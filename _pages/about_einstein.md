@@ -1,5 +1,8 @@
-Write your biography here. Tell the world about yourself. Link to your favorite [subreddit](http://reddit.com). You can put a picture in, too. The code is already in, just name your picture `prof_pic.jpg` and put it in the `img/` folder.
-
-Put your address / P.O. box / other info right below your picture. You can also disable any these elements by editing `profile` property of the YAML header of your `_pages/about.md`. Edit `_bibliography/papers.bib` and Jekyll will render your [publications page](/al-folio/publications/) automatically.
-
-Link to your social media connections, too. This theme is set up to use [Font Awesome icons](https://fontawesome.com/) and [Academicons](https://jpswalsh.github.io/academicons/), like the ones below. Add your Facebook, Twitter, LinkedIn, Google Scholar, or just disable all of them.
+- 🇸🇬 National university of Singapore (NUS), Singapore (2023-now)
+  - Research Fellow, School of Computing
+  - Principle Investigator: [Prof. You Yang](https://www.comp.nus.edu.sg/~youy/)
+- 🇭🇰 Hong Kong Baptist University (HKBU), Hong Kong, China (2018 - 2023)
+  - Ph.D, Department of Computer Science
+  - Supervisor: [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen)
+- 🇨🇳 Huazhong University of Science & Technology (HUST), Wuhan, China (2014 - 2018)
+  - Bachelor, School of Electronic Information and Communications, Honor of Outstanding Student

@@ -1,12 +1,15 @@
 github_users:
-  - torvalds
-  - alshedivat
+  - marsggbo
 
 github_repos:
-  - alshedivat/al-folio
-  - twbs/bootstrap
-  - jekyll/jekyll
-  - jquery/jquery
-  - FortAwesome/Font-Awesome
-  - jpswalsh/academicons
-  - mathjax/MathJax
+  - marsggbo/hyperbox
+  - marsggbo/torchline
+  - marsggbo/EAGAN
+  - marsggbo/CovidNet3D
+  - marsggbo/MICCAI2022-EMARS
+  - marsggbo/NAS-LID
+  - marsggbo/machine_learning_basics_notes
+  - marsggbo/LabelImg
+  - marsggbo/MarsMail
+  - marsggbo/script_identification
+  - marsggbo/2048
