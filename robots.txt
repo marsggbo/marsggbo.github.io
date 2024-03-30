@@ -1,4 +1,4 @@
 User-agent: *
 Disallow:
 
-Sitemap: https://marsggbo.github.io/sitemap.xml
+Sitemap: https://marsggbo.github.io//sitemap.xml
