@@ -10,15 +10,10 @@ profile:
   image_circular: true # crops the image to make it circular
   more_info: > MARSGGBO
 
-
 news: true # includes a list of news items
 selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
-
-<!-- <h1 align="center">Hi 👋, I'm Xin He</h1>
-<h3 align="center">A research newbie.</h3> -->
-<!-- <p align="left"> <img src="https://komarev.com/ghpvc/?username=marsggbo" alt="marsggbo" /> </p> -->
 
 hexin@nus.edu.sg<br>
 | [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) | [Wechat](../assets/img/WeChat.jpeg) | [博客园](https://www.cnblogs.com/marsggbo/) | [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) | [Source code](https://github.com/marsggbo/marsggbo.github.io) 
@@ -36,14 +31,13 @@ hexin@nus.edu.sg<br>
   - Bachelor, School of Electronic Information and Communications, Honor of Outstanding Student
 
 
-Research interests: 
+#### Research interests: 
 - Automated Machine Learning (AutoML)
 - Neural Architecture Search (NAS)
 - Large Language Model (LLM)
 - Distributed AI Training and Inference
 
-*Interested in collaboration? <a href = "mailto: csxinhe@comp.hkbu.edu.hk">Contact me</a>.*
-
+*Interested in collaboration? <a href = "mailto: hexin.research@gmail.com">Contact me</a>.*
 
 
 #### Highlights
