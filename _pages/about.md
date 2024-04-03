@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: >
+subtitle: AI/CS Research Fellow, National University of Singapore
 profile:
   align: right
   image: avatar.jpg
@@ -14,7 +14,7 @@ social: true # includes social icons at the bottom of the page
 ---
 
 hexin@nus.edu.sg<br>
-| [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) | [Wechat](../assets/img/WeChat.jpeg) | [博客园](https://www.cnblogs.com/marsggbo/) | [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) | [Source code](https://github.com/marsggbo/marsggbo.github.io) 
+| [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) | [Wechat](../assets/img/WeChat.jpeg) | [博客园](https://www.cnblogs.com/marsggbo/) | [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) | [Source code](https://github.com/marsggbo/marsggbo.github.io) |
 
 
 #### Education & Work
