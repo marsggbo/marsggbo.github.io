@@ -2,8 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: AI Research Fellow, National University of Singapore
-MARSGGBO means GGBond Superman from MARS
+subtitle: AI Research Fellow, National University of Singapore,\n MARSGGBO means GGBond Superman from MARS
 profile:
   align: right
   image: ggbo.jpg
