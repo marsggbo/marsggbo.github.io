@@ -2,10 +2,11 @@
 layout: about
 title: About
 permalink: /
-subtitle: AI/CS Research Fellow, National University of Singapore
+subtitle: AI Research Fellow, National University of Singapore
+MARSGGBO means GGBond Superman from MARS
 profile:
   align: right
-  image: avatar.jpg
+  image: ggbo.jpg
   image_circular: true # crops the image to make it circular
   more_info: >
 news: true # includes a list of news items
