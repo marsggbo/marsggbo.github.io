@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: AI Research Fellow, National University of Singapore.<br>MARSGGBO means GGBond Superman from MARS
+subtitle: AI Research Fellow, National University of Singapore
 profile:
   align: right
   image: ggbo_on_mars.jpg
@@ -16,6 +16,19 @@ social: true # includes social icons at the bottom of the page
 hexin@nus.edu.sg<br>
 | [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) | [Wechat](../assets/img/WeChat.jpeg) | [博客园](https://www.cnblogs.com/marsggbo/) | [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) | [Source code](https://github.com/marsggbo/marsggbo.github.io) |
 
+
+Driven by a mission to democratize deep learning, my research is dedicated to advancing the accessibility and efficiency of large-scale deep learning models, particularly Large Language Models (LLMs). My goal is to bridge the theoretical aspects of machine learning with practical system designs to create scalable, robust, and trustworthy AI systems that are widely accessible. My interested research directions include:
+- 1. **Model-Centric AI**:
+  - Architecture Dearch: Neural Architecture Search (e.g., multi-objective NAS, Training-free NAS, resource-aware NAS), Sparse Model (e.g., Mixture-of-Experts)
+  - Hyper-parameter optimization (HPO): Grid/Random Search, Evolutionary Algorithm, Differentiable Optimization
+  - Model Compression: Pruning, Quantization, Knowledge Distillation
+- 2. **Data-Centric AI**:
+  - Automatic Data Augmentation (ADA), Data Generation, Dataset compression,
+  - RAG, LLM alignment
+- 3. **HPC AI**:
+  - Memory efficiency: Offloading, KV-cache
+  - LLM training acceleration: Distributed Parallellism (data parallel, tensor parallel, pipeline parallel)
+  - LLM inference optimization: Batch Schedule, Dynamic Inference Paths
 
 #### Education & Work
 
