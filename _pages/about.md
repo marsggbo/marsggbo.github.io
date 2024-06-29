@@ -18,14 +18,14 @@ hexin@nus.edu.sg<br>
 
 
 Driven by a mission to democratize deep learning, my research is dedicated to advancing the accessibility and efficiency of large-scale deep learning models, particularly Large Language Models (LLMs). My goal is to bridge the theoretical aspects of machine learning with practical system designs to create scalable, robust, and trustworthy AI systems that are widely accessible. My interested research directions include:
-- 1. **Model-Centric AI**:
+- 1.**Model-Centric AI**:
   - Architecture Dearch: Neural Architecture Search (e.g., multi-objective NAS, Training-free NAS, resource-aware NAS), Sparse Model (e.g., Mixture-of-Experts)
   - Hyper-parameter optimization (HPO): Grid/Random Search, Evolutionary Algorithm, Differentiable Optimization
   - Model Compression: Pruning, Quantization, Knowledge Distillation
-- 2. **Data-Centric AI**:
+- 2.**Data-Centric AI**:
   - Automatic Data Augmentation (ADA), Data Generation, Dataset compression,
   - RAG, LLM alignment
-- 3. **HPC AI**:
+- 3.**HPC AI**:
   - Memory efficiency: Offloading, KV-cache
   - LLM training acceleration: Distributed Parallellism (data parallel, tensor parallel, pipeline parallel)
   - LLM inference optimization: Batch Schedule, Dynamic Inference Paths
