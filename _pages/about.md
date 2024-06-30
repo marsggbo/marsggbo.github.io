@@ -42,11 +42,6 @@ Driven by a mission to democratize deep learning, my research is dedicated to ad
   - Bachelor, School of Electronic Information and Communications, Honor of Outstanding Student
 
 
-#### Research interests: 
-- Automated Machine Learning (AutoML)
-- Neural Architecture Search (NAS)
-- Large Language Model (LLM)
-- Distributed AI Training and Inference
 
 *Interested in collaboration? <a href = "mailto: hexin.research@gmail.com">Contact me</a>.*
 
