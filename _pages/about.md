@@ -2,7 +2,7 @@
 layout: about
 title: About
 permalink: /
-subtitle: AI Research Fellow, National University of Singapore
+subtitle: Research Scientist, CFAR, A*STAR, Singapore
 profile:
   align: right
   image: ggbo_on_mars.jpg
@@ -31,8 +31,10 @@ Driven by a mission to democratize deep learning, my research is dedicated to ad
   - LLM inference optimization: Batch Schedule, Dynamic Inference Paths
 
 #### Education & Work
-
-- 🇸🇬 National university of Singapore (NUS), Singapore (2023-now)
+- 🇸🇬 A*star, Singapore (2024-now)
+  - Research Scientist, CFAR
+  - Supervisor: [Prof Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en)
+- 🇸🇬 National university of Singapore (NUS), Singapore (2023-2024)
   - Research Fellow, School of Computing
   - Principle Investigator: [Prof. You Yang](https://www.comp.nus.edu.sg/~youy/)
 - 🇭🇰 Hong Kong Baptist University (HKBU), Hong Kong, China (2018 - 2023)
