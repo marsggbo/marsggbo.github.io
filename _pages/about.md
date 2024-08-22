@@ -16,6 +16,8 @@ social: true # includes social icons at the bottom of the page
 hexin@nus.edu.sg<br>
 | [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) | [Wechat](../assets/img/WeChat.jpeg) | [博客园](https://www.cnblogs.com/marsggbo/) | [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) | [Source code](https://github.com/marsggbo/marsggbo.github.io) |
 
+I am currently a Research Scientist at A*star, Singapore, affiliated with CFAR, under the supervision of [Prof Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en). Prior to this, I completed my Ph.D. in Computer Science at Hong Kong Baptist University (HKBU), where I was advised by [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen). I earned my Bachelor's degree with honors in the School of Electronic Information and Communications at Huazhong University of Science & Technology (HUST).
+
 
 Driven by a mission to democratize deep learning, my research is dedicated to advancing the accessibility and efficiency of large-scale deep learning models, particularly Large Language Models (LLMs). My goal is to bridge the theoretical aspects of machine learning with practical system designs to create scalable, robust, and trustworthy AI systems that are widely accessible. My interested research directions include:
 - 1.**Model-Centric AI**:
@@ -30,27 +32,13 @@ Driven by a mission to democratize deep learning, my research is dedicated to ad
   - LLM training acceleration: Distributed Parallellism (data parallel, tensor parallel, pipeline parallel)
   - LLM inference optimization: Batch Schedule, Dynamic Inference Paths
 
-#### Education & Work
-- 🇸🇬 A*star, Singapore (2024-now)
-  - Research Scientist, CFAR
-  - Supervisor: [Prof Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en)
-- 🇸🇬 National university of Singapore (NUS), Singapore (2023-2024)
-  - Research Fellow, School of Computing
-  - Principle Investigator: [Prof. You Yang](https://www.comp.nus.edu.sg/~youy/)
-- 🇭🇰 Hong Kong Baptist University (HKBU), Hong Kong, China (2018 - 2023)
-  - Ph.D, Department of Computer Science
-  - Supervisor: [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen)
-- 🇨🇳 Huazhong University of Science & Technology (HUST), Wuhan, China (2014 - 2018)
-  - Bachelor, School of Electronic Information and Communications, Honor of Outstanding Student
-
-
 
 *Interested in collaboration? <a href = "mailto: hexin.research@gmail.com">Contact me</a>.*
 
 
 #### Highlights
 
-- 1.AutoML Survey (**1400+ citation**): [AutoML: A Survey of State-of-ther-art](https://arxiv.org/abs/1908.00709)
+- 1.AutoML Survey (**1600+ citation**): [AutoML: A Survey of State-of-ther-art](https://arxiv.org/abs/1908.00709)
 - 2.AutoML Framework: [Hyperbox](https://github.com/marsggbo/hyperbox) [![Hyperbox](https://img.shields.io/github/stars/marsggbo/hyperbox?style=social)](https://github.com/marsggbo/hyperbox)
 - 3.AutoML Applications: 
   - [AAAI2021 COVID3DNet](https://ojs.aaai.org/index.php/AAAI/article/view/16614): The first NAS application for COVID-19 3D CT scans
