@@ -38,7 +38,7 @@ Driven by a mission to democratize deep learning, my research is dedicated to ad
 
 #### Highlights
 
-- 1.AutoML Survey (**1600+ citation**): [AutoML: A Survey of State-of-ther-art](https://arxiv.org/abs/1908.00709)
+- 1.AutoML Survey (**1770+ citation**): [AutoML: A Survey of State-of-ther-art](https://arxiv.org/abs/1908.00709)
 - 2.AutoML Framework: [Hyperbox](https://github.com/marsggbo/hyperbox) [![Hyperbox](https://img.shields.io/github/stars/marsggbo/hyperbox?style=social)](https://github.com/marsggbo/hyperbox)
 - 3.AutoML Applications: 
   - [AAAI2021 COVID3DNet](https://ojs.aaai.org/index.php/AAAI/article/view/16614): The first NAS application for COVID-19 3D CT scans
