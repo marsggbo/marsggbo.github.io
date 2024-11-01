@@ -13,7 +13,7 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
 
-hexin@nus.edu.sg<br>
+hexin.research@gmail.com<br>
 | [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) | [Wechat](../assets/img/WeChat.jpeg) | [博客园](https://www.cnblogs.com/marsggbo/) | [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) | [Source code](https://github.com/marsggbo/marsggbo.github.io) |
 
 I am currently a Research Scientist at A*STAR, Singapore, working with [Prof. Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en) and [Prof. Ivor W. Tsang](https://scholar.google.com.sg/citations?user=rJMOlVsAAAAJ&hl=en). Prior to this, I completed my Ph.D. in Computer Science at Hong Kong Baptist University (HKBU), where I was advised by [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen). I earned my Bachelor's degree with honors in the School of Electronic Information and Communications at Huazhong University of Science & Technology (HUST).
