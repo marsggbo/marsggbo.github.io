@@ -31,7 +31,8 @@ I am currently a Research Scientist at A*STAR, Singapore, working with [Prof. On
   - **Duration**: 6-12 months (1 year available for PhD-track students)
   - **Welcome**: CSC scholars, Master/Bachelor students (planning to apply for PhD)
 
-*Interested in collaboration? send an email to me with title "ASTAR-CFAR Intern Application-Name" <a href = "mailto: hex@cfar.a-star.edu.sg">Contact me</a>.*
+*Interested in internship? send an email to me with title "ASTAR-CFAR Intern Application-Name" <a href = "mailto: hex@cfar.a-star.edu.sg">Contact me</a>.*
+
 <!--
 Driven by a mission to democratize deep learning, my research is dedicated to advancing the accessibility and efficiency of large-scale deep learning models, particularly Large Language Models (LLMs). My goal is to bridge the theoretical aspects of machine learning with practical system designs to create scalable, robust, and trustworthy AI systems that are widely accessible. My interested research directions include:
 - 1.**Model-Centric AI**:
