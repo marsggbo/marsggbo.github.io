@@ -13,25 +13,23 @@ selected_papers: true # includes a list of papers marked as "selected={true}"
 social: true # includes social icons at the bottom of the page
 ---
 
-hexin.research@gmail.com<br>
+hex@cfar.a-star.edu.sg <br>
 | [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) | [Wechat](../assets/img/WeChat.jpeg) | [博客园](https://www.cnblogs.com/marsggbo/) | [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) | [Source code](https://github.com/marsggbo/marsggbo.github.io) |
 
 I am currently a Research Scientist at A*STAR, Singapore, working with [Prof. Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en) and [Prof. Ivor W. Tsang](https://scholar.google.com.sg/citations?user=rJMOlVsAAAAJ&hl=en). Prior to this, I completed my Ph.D. in Computer Science at Hong Kong Baptist University (HKBU), where I was advised by [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen). I earned my Bachelor's degree with honors in the School of Electronic Information and Communications at Huazhong University of Science & Technology (HUST).
 
 
-We are looking for passionate **research interns** to work on cutting-edge projects in machine learning systems and large language model optimization at ASTAR CFAR. Our research focuses on improving the efficiency and performance of AI systems, particularly in the areas of:
-- **AI cluster optimization**
-- **Large language model optimization**
-- **Resource-efficient ML systems**
-
-**Requirements**:
-- Python, PyTorch/TensorFlow
-- ML/Systems background
-- Self-motivated
-
-  
-**Duration**: 6-12 months (1 year available for PhD-track students)
-**Welcome**: CSC scholars, Master/Bachelor students (planning to apply for PhD)
+- Looking for **Research Interns**:
+  - **Areas of**:
+    - AI cluster optimization
+    - Large language model optimization
+    - Resource-efficient ML systems
+  - **Requirements**:
+    - Python, PyTorch/TensorFlow
+    - ML/Systems background
+    - LLM background
+  - **Duration**: 6-12 months (1 year available for PhD-track students)
+  - **Welcome**: CSC scholars, Master/Bachelor students (planning to apply for PhD)
 
 <!--
 Driven by a mission to democratize deep learning, my research is dedicated to advancing the accessibility and efficiency of large-scale deep learning models, particularly Large Language Models (LLMs). My goal is to bridge the theoretical aspects of machine learning with practical system designs to create scalable, robust, and trustworthy AI systems that are widely accessible. My interested research directions include:
@@ -48,7 +46,7 @@ Driven by a mission to democratize deep learning, my research is dedicated to ad
   - LLM inference optimization: Batch Schedule, Dynamic Inference Paths
 -->
 
-*Interested in collaboration? send an email to me with title "ASTAR-CFAR Intern Application-Name"<a href = "mailto: hexin.research@gmail.com">Contact me</a>.*
+*Interested in collaboration? send an email to me with title "ASTAR-CFAR Intern Application-Name" <a href = "mailto: hex@cfar.a-star.edu.sg">Contact me</a>.*
 
 
 #### Highlights
