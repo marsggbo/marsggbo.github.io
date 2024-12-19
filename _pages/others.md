@@ -7,17 +7,19 @@ nav: true
 
 #### Academic service 
 
-#### Journal/Conference Reviewer
+#### Journal Reviewer
 - IEEE Transactions on Pattern Analysis and Machine Intelligence (TPAMI)
 - IEEE Transactions on Medical Imaging (TMI)
 - IEEE Journal of Biomedical and Health Informatics (JBHI)
 - Expert Systems with Applications
-- AAAI Conference on Artificial Intelligence (AAAI) 2020/2022
-- European Conference on Computer Vision (ECCV) 2022
+- IEEE Transaction on Cybernetics
+
+#### Conference Reviewer
+- AAAI Conference on Artificial Intelligence (AAAI) 2020/2022/2024
+- European Conference on Computer Vision (ECCV) 2022/2024
 - Computer Vision and Pattern Recognition Conference (CVPR) 2023
 - International Conference on Computer Vision (ICCV) 2023
 - Thirty-seventh Conference on Neural Information Processing Systems (Neuips) 2023
-- IEEE Transaction on Cybernetics
 
 #### Awards
 
