@@ -13,6 +13,8 @@ nav: true
 - IEEE Journal of Biomedical and Health Informatics (JBHI)
 - Expert Systems with Applications
 - IEEE Transaction on Cybernetics
+- IEEE Transaction on Image Processing (TIP)
+- Knowledge-based Systems
 
 #### Conference Reviewer
 - AAAI Conference on Artificial Intelligence (AAAI) 2020/2022/2024
