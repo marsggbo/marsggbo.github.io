@@ -5,7 +5,7 @@ permalink: /
 subtitle: Research Scientist, CFAR, A*STAR, Singapore
 profile:
   align: right
-  image: assets/img/ggbo_on_mars.jpg
+  image: ggbo_on_mars.jpg
   image_circular: true # crops the image to make it circular
   more_info: >
 news: true # includes a list of news items
