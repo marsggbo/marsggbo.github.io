@@ -19,6 +19,7 @@ he_xin@a-star.edu.sg <br>
 I am currently a Research Scientist at A*STAR, Singapore, working with [Prof. Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en) and [Prof. Ivor W. Tsang](https://scholar.google.com.sg/citations?user=rJMOlVsAAAAJ&hl=en). Prior to this, I completed my Ph.D. in Computer Science at Hong Kong Baptist University (HKBU), where I was advised by [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen). I earned my Bachelor's degree with honors in the School of Electronic Information and Communications at Huazhong University of Science & Technology (HUST).
 
 
+<!--
 Looking for **Research Interns**:
   - **Areas of**:
     - AI cluster optimization (working with [NSCC Singapore](https://www.nscc.sg/))
@@ -31,9 +32,10 @@ Looking for **Research Interns**:
   - **Duration**: 6-12 months (1 year available for PhD-track students)
   - **Welcome**: CSC scholars, Master/Bachelor students (planning to apply for PhD)
 
+
 *Interested in internship? send an email to me with title "ASTAR-CFAR Intern Application-Name" <a href = "mailto: hex@cfar.a-star.edu.sg">Contact me</a>.*
 
-<!--
+
 Driven by a mission to democratize deep learning, my research is dedicated to advancing the accessibility and efficiency of large-scale deep learning models, particularly Large Language Models (LLMs). My goal is to bridge the theoretical aspects of machine learning with practical system designs to create scalable, robust, and trustworthy AI systems that are widely accessible. My interested research directions include:
 - 1.**Model-Centric AI**:
   - Architecture Dearch: Neural Architecture Search (e.g., multi-objective NAS, Training-free NAS, resource-aware NAS), Sparse Model (e.g., Mixture-of-Experts)
@@ -47,8 +49,10 @@ Driven by a mission to democratize deep learning, my research is dedicated to ad
   - LLM training acceleration: Distributed Parallellism (data parallel, tensor parallel, pipeline parallel)
   - LLM inference optimization: Batch Schedule, Dynamic Inference Paths
 
+-->
 
 
+<!--
 #### Highlights
 
 - 1.AutoML Survey (**2200+ citation**): [AutoML: A Survey of State-of-ther-art](https://arxiv.org/abs/1908.00709)
