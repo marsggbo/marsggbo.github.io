@@ -18,13 +18,16 @@ nav: true
 
 #### Conference Reviewer
 - AAAI Conference on Artificial Intelligence (AAAI) 2020/2022/2024
-- European Conference on Computer Vision (ECCV) 2022/2024
+- European Conference on Computer Vision (ECCV) 2022/2024/2026
 - Computer Vision and Pattern Recognition Conference (CVPR) 2023
 - International Conference on Computer Vision (ICCV) 2023
 - Thirty-seventh Conference on Neural Information Processing Systems (Neuips) 2023
+- International Conference on Learning Representations (ICLR) 2026
+- Association for Computational Linguistics (ACL) 2025/2026
 
 ### Awards
 
+- 2025 Career Development Func (CDF), A*STAR, PI
 - 2021/22 Computer Science Department RPg Performance Award, Hong Kong Baptist University. [Link](https://www.comp.hkbu.edu.hk/v1/?pid=48)
 - 2020/21 Computer Science Department RPg Performance Award, Hong Kong Baptist University. [Link](https://www.comp.hkbu.edu.hk/v1/?pid=48)
 - 2020/21 Best Presentation Award of 2021 PG day, Computer Science Department, HKBU
