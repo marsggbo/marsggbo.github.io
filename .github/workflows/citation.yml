@@ -1,0 +1,29 @@
+name: Citation Tracker
+on:
+  schedule:
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: python-version: '3.11'
+      - run: pip install scholarly
+      - run: python scrape.py
+      - run: |
+          python -c "
+import json, csv
+with open('history.csv') as f:
+    rows = list(csv.DictReader(f))
+with open('history.json', 'w') as f:
+    json.dump({'history': rows}, f)
+"
+      - name: Commit
+        run: |
+          git config --local user.email "bot@github.com"
+          git config --local user.name "Bot"
+          git add data.json history.csv history.json
+          git diff --staged --quiet || git commit -m "Update citations"
+          git push
