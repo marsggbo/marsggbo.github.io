@@ -28,16 +28,12 @@ def scrape_with_scholarly():
     
     logger.info(f"正在抓取 Google Scholar: {SCHOLAR_USER_ID}")
     
-    # 搜索作者
-    search_results = list(scholarly.search_author_id(SCHOLAR_USER_ID))
-    if not search_results:
-        raise Exception("未找到该作者")
+    # 搜索并填充作者信息
+    search_results = scholarly.search_author_id(SCHOLAR_USER_ID)
+    author = scholarly.fill(search_results)
     
-    author = search_results[0]
     logger.info(f"找到作者: {author.get('name', 'N/A')}")
-    
-    # 填充作者详情（包括所有出版物）
-    author = scholarly.fill(author)
+    logger.info(f"机构: {author.get('affiliation', 'N/A')}")
     
     papers = []
     for pub in author.get('publications', []):
@@ -63,42 +59,6 @@ def scrape_with_scholarly():
         'total_citations': author.get('citedby', 0),
         'hindex': author.get('hindex', 0),
         'i10index': author.get('i10index', 0),
-        'papers': papers
-    }
-
-
-def scrape_fallback():
-    """备用抓取方法：使用 requests + BeautifulSoup"""
-    import requests
-    from bs4 import BeautifulSoup
-    
-    logger.info("使用备用方法抓取...")
-    
-    url = f"https://scholar.google.com/citations?user={SCHOLAR_USER_ID}&view_op=list_works&sortby=pubdate"
-    headers = {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
-    }
-    
-    response = requests.get(url, headers=headers, timeout=30)
-    soup = BeautifulSoup(response.text, 'html.parser')
-    
-    papers = []
-    for item in soup.select('#gsc_a_b .gsc_a_t'):
-        title_elem = item.select_one('.gsc_a_at')
-        cites_elem = item.select_one('.gsc_a_c-n')
-        
-        if title_elem:
-            title = title_elem.get_text(strip=True)
-            citations = int(re.sub(r'[^\d]', '', cites_elem.get_text(strip=True) if cites_elem else '0') or 0)
-            papers.append({
-                'title': title,
-                'citations': citations,
-                'scholar_id': ''
-            })
-    
-    return {
-        'date': datetime.now().strftime('%Y-%m-%d'),
-        'total_citations': sum(p['citations'] for p in papers),
         'papers': papers
     }
 
@@ -136,7 +96,7 @@ def save_history(history, data):
 
 
 def save_papers(data):
-    """保存最新论文数据（用于 BibTeX 更新和可视化）"""
+    """保存最新论文数据"""
     with open(PAPERS_FILE, 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     logger.info(f"保存了 {len(data['papers'])} 篇论文数据")
@@ -148,30 +108,18 @@ def main():
     print("=" * 50)
     
     data = None
-    error_msg = None
     
-    # 方法1: scholarly
+    # 方法: scholarly
     try:
         data = scrape_with_scholarly()
         logger.info("✅ scholarly 抓取成功")
     except Exception as e:
-        error_msg = f"scholarly: {e}"
-        logger.warning(f"❌ scholarly 失败: {e}")
-    
-    # 方法2: 备用
-    if data is None:
-        try:
-            data = scrape_fallback()
-            logger.info("✅ 备用方法抓取成功")
-        except Exception as e:
-            error_msg += f", fallback: {e}"
-            logger.error(f"❌ 备用方法也失败: {e}")
+        logger.error(f"❌ scholarly 失败: {e}")
+        import traceback
+        traceback.print_exc()
     
     if data is None:
-        logger.error("所有抓取方法都失败了")
-        # 写入空数据标记
-        with open('error.log', 'a') as f:
-            f.write(f"{datetime.now()} - {error_msg}\n")
+        logger.error("抓取失败")
         return
     
     # 打印结果
