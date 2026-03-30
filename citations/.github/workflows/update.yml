@@ -1,0 +1,48 @@
+name: Citation Tracker
+
+on:
+  schedule:
+    # 每天早上10点（北京时间）运行一次
+    - cron: '0 2 * * *'
+  workflow_dispatch:
+  push:
+    branches: [master]
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          token: ${{ secrets.GH_TOKEN }}
+          
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+          
+      - name: Install dependencies
+        run: pip install scholarly beautifulsoup4 lxml requests
+        
+      - name: Scrape Google Scholar
+        env:
+          SCHOLAR_USER_ID: ${{ secrets.SCHOLAR_USER_ID }}
+        run: python scrape_scholar.py
+        
+      - name: Update BibTeX if new papers found
+        run: python update_bibtex.py
+        
+      - name: Generate visualization
+        run: python generate_html.py
+        
+      - name: Commit and push
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "GitHub Actions"
+          git add -A
+          git diff --staged --quiet || git commit -m "📊 Update citations - $(date +'%Y-%m-%d')"
+          git push
