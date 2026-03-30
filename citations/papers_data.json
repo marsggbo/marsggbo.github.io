@@ -1,0 +1,209 @@
+{
+  "date": "2026-03-30",
+  "time": "12:29:56",
+  "author_name": "Xin He",
+  "affiliation": "Scientist, A*STAR, Singapore",
+  "total_citations": 3377,
+  "hindex": 13,
+  "i10index": 14,
+  "papers": [
+    {
+      "title": "AutoML: A survey of the state-of-the-art",
+      "author": "N/A",
+      "venue": "",
+      "year": "2021",
+      "citations": 2621,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Virtual homogeneity learning: Defending against data heterogeneity in federated learning",
+      "author": "N/A",
+      "venue": "",
+      "year": "2022",
+      "citations": 146,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Benchmarking the performance and energy efficiency of AI accelerators for AI training",
+      "author": "N/A",
+      "venue": "",
+      "year": "2020",
+      "citations": 126,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems",
+      "author": "N/A",
+      "venue": "",
+      "year": "2025",
+      "citations": 120,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans",
+      "author": "N/A",
+      "venue": "",
+      "year": "2020",
+      "citations": 67,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans",
+      "author": "N/A",
+      "venue": "",
+      "year": "2021",
+      "citations": 57,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus",
+      "author": "N/A",
+      "venue": "",
+      "year": "2023",
+      "citations": 46,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "EAGAN: Efficient two-stage evolutionary architecture search for GANs",
+      "author": "N/A",
+      "venue": "",
+      "year": "2022",
+      "citations": 38,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling",
+      "author": "N/A",
+      "venue": "",
+      "year": "2026",
+      "citations": 29,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification",
+      "author": "N/A",
+      "venue": "",
+      "year": "2022",
+      "citations": 27,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Computer-aided clinical skin disease diagnosis using CNN and object detection models",
+      "author": "N/A",
+      "venue": "",
+      "year": "2019",
+      "citations": 24,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Nas-lid: Efficient neural architecture search with local intrinsic dimension",
+      "author": "N/A",
+      "venue": "",
+      "year": "2023",
+      "citations": 22,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing",
+      "author": "N/A",
+      "venue": "",
+      "year": "2024",
+      "citations": 18,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression",
+      "author": "N/A",
+      "venue": "",
+      "year": "2024",
+      "citations": 13,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification",
+      "author": "N/A",
+      "venue": "",
+      "year": "2023",
+      "citations": 8,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework",
+      "author": "N/A",
+      "venue": "",
+      "year": "2026",
+      "citations": 5,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated",
+      "author": "N/A",
+      "venue": "",
+      "year": "2026",
+      "citations": 4,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Autohete: An automatic and efficient heterogeneous training system for llms",
+      "author": "N/A",
+      "venue": "",
+      "year": "2025",
+      "citations": 3,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Routemark: A fingerprint for intellectual property attribution in routing-based model merging",
+      "author": "N/A",
+      "venue": "",
+      "year": "2025",
+      "citations": 2,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models",
+      "author": "N/A",
+      "venue": "",
+      "year": "2025",
+      "citations": 1,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective",
+      "author": "N/A",
+      "venue": "",
+      "year": "2026",
+      "citations": 0,
+      "scholar_id": "",
+      "gsrank": 0
+    },
+    {
+      "title": "Automated Machine Learning and Its Applications",
+      "author": "N/A",
+      "venue": "",
+      "year": "2023",
+      "citations": 0,
+      "scholar_id": "",
+      "gsrank": 0
+    }
+  ]
+}
