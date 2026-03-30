@@ -1,0 +1,172 @@
+{
+  "total_trend": [
+    {
+      "date": "2026-03-30",
+      "total": 0
+    }
+  ],
+  "papers_trends": {
+    "AutoML: A survey of the state-of-the-art": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "Virtual homogeneity learning: Defending ...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "Benchmarking the performance and energy ...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "BurstGPT: A Real-world Workload Dataset ...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "Benchmarking deep learning models and au...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "Automated model design and benchmarking ...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "Fusionai: Decentralized training and dep...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "EAGAN: Efficient two-stage evolutionary ...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "ExpertFlow: Efficient Mixture-of-Experts...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ],
+    "Evolutionary multi-objective architectur...": [
+      {
+        "date": "2026-03-30",
+        "citations": 0
+      }
+    ]
+  },
+  "latest_papers": [
+    {
+      "title": "AutoML: A survey of the state-of-the-art",
+      "authors": "X He, K Zhao, X Chu",
+      "citations": 0
+    },
+    {
+      "title": "Virtual homogeneity learning: Defending against data heterogeneity in federated learning",
+      "authors": "Z Tang, Y Zhang, S Shi, X He, B Han, X Chu",
+      "citations": 0
+    },
+    {
+      "title": "Benchmarking the performance and energy efficiency of AI accelerators for AI training",
+      "authors": "Y Wang, Q Wang, S Shi, X He, Z Tang, K Zhao, X Chu",
+      "citations": 0
+    },
+    {
+      "title": "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems",
+      "authors": "XC Yuxin Wang, Yuhan Chen, Zeyu Li, Xueze Kang, Zhenheng Tang, Xin He, Rui ...",
+      "citations": 0
+    },
+    {
+      "title": "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans",
+      "authors": "X He, S Wang, S Shi, X Chu, J Tang, X Liu, C Yan, J Zhang, G Ding",
+      "citations": 0
+    },
+    {
+      "title": "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans",
+      "authors": "X He, S Wang, X Chu, S Shi, J Tang, X Liu, C Yan, J Zhang, G Ding",
+      "citations": 0
+    },
+    {
+      "title": "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus",
+      "authors": "Z Tang, Y Wang, X He, L Zhang, X Pan, Q Wang, R Zeng, K Zhao, S Shi, ...",
+      "citations": 0
+    },
+    {
+      "title": "EAGAN: Efficient two-stage evolutionary architecture search for GANs",
+      "authors": "G Ying, X He, B Gao, B Han, X Chu",
+      "citations": 0
+    },
+    {
+      "title": "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling",
+      "authors": "X He, S Zhang, T Kaijie, S Shi, Y Wang, Z Zeng, Z Tang, X Chu, H Yin, ...",
+      "citations": 0
+    },
+    {
+      "title": "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification",
+      "authors": "X He, G Ying, J Zhang, X Chu",
+      "citations": 0
+    },
+    {
+      "title": "Computer-aided clinical skin disease diagnosis using CNN and object detection models",
+      "authors": "X He, S Wang, S Shi, Z Tang, Y Wang, Z Zhao, J Dai, R Ni, X Zhang, X Liu, ...",
+      "citations": 0
+    },
+    {
+      "title": "Nas-lid: Efficient neural architecture search with local intrinsic dimension",
+      "authors": "X He, J Yao, Y Wang, Z Tang, KC Cheung, S See, B Han, X Chu",
+      "citations": 0
+    },
+    {
+      "title": "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing",
+      "authors": "Y Wang, S Shi, X He, Z Tang, X Pan, Y Zheng, X Wu, AC Zhou, B He, ...",
+      "citations": 0
+    },
+    {
+      "title": "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression",
+      "authors": "Z Tang, X Kang, Y Yin, X Pan, Y Wang, X He, Q Wang, R Zeng, K Zhao, ...",
+      "citations": 0
+    },
+    {
+      "title": "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification",
+      "authors": "X He, X Chu",
+      "citations": 0
+    },
+    {
+      "title": "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework",
+      "authors": "X He, L You, H Tian, B Han, I Tsang, YS Ong",
+      "citations": 0
+    },
+    {
+      "title": "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated",
+      "authors": "BL Zichen TANG, Zhenheng Tang, Gaoning Pan, Buhua Liu, Xin He, Kunfeng Lai ...",
+      "citations": 0
+    },
+    {
+      "title": "Autohete: An automatic and efficient heterogeneous training system for llms",
+      "authors": "Z Zeng, C Liu, X He, J Hu, Y Jiang, F Huang, K Li, WYB Lim",
+      "citations": 0
+    },
+    {
+      "title": "Routemark: A fingerprint for intellectual property attribution in routing-based model merging",
+      "authors": "X He, J Shen, Z Tang, X Chu, B Li, IW Tsang, YS Ong",
+      "citations": 0
+    },
+    {
+      "title": "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models",
+      "authors": "L Huang, H Hu, Q Li, X He, N Guan, CJ Xue",
+      "citations": 0
+    }
+  ]
+}
