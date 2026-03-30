@@ -1,0 +1,317 @@
+---
+layout: page
+title: Citation Tracker
+permalink: /citations/
+---
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Citation Tracker - {{ site.title }}</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
+    <style>
+        :root {
+            --primary: #2563eb;
+            --secondary: #7c3aed;
+            --bg: #0f172a;
+            --card-bg: #1e293b;
+            --text: #f1f5f9;
+            --text-muted: #94a3b8;
+        }
+        
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+            background: var(--bg);
+            color: var(--text);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+        
+        .container { max-width: 1200px; margin: 0 auto; }
+        
+        h1 {
+            font-size: 2rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+        
+        .subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+        
+        .stat-card {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            text-align: center;
+        }
+        
+        .stat-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: var(--primary);
+        }
+        
+        .stat-label { color: var(--text-muted); margin-top: 0.5rem; }
+        
+        .chart-container {
+            background: var(--card-bg);
+            border-radius: 12px;
+            padding: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            margin-bottom: 1rem;
+            color: var(--text);
+        }
+        
+        .papers-table {
+            background: var(--card-bg);
+            border-radius: 12px;
+            overflow: hidden;
+        }
+        
+        table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+        
+        th, td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        th {
+            background: rgba(255,255,255,0.05);
+            color: var(--text-muted);
+            font-weight: 600;
+            font-size: 0.875rem;
+            text-transform: uppercase;
+        }
+        
+        tr:hover { background: rgba(255,255,255,0.02); }
+        
+        .citation-count {
+            font-weight: bold;
+            color: var(--secondary);
+        }
+        
+        .loading {
+            text-align: center;
+            padding: 3rem;
+            color: var(--text-muted);
+        }
+        
+        .error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.3);
+            border-radius: 8px;
+            padding: 1rem;
+            color: #fca5a5;
+        }
+        
+        @media (max-width: 768px) {
+            body { padding: 1rem; }
+            .stat-value { font-size: 2rem; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📊 Citation Tracker</h1>
+        <p class="subtitle">Google Scholar citation statistics - Updated daily at 10:00 AM</p>
+        
+        <div id="stats" class="stats-grid">
+            <div class="stat-card">
+                <div class="stat-value" id="total-citations">--</div>
+                <div class="stat-label">Total Citations</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="paper-count">--</div>
+                <div class="stat-label">Papers</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="last-update">--</div>
+                <div class="stat-label">Last Update</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-value" id="days-tracked">--</div>
+                <div class="stat-label">Days Tracked</div>
+            </div>
+        </div>
+        
+        <div class="chart-container">
+            <h2 class="chart-title">📈 Total Citations Over Time</h2>
+            <canvas id="totalChart"></canvas>
+        </div>
+        
+        <div class="chart-container">
+            <h2 class="chart-title">📚 Top 10 Papers Citation Trends</h2>
+            <canvas id="papersChart"></canvas>
+        </div>
+        
+        <div class="papers-table">
+            <h2 class="chart-title" style="padding: 1rem;">📄 All Papers (Current)</h2>
+            <table>
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Title</th>
+                        <th>Authors</th>
+                        <th>Citations</th>
+                    </tr>
+                </thead>
+                <tbody id="papers-body">
+                    <tr><td colspan="4" class="loading">Loading...</td></tr>
+                </tbody>
+            </table>
+        </div>
+    </div>
+    
+    <script>
+        // 默认数据（当无法加载时会显示）
+        const defaultData = {
+            total_trend: [],
+            papers_trends: {},
+            latest_papers: []
+        };
+        
+        async function loadData() {
+            try {
+                // 尝试加载 GitHub 仓库中的数据
+                const response = await fetch('/assets/scholar-tracker/citation_data.json');
+                if (!response.ok) throw new Error('Data file not found');
+                return await response.json();
+            } catch (e) {
+                console.log('Using default data');
+                return defaultData;
+            }
+        }
+        
+        async function init() {
+            const data = await loadData();
+            
+            // 更新统计卡片
+            if (data.total_trend && data.total_trend.length > 0) {
+                const latest = data.total_trend[data.total_trend.length - 1];
+                const first = data.total_trend[0];
+                
+                document.getElementById('total-citations').textContent = latest.total.toLocaleString();
+                document.getElementById('paper-count').textContent = Object.keys(data.papers_trends).length;
+                document.getElementById('last-update').textContent = latest.date;
+                document.getElementById('days-tracked').textContent = data.total_trend.length;
+            }
+            
+            // 总引用趋势图
+            if (data.total_trend && data.total_trend.length > 0) {
+                new Chart(document.getElementById('totalChart'), {
+                    type: 'line',
+                    data: {
+                        labels: data.total_trend.map(d => d.date),
+                        datasets: [{
+                            label: 'Total Citations',
+                            data: data.total_trend.map(d => d.total),
+                            borderColor: '#2563eb',
+                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                            fill: true,
+                            tension: 0.3
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: { display: false }
+                        },
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: { unit: 'day' },
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                ticks: { color: '#94a3b8' }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                ticks: { color: '#94a3b8' }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 论文引用趋势图
+            if (data.papers_trends) {
+                const topPapers = Object.entries(data.papers_trends).slice(0, 10);
+                const colors = [
+                    '#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626',
+                    '#0891b2', '#4f46e5', '#84cc16', '#f59e0b', '#ec4899'
+                ];
+                
+                new Chart(document.getElementById('papersChart'), {
+                    type: 'line',
+                    data: {
+                        labels: topPapers[0]?.[1].map(d => d.date) || [],
+                        datasets: topPapers.map(([title, values], i) => ({
+                            label: title,
+                            data: values.map(v => v.citations),
+                            borderColor: colors[i % colors.length],
+                            backgroundColor: 'transparent',
+                            tension: 0.3
+                        }))
+                    },
+                    options: {
+                        responsive: true,
+                        plugins: {
+                            legend: {
+                                position: 'bottom',
+                                labels: { color: '#94a3b8', boxWidth: 12, padding: 10 }
+                            }
+                        },
+                        scales: {
+                            x: {
+                                type: 'time',
+                                time: { unit: 'day' },
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                ticks: { color: '#94a3b8' }
+                            },
+                            y: {
+                                grid: { color: 'rgba(255,255,255,0.1)' },
+                                ticks: { color: '#94a3b8' }
+                            }
+                        }
+                    }
+                });
+            }
+            
+            // 论文表格
+            const tbody = document.getElementById('papers-body');
+            if (data.latest_papers && data.latest_papers.length > 0) {
+                tbody.innerHTML = data.latest_papers.map((paper, i) => `
+                    <tr>
+                        <td>${i + 1}</td>
+                        <td>${paper.title}</td>
+                        <td style="color: var(--text-muted); font-size: 0.875rem;">${paper.authors}</td>
+                        <td class="citation-count">${paper.citations.toLocaleString()}</td>
+                    </tr>
+                `).join('');
+            }
+        }
+        
+        init();
+    </script>
+</body>
+</html>
