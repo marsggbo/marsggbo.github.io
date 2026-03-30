@@ -1,153 +1,115 @@
 #!/usr/bin/env python3
 """
 Google Scholar Citation Scraper
-无头浏览器方式抓取，兼容 GitHub Actions
+使用 scholarly 库抓取论文引用数据
 """
 
 import os
 import re
 import json
 import csv
+import time
+import logging
 from datetime import datetime
 from pathlib import Path
 
-try:
-    from bs4 import BeautifulSoup
-    HAS_BS4 = True
-except ImportError:
-    HAS_BS4 = False
-
-try:
-    import httpx
-    HAS_HTTPX = True
-except ImportError:
-    HAS_HTTPX = False
-
 # 配置
 SCHOLAR_USER_ID = os.environ.get('SCHOLAR_USER_ID', 'LYNKm_8AAAAJ')
-SCHOLAR_URL = f"https://scholar.google.com/citations?user={SCHOLAR_USER_ID}"
+HISTORY_FILE = 'citations_history.csv'
+PAPERS_FILE = 'papers_data.json'
 
-HEADERS = {
-    'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-    'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-    'Accept-Language': 'en-US,en;q=0.5',
-    'Accept-Encoding': 'gzip, deflate, br',
-    'Connection': 'keep-alive',
-    'Upgrade-Insecure-Requests': '1',
-}
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(message)s')
+logger = logging.getLogger(__name__)
 
 
-def scrape_with_requests():
-    """使用 requests + BeautifulSoup 抓取"""
-    import requests
+def scrape_with_scholarly():
+    """使用 scholarly 库抓取"""
+    from scholarly import scholarly
     
-    session = requests.Session()
-    response = session.get(SCHOLAR_URL, headers=HEADERS, timeout=30)
-    response.raise_for_status()
+    logger.info(f"正在抓取 Google Scholar: {SCHOLAR_USER_ID}")
     
-    soup = BeautifulSoup(response.text, 'html.parser')
-    return parse_soup(soup)
-
-
-def scrape_with_httpx():
-    """使用 httpx 抓取（备用）"""
-    with httpx.Client(headers=HEADERS, timeout=30) as client:
-        response = client.get(SCHOLAR_URL)
-        soup = BeautifulSoup(response.text, 'html.parser')
-        return parse_soup(soup)
-
-
-def scrape_with_urllib():
-    """纯 urllib 实现（最后备用）"""
-    from urllib.request import Request, urlopen
+    # 搜索作者
+    search_results = list(scholarly.search_author_id(SCHOLAR_USER_ID))
+    if not search_results:
+        raise Exception("未找到该作者")
     
-    req = Request(SCHOLAR_URL, headers=HEADERS)
-    with urlopen(req, timeout=30) as response:
-        html = response.read().decode('utf-8')
+    author = search_results[0]
+    logger.info(f"找到作者: {author.get('name', 'N/A')}")
     
-    soup = BeautifulSoup(html, 'html.parser')
-    return parse_soup(soup)
-
-
-def parse_soup(soup):
-    """解析 BeautifulSoup 对象"""
+    # 填充作者详情（包括所有出版物）
+    author = scholarly.fill(author)
+    
     papers = []
+    for pub in author.get('publications', []):
+        bib = pub.get('bib', {})
+        papers.append({
+            'title': bib.get('title', 'N/A'),
+            'author': bib.get('author', 'N/A'),
+            'venue': bib.get('venue', ''),
+            'year': bib.get('pub_year', ''),
+            'citations': pub.get('num_citations', 0),
+            'scholar_id': pub.get('scholar_id', ''),
+            'gsrank': pub.get('gsrank', 0),
+        })
     
-    # 方法1: 解析论文列表（gsc_a_b 容器）
-    for item in soup.select('#gsc_a_b .gsc_a_t'):
-        title_elem = item.select_one('.gsc_a_at')
-        authors_elem = item.select_one('.gs_gray')
-        cites_elem = item.select_one('.gsc_a_c-n')
-        
-        if title_elem:
-            title = title_elem.get_text(strip=True)
-            # 获取链接中的论文ID
-            link = title_elem.get('href', '')
-            authors = authors_elem.get_text(strip=True) if authors_elem else ""
-            cites_text = cites_elem.get_text(strip=True) if cites_elem else "0"
-            
-            # 提取引用数
-            citations = int(re.sub(r'[^\d]', '', cites_text) or 0)
-            
-            papers.append({
-                'title': title,
-                'authors': authors,
-                'citations': citations,
-                'year': ''
-            })
-    
-    # 如果没找到，尝试方法2
-    if not papers:
-        for item in soup.select('.gsc_a_tr'):
-            title_elem = item.select_one('.gsc_a_at')
-            cites_elem = item.select_one('.gsc_a_c')
-            year_elem = item.select_one('.gsc_a_y')
-            
-            if title_elem:
-                papers.append({
-                    'title': title_elem.get_text(strip=True),
-                    'authors': '',
-                    'citations': int(re.sub(r'[^\d]', '', cites_elem.get_text(strip=True) if cites_elem else '0') or 0),
-                    'year': year_elem.get_text(strip=True) if year_elem else ''
-                })
-    
-    # 获取总引用数
-    total_citations = 0
-    total_elem = soup.select_one('#gsc_rsb_stm')
-    if total_elem:
-        total_citations = int(re.sub(r'[^\d]', '', total_elem.get_text(strip=True)) or 0)
-    
-    # h-index, i10-index
-    h_index = 0
-    i10_index = 0
-    
-    for stat in soup.select('#gsc_rsb_sts .gsc_rsb_std'):
-        text = stat.get_text(strip=True)
-        if text.isdigit():
-            if h_index == 0:
-                h_index = int(text)
-            elif i10_index == 0:
-                i10_index = int(text)
-                break
+    # 按引用数排序
+    papers.sort(key=lambda x: x['citations'], reverse=True)
     
     return {
         'date': datetime.now().strftime('%Y-%m-%d'),
         'time': datetime.now().strftime('%H:%M:%S'),
-        'total_citations': total_citations,
-        'h_index': h_index,
-        'i10_index': i10_index,
+        'author_name': author.get('name', ''),
+        'affiliation': author.get('affiliation', ''),
+        'total_citations': author.get('citedby', 0),
+        'hindex': author.get('hindex', 0),
+        'i10index': author.get('i10index', 0),
+        'papers': papers
+    }
+
+
+def scrape_fallback():
+    """备用抓取方法：使用 requests + BeautifulSoup"""
+    import requests
+    from bs4 import BeautifulSoup
+    
+    logger.info("使用备用方法抓取...")
+    
+    url = f"https://scholar.google.com/citations?user={SCHOLAR_USER_ID}&view_op=list_works&sortby=pubdate"
+    headers = {
+        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36'
+    }
+    
+    response = requests.get(url, headers=headers, timeout=30)
+    soup = BeautifulSoup(response.text, 'html.parser')
+    
+    papers = []
+    for item in soup.select('#gsc_a_b .gsc_a_t'):
+        title_elem = item.select_one('.gsc_a_at')
+        cites_elem = item.select_one('.gsc_a_c-n')
+        
+        if title_elem:
+            title = title_elem.get_text(strip=True)
+            citations = int(re.sub(r'[^\d]', '', cites_elem.get_text(strip=True) if cites_elem else '0') or 0)
+            papers.append({
+                'title': title,
+                'citations': citations,
+                'scholar_id': ''
+            })
+    
+    return {
+        'date': datetime.now().strftime('%Y-%m-%d'),
+        'total_citations': sum(p['citations'] for p in papers),
         'papers': papers
     }
 
 
 def load_history():
     """加载历史数据"""
-    history_file = Path('citations_history.csv')
-    if not history_file.exists():
+    if not Path(HISTORY_FILE).exists():
         return {}
     
     history = {}
-    with open(history_file, 'r', encoding='utf-8') as f:
+    with open(HISTORY_FILE, 'r', encoding='utf-8') as f:
         reader = csv.DictReader(f)
         for row in reader:
             history[row['date']] = row
@@ -156,441 +118,83 @@ def load_history():
 
 def save_history(history, data):
     """保存历史数据"""
-    # 更新当前日期
     history[data['date']] = {
         'date': data['date'],
         'total_citations': data['total_citations'],
-        'h_index': data.get('h_index', 0),
-        'i10_index': data.get('i10_index', 0),
+        'hindex': data.get('hindex', ''),
+        'i10index': data.get('i10index', ''),
         'papers_count': len(data['papers'])
     }
     
-    with open('citations_history.csv', 'w', encoding='utf-8', newline='') as f:
-        writer = csv.DictWriter(f, fieldnames=['date', 'total_citations', 'h_index', 'i10_index', 'papers_count'])
+    with open(HISTORY_FILE, 'w', encoding='utf-8', newline='') as f:
+        writer = csv.DictWriter(f, fieldnames=['date', 'total_citations', 'hindex', 'i10index', 'papers_count'])
         writer.writeheader()
         for entry in sorted(history.values(), key=lambda x: x['date']):
             writer.writerow(entry)
     
-    print(f"✅ 保存了 {len(history)} 天的历史数据")
+    logger.info(f"保存了 {len(history)} 天的历史数据")
 
 
-def generate_visualization(data, history):
-    """生成可视化 HTML"""
-    today = data['date']
-    
-    # 准备时间序列数据
-    dates = sorted(history.keys())
-    
-    # 总引用趋势
-    total_trend = [(d, int(history[d]['total_citations'])) for d in dates]
-    
-    # 论文数量趋势
-    papers_trend = [(d, int(history[d].get('papers_count', 0))) for d in dates]
-    
-    html = f'''<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citation Tracker - {SCHOLAR_USER_ID}</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
-    <style>
-        :root {{
-            --primary: #2563eb;
-            --secondary: #7c3aed;
-            --bg: linear-gradient(135deg, #0f172a 0%, #1e293b 100%);
-            --card-bg: rgba(30, 41, 59, 0.8);
-            --text: #f1f5f9;
-            --text-muted: #94a3b8;
-            --success: #10b981;
-            --warning: #f59e0b;
-        }}
-        
-        * {{ box-sizing: border-box; margin: 0; padding: 0; }}
-        
-        body {{
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
-            padding: 2rem;
-            backdrop-filter: blur(10px);
-        }}
-        
-        .container {{ max-width: 1200px; margin: 0 auto; }}
-        
-        header {{
-            text-align: center;
-            margin-bottom: 3rem;
-        }}
-        
-        h1 {{
-            font-size: 2.5rem;
-            margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-            background-clip: text;
-        }}
-        
-        .subtitle {{
-            color: var(--text-muted);
-            font-size: 1.1rem;
-        }}
-        
-        .stats-grid {{
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
-            gap: 1.5rem;
-            margin-bottom: 2rem;
-        }}
-        
-        .stat-card {{
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 1.5rem;
-            text-align: center;
-            border: 1px solid rgba(255,255,255,0.1);
-            transition: transform 0.3s, box-shadow 0.3s;
-        }}
-        
-        .stat-card:hover {{
-            transform: translateY(-4px);
-            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
-        }}
-        
-        .stat-icon {{ font-size: 2rem; margin-bottom: 0.5rem; }}
-        
-        .stat-value {{
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary);
-        }}
-        
-        .stat-value.citations {{ color: var(--success); }}
-        .stat-value.h-index {{ color: var(--warning); }}
-        .stat-value.papers {{ color: var(--secondary); }}
-        
-        .stat-label {{
-            color: var(--text-muted);
-            margin-top: 0.5rem;
-            font-size: 0.9rem;
-        }}
-        
-        .chart-container {{
-            background: var(--card-bg);
-            border-radius: 16px;
-            padding: 2rem;
-            margin-bottom: 2rem;
-            border: 1px solid rgba(255,255,255,0.1);
-        }}
-        
-        .chart-title {{
-            font-size: 1.25rem;
-            margin-bottom: 1.5rem;
-            display: flex;
-            align-items: center;
-            gap: 0.5rem;
-        }}
-        
-        .papers-table {{
-            background: var(--card-bg);
-            border-radius: 16px;
-            overflow: hidden;
-            border: 1px solid rgba(255,255,255,0.1);
-        }}
-        
-        table {{ width: 100%; border-collapse: collapse; }}
-        
-        th, td {{
-            padding: 1rem;
-            text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.05);
-        }}
-        
-        th {{
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
-            font-weight: 600;
-            font-size: 0.85rem;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }}
-        
-        tr:hover {{ background: rgba(255,255,255,0.02); }}
-        tr:last-child td {{ border-bottom: none; }}
-        
-        .citation-count {{
-            font-weight: bold;
-            color: var(--success);
-            font-size: 1.1rem;
-        }}
-        
-        .paper-rank {{
-            color: var(--text-muted);
-            font-size: 0.9rem;
-        }}
-        
-        .footer {{
-            text-align: center;
-            margin-top: 3rem;
-            color: var(--text-muted);
-            font-size: 0.85rem;
-        }}
-        
-        .footer a {{
-            color: var(--primary);
-            text-decoration: none;
-        }}
-        
-        @media (max-width: 768px) {{
-            body {{ padding: 1rem; }}
-            h1 {{ font-size: 1.8rem; }}
-            .stat-value {{ font-size: 2rem; }}
-            th, td {{ padding: 0.75rem 0.5rem; font-size: 0.85rem; }}
-        }}
-    </style>
-</head>
-<body>
-    <div class="container">
-        <header>
-            <h1>📊 Citation Tracker</h1>
-            <p class="subtitle">Google Scholar • Updated {today}</p>
-        </header>
-        
-        <div class="stats-grid">
-            <div class="stat-card">
-                <div class="stat-icon">📈</div>
-                <div class="stat-value citations">{data['total_citations']:,}</div>
-                <div class="stat-label">Total Citations</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">🏆</div>
-                <div class="stat-value h-index">{data.get('h_index', '-')}</div>
-                <div class="stat-label">h-index</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📄</div>
-                <div class="stat-value papers">{len(data['papers'])}</div>
-                <div class="stat-label">Papers</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-icon">📅</div>
-                <div class="stat-value" style="font-size: 1.5rem;">{len(history)}</div>
-                <div class="stat-label">Days Tracked</div>
-            </div>
-        </div>
-        
-        <div class="chart-container">
-            <h2 class="chart-title">📈 Citation History</h2>
-            <canvas id="citationChart" height="300"></canvas>
-        </div>
-        
-        <div class="chart-container">
-            <h2 class="chart-title">📚 Top 10 Papers by Citations</h2>
-            <canvas id="papersChart" height="300"></canvas>
-        </div>
-        
-        <div class="papers-table">
-            <table>
-                <thead>
-                    <tr>
-                        <th style="width: 60px;">#</th>
-                        <th>Title</th>
-                        <th style="width: 100px;">Citations</th>
-                    </tr>
-                </thead>
-                <tbody>
-'''
-    
-    # 添加论文列表
-    sorted_papers = sorted(data['papers'], key=lambda x: x['citations'], reverse=True)
-    for i, paper in enumerate(sorted_papers[:20], 1):
-        html += f'''
-                    <tr>
-                        <td class="paper-rank">{i}</td>
-                        <td>{paper['title']}</td>
-                        <td class="citation-count">{paper['citations']:,}</td>
-                    </tr>
-'''
-    
-    html += '''
-                </tbody>
-            </table>
-        </div>
-        
-        <div class="footer">
-            <p>Automated by GitHub Actions • Data from <a href="https://scholar.google.com" target="_blank">Google Scholar</a></p>
-            <p style="margin-top: 0.5rem;">Generated at ''' + datetime.now().strftime('%Y-%m-%d %H:%M:%S') + '''</p>
-        </div>
-    </div>
-    
-    <script>
-        // 历史数据
-        const totalTrend = ''' + json.dumps([{"date": d, "total": t} for d, t in total_trend]) + ''';
-        const papersTrend = ''' + json.dumps(data['papers']) + ''';
-        
-        // 总引用趋势图
-        new Chart(document.getElementById('citationChart'), {
-            type: 'line',
-            data: {
-                labels: totalTrend.map(d => d.date),
-                datasets: [{
-                    label: 'Total Citations',
-                    data: totalTrend.map(d => d.total),
-                    borderColor: '#2563eb',
-                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                    fill: true,
-                    tension: 0.4,
-                    pointRadius: 4,
-                    pointHoverRadius: 6
-                }]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(30, 41, 59, 0.9)',
-                        titleColor: '#f1f5f9',
-                        bodyColor: '#94a3b8',
-                        borderColor: 'rgba(255,255,255,0.1)',
-                        borderWidth: 1
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#94a3b8' }
-                    },
-                    y: {
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#94a3b8' }
-                    }
-                }
-            }
-        });
-        
-        // 论文引用柱状图
-        const topPapers = papersTrend
-            .sort((a, b) => b.citations - a.citations)
-            .slice(0, 10);
-            
-        new Chart(document.getElementById('papersChart'), {
-            type: 'bar',
-            data: {
-                labels: topPapers.map(p => p.title.length > 30 ? p.title.substring(0, 30) + '...' : p.title),
-                datasets: [{
-                    label: 'Citations',
-                    data: topPapers.map(p => p.citations),
-                    backgroundColor: [
-                        'rgba(37, 99, 235, 0.8)',
-                        'rgba(124, 58, 237, 0.8)',
-                        'rgba(16, 185, 129, 0.8)',
-                        'rgba(245, 158, 11, 0.8)',
-                        'rgba(239, 68, 68, 0.8)',
-                        'rgba(8, 145, 178, 0.8)',
-                        'rgba(79, 70, 229, 0.8)',
-                        'rgba(132, 204, 22, 0.8)',
-                        'rgba(236, 72, 153, 0.8)',
-                        'rgba(14, 165, 233, 0.8)'
-                    ],
-                    borderRadius: 8
-                }]
-            },
-            options: {
-                indexAxis: 'y',
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: { display: false },
-                    tooltip: {
-                        backgroundColor: 'rgba(30, 41, 59, 0.9)',
-                        titleColor: '#f1f5f9',
-                        bodyColor: '#94a3b8'
-                    }
-                },
-                scales: {
-                    x: {
-                        grid: { color: 'rgba(255,255,255,0.05)' },
-                        ticks: { color: '#94a3b8' }
-                    },
-                    y: {
-                        grid: { display: false },
-                        ticks: { color: '#f1f5f9', font: { size: 11 } }
-                    }
-                }
-            }
-        });
-    </script>
-</body>
-</html>'''
-    
-    with open('index.html', 'w', encoding='utf-8') as f:
-        f.write(html)
-    
-    print(f"✅ 生成了可视化页面 index.html")
+def save_papers(data):
+    """保存最新论文数据（用于 BibTeX 更新和可视化）"""
+    with open(PAPERS_FILE, 'w', encoding='utf-8') as f:
+        json.dump(data, f, ensure_ascii=False, indent=2)
+    logger.info(f"保存了 {len(data['papers'])} 篇论文数据")
 
 
 def main():
-    print(f"[{datetime.now().strftime('%Y-%m-%d %H:%M:%S')}] 开始抓取 Google Scholar...")
-    print(f"用户ID: {SCHOLAR_USER_ID}")
+    print("=" * 50)
+    logger.info("开始抓取 Google Scholar")
+    print("=" * 50)
     
-    # 尝试不同的抓取方法
     data = None
-    errors = []
+    error_msg = None
     
-    # 方法1: requests + BeautifulSoup
-    if HAS_BS4:
-        try:
-            import requests
-            data = scrape_with_requests()
-            print("✅ 使用 requests + BeautifulSoup 抓取成功")
-        except Exception as e:
-            errors.append(f"requests: {e}")
+    # 方法1: scholarly
+    try:
+        data = scrape_with_scholarly()
+        logger.info("✅ scholarly 抓取成功")
+    except Exception as e:
+        error_msg = f"scholarly: {e}"
+        logger.warning(f"❌ scholarly 失败: {e}")
     
-    # 方法2: httpx + BeautifulSoup
-    if data is None and HAS_HTTPX:
-        try:
-            data = scrape_with_httpx()
-            print("✅ 使用 httpx + BeautifulSoup 抓取成功")
-        except Exception as e:
-            errors.append(f"httpx: {e}")
-    
-    # 方法3: 纯 urllib
+    # 方法2: 备用
     if data is None:
         try:
-            data = scrape_with_urllib()
-            print("✅ 使用 urllib + BeautifulSoup 抓取成功")
+            data = scrape_fallback()
+            logger.info("✅ 备用方法抓取成功")
         except Exception as e:
-            errors.append(f"urllib: {e}")
+            error_msg += f", fallback: {e}"
+            logger.error(f"❌ 备用方法也失败: {e}")
     
     if data is None:
-        print(f"❌ 所有抓取方法都失败了:")
-        for err in errors:
-            print(f"   - {err}")
-        exit(1)
+        logger.error("所有抓取方法都失败了")
+        # 写入空数据标记
+        with open('error.log', 'a') as f:
+            f.write(f"{datetime.now()} - {error_msg}\n")
+        return
     
-    print(f"\n📊 抓取结果:")
-    print(f"   总引用数: {data['total_citations']}")
-    print(f"   h-index: {data.get('h_index', 'N/A')}")
-    print(f"   论文数量: {len(data['papers'])}")
+    # 打印结果
+    print()
+    logger.info(f"📊 抓取结果:")
+    logger.info(f"   作者: {data.get('author_name', 'N/A')}")
+    logger.info(f"   总引用数: {data['total_citations']}")
+    logger.info(f"   h-index: {data.get('hindex', 'N/A')}")
+    logger.info(f"   i10-index: {data.get('i10index', 'N/A')}")
+    logger.info(f"   论文数量: {len(data['papers'])}")
     
     if data['papers']:
-        print(f"\n📚 Top 5 论文:")
-        for i, paper in enumerate(sorted(data['papers'], key=lambda x: x['citations'], reverse=True)[:5], 1):
-            print(f"   {i}. {paper['title'][:50]}... ({paper['citations']} citations)")
+        print()
+        logger.info("📚 Top 5 论文:")
+        for i, paper in enumerate(data['papers'][:5], 1):
+            logger.info(f"   {i}. {paper['title'][:60]}... ({paper['citations']} citations)")
     
-    # 加载并更新历史
-    history = load_history()
-    save_history(history, data)
+    # 保存数据
+    save_history(load_history(), data)
+    save_papers(data)
     
-    # 生成可视化
-    generate_visualization(data, history)
-    
-    print(f"\n🎉 完成！")
+    print()
+    logger.info("✅ 完成!")
 
 
 if __name__ == '__main__':
