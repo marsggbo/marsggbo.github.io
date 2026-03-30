@@ -1,7 +1,9 @@
 ---
 layout: page
-title: Citation Tracker
+title: Citation Analytics
 permalink: /citations/
+nav: true
+nav_order: 99
 ---
 
 <!DOCTYPE html>
@@ -9,80 +11,195 @@ permalink: /citations/
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Citation Tracker - {{ site.title }}</title>
+    <title>Citation Analytics - Xin He</title>
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/chartjs-adapter-date-fns@3.0.0/dist/chartjs-adapter-date-fns.bundle.min.js"></script>
     <style>
+        /* 复用主题变量，自动适配暗黑/白天模式 */
         :root {
-            --primary: #2563eb;
-            --secondary: #7c3aed;
-            --bg: #0f172a;
-            --card-bg: #1e293b;
-            --text: #f1f5f9;
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
             --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --primary: #3b82f6;
+            --primary-hover: #2563eb;
+            --success: #10b981;
+            --warning: #f59e0b;
+            --purple: #8b5cf6;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.1);
+        }
+        
+        /* 暗黑模式 */
+        @media (prefers-color-scheme: dark) {
+            :root {
+                --bg-primary: #0f172a;
+                --bg-secondary: #1e293b;
+                --bg-card: #1e293b;
+                --text-primary: #f1f5f9;
+                --text-secondary: #94a3b8;
+                --text-muted: #64748b;
+                --border-color: #334155;
+                --shadow: 0 1px 3px rgba(0,0,0,0.3);
+                --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+            }
+        }
+        
+        body.theme-dark {
+            --bg-primary: #0f172a;
+            --bg-secondary: #1e293b;
+            --bg-card: #1e293b;
+            --text-primary: #f1f5f9;
+            --text-secondary: #94a3b8;
+            --text-muted: #64748b;
+            --border-color: #334155;
+            --shadow: 0 1px 3px rgba(0,0,0,0.3);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.4);
+        }
+        
+        body.theme-light {
+            --bg-primary: #ffffff;
+            --bg-secondary: #f8fafc;
+            --bg-card: #ffffff;
+            --text-primary: #1e293b;
+            --text-secondary: #64748b;
+            --text-muted: #94a3b8;
+            --border-color: #e2e8f0;
+            --shadow: 0 1px 3px rgba(0,0,0,0.1);
+            --shadow-lg: 0 10px 40px rgba(0,0,0,0.1);
         }
         
         * { box-sizing: border-box; margin: 0; padding: 0; }
         
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
-            background: var(--bg);
-            color: var(--text);
-            min-height: 100vh;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, 'Helvetica Neue', Arial, sans-serif;
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            line-height: 1.6;
             padding: 2rem;
+            transition: background 0.3s, color 0.3s;
         }
         
-        .container { max-width: 1200px; margin: 0 auto; }
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        header {
+            margin-bottom: 2rem;
+        }
         
         h1 {
             font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
             margin-bottom: 0.5rem;
-            background: linear-gradient(135deg, var(--primary), var(--secondary));
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
         }
         
-        .subtitle { color: var(--text-muted); margin-bottom: 2rem; }
+        .subtitle {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+        
+        .back-link {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--primary);
+            text-decoration: none;
+            font-size: 0.9rem;
+            margin-bottom: 1rem;
+            transition: color 0.2s;
+        }
+        
+        .back-link:hover {
+            color: var(--primary-hover);
+        }
         
         .stats-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
             gap: 1rem;
             margin-bottom: 2rem;
         }
         
         .stat-card {
-            background: var(--card-bg);
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
             border-radius: 12px;
             padding: 1.5rem;
             text-align: center;
+            box-shadow: var(--shadow);
+            transition: transform 0.2s, box-shadow 0.2s, background 0.3s;
+        }
+        
+        .stat-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-lg);
+        }
+        
+        .stat-icon {
+            font-size: 1.5rem;
+            margin-bottom: 0.5rem;
         }
         
         .stat-value {
-            font-size: 2.5rem;
-            font-weight: bold;
-            color: var(--primary);
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            line-height: 1.2;
         }
         
-        .stat-label { color: var(--text-muted); margin-top: 0.5rem; }
+        .stat-value.citations { color: var(--primary); }
+        .stat-value.hindex { color: var(--success); }
+        .stat-value.i10 { color: var(--warning); }
+        .stat-value.papers { color: var(--purple); }
+        
+        .stat-change {
+            font-size: 0.85rem;
+            color: var(--text-muted);
+            margin-top: 0.25rem;
+        }
+        
+        .stat-change.positive { color: var(--success); }
+        .stat-change.negative { color: #ef4444; }
+        
+        .stat-label {
+            color: var(--text-secondary);
+            font-size: 0.85rem;
+            margin-top: 0.5rem;
+        }
         
         .chart-container {
-            background: var(--card-bg);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
             padding: 1.5rem;
             margin-bottom: 2rem;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border-color 0.3s;
         }
         
         .chart-title {
-            font-size: 1.25rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: var(--text-primary);
             margin-bottom: 1rem;
-            color: var(--text);
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
         }
         
         .papers-table {
-            background: var(--card-bg);
-            border-radius: 12px;
+            background: var(--bg-card);
+            border: 1px solid var(--border-color);
+            border-radius: 16px;
             overflow: hidden;
+            box-shadow: var(--shadow);
+            transition: background 0.3s, border-color 0.3s;
         }
         
         table {
@@ -93,225 +210,452 @@ permalink: /citations/
         th, td {
             padding: 1rem;
             text-align: left;
-            border-bottom: 1px solid rgba(255,255,255,0.1);
+            border-bottom: 1px solid var(--border-color);
         }
         
         th {
-            background: rgba(255,255,255,0.05);
-            color: var(--text-muted);
+            background: var(--bg-secondary);
+            color: var(--text-secondary);
             font-weight: 600;
-            font-size: 0.875rem;
+            font-size: 0.8rem;
             text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
         
-        tr:hover { background: rgba(255,255,255,0.02); }
+        tr:last-child td { border-bottom: none; }
+        tr:hover td { background: var(--bg-secondary); }
+        
+        .rank {
+            color: var(--text-muted);
+            font-size: 0.9rem;
+            width: 50px;
+        }
+        
+        .paper-title {
+            color: var(--text-primary);
+            font-weight: 500;
+        }
+        
+        .paper-venue {
+            color: var(--text-muted);
+            font-size: 0.85rem;
+            margin-top: 0.25rem;
+        }
         
         .citation-count {
-            font-weight: bold;
-            color: var(--secondary);
+            font-weight: 700;
+            color: var(--primary);
+            text-align: right;
+            white-space: nowrap;
         }
         
-        .loading {
+        .footer {
             text-align: center;
-            padding: 3rem;
+            margin-top: 3rem;
+            padding-top: 2rem;
+            border-top: 1px solid var(--border-color);
             color: var(--text-muted);
+            font-size: 0.85rem;
         }
         
-        .error {
-            background: rgba(239, 68, 68, 0.1);
-            border: 1px solid rgba(239, 68, 68, 0.3);
-            border-radius: 8px;
-            padding: 1rem;
-            color: #fca5a5;
+        .footer a {
+            color: var(--primary);
+            text-decoration: none;
+        }
+        
+        .footer a:hover {
+            text-decoration: underline;
         }
         
         @media (max-width: 768px) {
             body { padding: 1rem; }
-            .stat-value { font-size: 2rem; }
+            h1 { font-size: 1.5rem; }
+            .stat-value { font-size: 1.5rem; }
+            .stats-grid { grid-template-columns: repeat(2, 1fr); }
+            th, td { padding: 0.75rem 0.5rem; }
+            .paper-title { font-size: 0.9rem; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>📊 Citation Tracker</h1>
-        <p class="subtitle">Google Scholar citation statistics - Updated daily at 10:00 AM</p>
+        <a href="/publications/" class="back-link">
+            ← Back to Publications
+        </a>
         
-        <div id="stats" class="stats-grid">
+        <header>
+            <h1>📊 Citation Analytics</h1>
+            <p class="subtitle">Google Scholar • Updated 2026-03-30</p>
+        </header>
+        
+        <div class="stats-grid">
             <div class="stat-card">
-                <div class="stat-value" id="total-citations">--</div>
+                <div class="stat-icon">📈</div>
+                <div class="stat-value citations">3,377</div>
+                <div class="stat-change ">
+                    0 from yesterday
+                </div>
                 <div class="stat-label">Total Citations</div>
             </div>
             <div class="stat-card">
-                <div class="stat-value" id="paper-count">--</div>
+                <div class="stat-icon">🏆</div>
+                <div class="stat-value hindex">13</div>
+                <div class="stat-label">h-index</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📚</div>
+                <div class="stat-value i10">14</div>
+                <div class="stat-label">i10-index</div>
+            </div>
+            <div class="stat-card">
+                <div class="stat-icon">📄</div>
+                <div class="stat-value papers">22</div>
                 <div class="stat-label">Papers</div>
             </div>
-            <div class="stat-card">
-                <div class="stat-value" id="last-update">--</div>
-                <div class="stat-label">Last Update</div>
-            </div>
-            <div class="stat-card">
-                <div class="stat-value" id="days-tracked">--</div>
-                <div class="stat-label">Days Tracked</div>
-            </div>
         </div>
         
         <div class="chart-container">
-            <h2 class="chart-title">📈 Total Citations Over Time</h2>
-            <canvas id="totalChart"></canvas>
+            <h2 class="chart-title">📈 Citation Trend</h2>
+            <canvas id="citationChart" style="max-height: 300px;"></canvas>
         </div>
         
         <div class="chart-container">
-            <h2 class="chart-title">📚 Top 10 Papers Citation Trends</h2>
-            <canvas id="papersChart"></canvas>
+            <h2 class="chart-title">📚 Top 10 Papers</h2>
+            <canvas id="papersChart" style="max-height: 400px;"></canvas>
         </div>
         
         <div class="papers-table">
-            <h2 class="chart-title" style="padding: 1rem;">📄 All Papers (Current)</h2>
             <table>
                 <thead>
                     <tr>
-                        <th>#</th>
-                        <th>Title</th>
-                        <th>Authors</th>
-                        <th>Citations</th>
+                        <th class="rank">#</th>
+                        <th>Paper</th>
+                        <th style="text-align: right; width: 100px;">Citations</th>
                     </tr>
                 </thead>
-                <tbody id="papers-body">
-                    <tr><td colspan="4" class="loading">Loading...</td></tr>
+                <tbody>
+
+                    <tr>
+                        <td class="rank">1</td>
+                        <td>
+                            <div class="paper-title">AutoML: A survey of the state-of-the-art</div>
+                            
+                        </td>
+                        <td class="citation-count">2,621</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">2</td>
+                        <td>
+                            <div class="paper-title">Virtual homogeneity learning: Defending against data heterogeneity in federated learning</div>
+                            
+                        </td>
+                        <td class="citation-count">146</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">3</td>
+                        <td>
+                            <div class="paper-title">Benchmarking the performance and energy efficiency of AI accelerators for AI training</div>
+                            
+                        </td>
+                        <td class="citation-count">126</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">4</td>
+                        <td>
+                            <div class="paper-title">BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems</div>
+                            
+                        </td>
+                        <td class="citation-count">120</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">5</td>
+                        <td>
+                            <div class="paper-title">Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans</div>
+                            
+                        </td>
+                        <td class="citation-count">67</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">6</td>
+                        <td>
+                            <div class="paper-title">Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans</div>
+                            
+                        </td>
+                        <td class="citation-count">57</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">7</td>
+                        <td>
+                            <div class="paper-title">Fusionai: Decentralized training and deploying llms with massive consumer-level gpus</div>
+                            
+                        </td>
+                        <td class="citation-count">46</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">8</td>
+                        <td>
+                            <div class="paper-title">EAGAN: Efficient two-stage evolutionary architecture search for GANs</div>
+                            
+                        </td>
+                        <td class="citation-count">38</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">9</td>
+                        <td>
+                            <div class="paper-title">ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling</div>
+                            
+                        </td>
+                        <td class="citation-count">29</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">10</td>
+                        <td>
+                            <div class="paper-title">Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification</div>
+                            
+                        </td>
+                        <td class="citation-count">27</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">11</td>
+                        <td>
+                            <div class="paper-title">Computer-aided clinical skin disease diagnosis using CNN and object detection models</div>
+                            
+                        </td>
+                        <td class="citation-count">24</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">12</td>
+                        <td>
+                            <div class="paper-title">Nas-lid: Efficient neural architecture search with local intrinsic dimension</div>
+                            
+                        </td>
+                        <td class="citation-count">22</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">13</td>
+                        <td>
+                            <div class="paper-title">Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing</div>
+                            
+                        </td>
+                        <td class="citation-count">18</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">14</td>
+                        <td>
+                            <div class="paper-title">FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression</div>
+                            
+                        </td>
+                        <td class="citation-count">13</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">15</td>
+                        <td>
+                            <div class="paper-title">MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification</div>
+                            
+                        </td>
+                        <td class="citation-count">8</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">16</td>
+                        <td>
+                            <div class="paper-title">Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework</div>
+                            
+                        </td>
+                        <td class="citation-count">5</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">17</td>
+                        <td>
+                            <div class="paper-title">Ghost in the cloud: Your geo-distributed large language models training is easily manipulated</div>
+                            
+                        </td>
+                        <td class="citation-count">4</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">18</td>
+                        <td>
+                            <div class="paper-title">Autohete: An automatic and efficient heterogeneous training system for llms</div>
+                            
+                        </td>
+                        <td class="citation-count">3</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">19</td>
+                        <td>
+                            <div class="paper-title">Routemark: A fingerprint for intellectual property attribution in routing-based model merging</div>
+                            
+                        </td>
+                        <td class="citation-count">2</td>
+                    </tr>
+
+                    <tr>
+                        <td class="rank">20</td>
+                        <td>
+                            <div class="paper-title">GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models</div>
+                            
+                        </td>
+                        <td class="citation-count">1</td>
+                    </tr>
+
                 </tbody>
             </table>
         </div>
+        
+        <footer class="footer">
+            <p>Generated by GitHub Actions • Data from <a href="https://scholar.google.com" target="_blank">Google Scholar</a></p>
+            <p>Updated at 2026-03-30 12:30:03</p>
+        </footer>
     </div>
     
     <script>
-        // 默认数据（当无法加载时会显示）
-        const defaultData = {
-            total_trend: [],
-            papers_trends: {},
-            latest_papers: []
+        // 检测主题偏好并应用
+        function applyTheme() {
+            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
+            const isDarkTheme = document.body.classList.contains('theme-dark') || 
+                              (!document.body.classList.contains('theme-light') && prefersDark);
+            return isDarkTheme;
+        }
+        
+        const isDark = applyTheme();
+        const gridColor = isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.1)';
+        const textColor = isDark ? '#94a3b8' : '#64748b';
+        const titleColor = isDark ? '#f1f5f9' : '#1e293b';
+        
+        // 历史数据
+        const totalTrend = [{"date": "2026-03-30", "total": 3377}];
+        const hindexTrend = [{"date": "2026-03-30", "hindex": 13}];
+        const topPapers = [{"title": "AutoML: A survey of the state-of-the-art", "author": "N/A", "venue": "", "year": "2021", "citations": 2621, "scholar_id": "", "gsrank": 0}, {"title": "Virtual homogeneity learning: Defending against data heterogeneity in federated learning", "author": "N/A", "venue": "", "year": "2022", "citations": 146, "scholar_id": "", "gsrank": 0}, {"title": "Benchmarking the performance and energy efficiency of AI accelerators for AI training", "author": "N/A", "venue": "", "year": "2020", "citations": 126, "scholar_id": "", "gsrank": 0}, {"title": "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems", "author": "N/A", "venue": "", "year": "2025", "citations": 120, "scholar_id": "", "gsrank": 0}, {"title": "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans", "author": "N/A", "venue": "", "year": "2020", "citations": 67, "scholar_id": "", "gsrank": 0}, {"title": "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans", "author": "N/A", "venue": "", "year": "2021", "citations": 57, "scholar_id": "", "gsrank": 0}, {"title": "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus", "author": "N/A", "venue": "", "year": "2023", "citations": 46, "scholar_id": "", "gsrank": 0}, {"title": "EAGAN: Efficient two-stage evolutionary architecture search for GANs", "author": "N/A", "venue": "", "year": "2022", "citations": 38, "scholar_id": "", "gsrank": 0}, {"title": "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling", "author": "N/A", "venue": "", "year": "2026", "citations": 29, "scholar_id": "", "gsrank": 0}, {"title": "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification", "author": "N/A", "venue": "", "year": "2022", "citations": 27, "scholar_id": "", "gsrank": 0}];
+        
+        // 格式化日期
+        const formatDate = (dateStr) => {
+            const date = new Date(dateStr);
+            return date.toLocaleDateString('en-US', { month: 'short', day: 'numeric' });
         };
         
-        async function loadData() {
-            try {
-                // 尝试加载 GitHub 仓库中的数据
-                const response = await fetch('/assets/scholar-tracker/citation_data.json');
-                if (!response.ok) throw new Error('Data file not found');
-                return await response.json();
-            } catch (e) {
-                console.log('Using default data');
-                return defaultData;
-            }
-        }
-        
-        async function init() {
-            const data = await loadData();
-            
-            // 更新统计卡片
-            if (data.total_trend && data.total_trend.length > 0) {
-                const latest = data.total_trend[data.total_trend.length - 1];
-                const first = data.total_trend[0];
-                
-                document.getElementById('total-citations').textContent = latest.total.toLocaleString();
-                document.getElementById('paper-count').textContent = Object.keys(data.papers_trends).length;
-                document.getElementById('last-update').textContent = latest.date;
-                document.getElementById('days-tracked').textContent = data.total_trend.length;
-            }
-            
-            // 总引用趋势图
-            if (data.total_trend && data.total_trend.length > 0) {
-                new Chart(document.getElementById('totalChart'), {
-                    type: 'line',
-                    data: {
-                        labels: data.total_trend.map(d => d.date),
-                        datasets: [{
-                            label: 'Total Citations',
-                            data: data.total_trend.map(d => d.total),
-                            borderColor: '#2563eb',
-                            backgroundColor: 'rgba(37, 99, 235, 0.1)',
-                            fill: true,
-                            tension: 0.3
-                        }]
+        // 总引用趋势图
+        if (totalTrend.length > 0) {
+            new Chart(document.getElementById('citationChart'), {
+                type: 'line',
+                data: {
+                    labels: totalTrend.map(d => formatDate(d.date)),
+                    datasets: [{
+                        label: 'Total Citations',
+                        data: totalTrend.map(d => d.total),
+                        borderColor: '#3b82f6',
+                        backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                        fill: true,
+                        tension: 0.4,
+                        pointRadius: 4,
+                        pointHoverRadius: 6,
+                        pointBackgroundColor: '#3b82f6'
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? 'rgba(30,41,59,0.95)' : 'rgba(255,255,255,0.95)',
+                            titleColor: titleColor,
+                            bodyColor: textColor,
+                            borderColor: gridColor,
+                            borderWidth: 1,
+                            padding: 12,
+                            displayColors: false
+                        }
                     },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: { display: false }
+                    scales: {
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
                         },
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: { unit: 'day' },
-                                grid: { color: 'rgba(255,255,255,0.1)' },
-                                ticks: { color: '#94a3b8' }
-                            },
-                            y: {
-                                grid: { color: 'rgba(255,255,255,0.1)' },
-                                ticks: { color: '#94a3b8' }
-                            }
+                        y: {
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
                         }
                     }
-                });
-            }
-            
-            // 论文引用趋势图
-            if (data.papers_trends) {
-                const topPapers = Object.entries(data.papers_trends).slice(0, 10);
-                const colors = [
-                    '#2563eb', '#7c3aed', '#059669', '#d97706', '#dc2626',
-                    '#0891b2', '#4f46e5', '#84cc16', '#f59e0b', '#ec4899'
-                ];
-                
-                new Chart(document.getElementById('papersChart'), {
-                    type: 'line',
-                    data: {
-                        labels: topPapers[0]?.[1].map(d => d.date) || [],
-                        datasets: topPapers.map(([title, values], i) => ({
-                            label: title,
-                            data: values.map(v => v.citations),
-                            borderColor: colors[i % colors.length],
-                            backgroundColor: 'transparent',
-                            tension: 0.3
-                        }))
-                    },
-                    options: {
-                        responsive: true,
-                        plugins: {
-                            legend: {
-                                position: 'bottom',
-                                labels: { color: '#94a3b8', boxWidth: 12, padding: 10 }
-                            }
-                        },
-                        scales: {
-                            x: {
-                                type: 'time',
-                                time: { unit: 'day' },
-                                grid: { color: 'rgba(255,255,255,0.1)' },
-                                ticks: { color: '#94a3b8' }
-                            },
-                            y: {
-                                grid: { color: 'rgba(255,255,255,0.1)' },
-                                ticks: { color: '#94a3b8' }
-                            }
-                        }
-                    }
-                });
-            }
-            
-            // 论文表格
-            const tbody = document.getElementById('papers-body');
-            if (data.latest_papers && data.latest_papers.length > 0) {
-                tbody.innerHTML = data.latest_papers.map((paper, i) => `
-                    <tr>
-                        <td>${i + 1}</td>
-                        <td>${paper.title}</td>
-                        <td style="color: var(--text-muted); font-size: 0.875rem;">${paper.authors}</td>
-                        <td class="citation-count">${paper.citations.toLocaleString()}</td>
-                    </tr>
-                `).join('');
-            }
+                }
+            });
         }
         
-        init();
+        // 论文引用柱状图
+        if (topPapers.length > 0) {
+            const sorted = [...topPapers].sort((a, b) => b.citations - a.citations);
+            
+            new Chart(document.getElementById('papersChart'), {
+                type: 'bar',
+                data: {
+                    labels: sorted.map(p => p.title.length > 35 ? p.title.substring(0, 35) + '...' : p.title),
+                    datasets: [{
+                        label: 'Citations',
+                        data: sorted.map(p => p.citations),
+                        backgroundColor: [
+                            'rgba(59, 130, 246, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(8, 145, 178, 0.8)',
+                            'rgba(236, 72, 153, 0.8)',
+                            'rgba(132, 204, 22, 0.8)',
+                            'rgba(14, 165, 233, 0.8)',
+                            'rgba(251, 146, 60, 0.8)'
+                        ],
+                        borderRadius: 6
+                    }]
+                },
+                options: {
+                    indexAxis: 'y',
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: { display: false },
+                        tooltip: {
+                            backgroundColor: isDark ? 'rgba(30,41,59,0.95)' : 'rgba(255,255,255,0.95)',
+                            titleColor: titleColor,
+                            bodyColor: textColor,
+                            borderColor: gridColor,
+                            borderWidth: 1,
+                            padding: 12
+                        }
+                    },
+                    scales: {
+                        x: {
+                            grid: { color: gridColor },
+                            ticks: { color: textColor }
+                        },
+                        y: {
+                            grid: { display: false },
+                            ticks: { color: titleColor, font: { size: 11 } }
+                        }
+                    }
+                }
+            });
+        }
+        
+        // 监听主题变化
+        window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', () => {
+            location.reload();
+        });
     </script>
 </body>
 </html>
