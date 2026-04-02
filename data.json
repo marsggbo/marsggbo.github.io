@@ -1,12 +1,12 @@
 {
-  "date": "2026-03-30",
+  "date": "2026-04-02",
   "papers": [
     {
       "id": "",
       "title": "AutoML: A survey of the state-of-the-art",
       "venue": "",
       "year": "2021",
-      "citations": 2621
+      "citations": 2625
     },
     {
       "id": "",
@@ -27,7 +27,7 @@
       "title": "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems",
       "venue": "",
       "year": "2025",
-      "citations": 120
+      "citations": 123
     },
     {
       "id": "",
