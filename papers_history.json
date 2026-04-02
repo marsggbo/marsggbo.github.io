@@ -132,5 +132,139 @@
       "venue": "",
       "year": "2023"
     }
+  },
+  "2026-04-02": {
+    "AutoML: A survey of the state-of-the-art": {
+      "title": "AutoML: A survey of the state-of-the-art",
+      "citations": 2625,
+      "venue": "",
+      "year": "2021"
+    },
+    "Virtual homogeneity learning: Defending against data heterogeneity in federated learning": {
+      "title": "Virtual homogeneity learning: Defending against data heterogeneity in federated learning",
+      "citations": 146,
+      "venue": "",
+      "year": "2022"
+    },
+    "Benchmarking the performance and energy efficiency of AI accelerators for AI training": {
+      "title": "Benchmarking the performance and energy efficiency of AI accelerators for AI training",
+      "citations": 126,
+      "venue": "",
+      "year": "2020"
+    },
+    "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems": {
+      "title": "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems",
+      "citations": 123,
+      "venue": "",
+      "year": "2025"
+    },
+    "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans": {
+      "title": "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans",
+      "citations": 67,
+      "venue": "",
+      "year": "2020"
+    },
+    "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans": {
+      "title": "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans",
+      "citations": 57,
+      "venue": "",
+      "year": "2021"
+    },
+    "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus": {
+      "title": "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus",
+      "citations": 46,
+      "venue": "",
+      "year": "2023"
+    },
+    "EAGAN: Efficient two-stage evolutionary architecture search for GANs": {
+      "title": "EAGAN: Efficient two-stage evolutionary architecture search for GANs",
+      "citations": 38,
+      "venue": "",
+      "year": "2022"
+    },
+    "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling": {
+      "title": "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling",
+      "citations": 29,
+      "venue": "",
+      "year": "2026"
+    },
+    "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification": {
+      "title": "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification",
+      "citations": 27,
+      "venue": "",
+      "year": "2022"
+    },
+    "Computer-aided clinical skin disease diagnosis using CNN and object detection models": {
+      "title": "Computer-aided clinical skin disease diagnosis using CNN and object detection models",
+      "citations": 24,
+      "venue": "",
+      "year": "2019"
+    },
+    "Nas-lid: Efficient neural architecture search with local intrinsic dimension": {
+      "title": "Nas-lid: Efficient neural architecture search with local intrinsic dimension",
+      "citations": 22,
+      "venue": "",
+      "year": "2023"
+    },
+    "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing": {
+      "title": "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing",
+      "citations": 18,
+      "venue": "",
+      "year": "2024"
+    },
+    "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression": {
+      "title": "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression",
+      "citations": 13,
+      "venue": "",
+      "year": "2024"
+    },
+    "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification": {
+      "title": "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification",
+      "citations": 8,
+      "venue": "",
+      "year": "2023"
+    },
+    "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework": {
+      "title": "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework",
+      "citations": 5,
+      "venue": "",
+      "year": "2026"
+    },
+    "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated": {
+      "title": "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated",
+      "citations": 4,
+      "venue": "",
+      "year": "2026"
+    },
+    "Autohete: An automatic and efficient heterogeneous training system for llms": {
+      "title": "Autohete: An automatic and efficient heterogeneous training system for llms",
+      "citations": 3,
+      "venue": "",
+      "year": "2025"
+    },
+    "Routemark: A fingerprint for intellectual property attribution in routing-based model merging": {
+      "title": "Routemark: A fingerprint for intellectual property attribution in routing-based model merging",
+      "citations": 2,
+      "venue": "",
+      "year": "2025"
+    },
+    "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models": {
+      "title": "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models",
+      "citations": 1,
+      "venue": "",
+      "year": "2025"
+    },
+    "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective": {
+      "title": "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective",
+      "citations": 0,
+      "venue": "",
+      "year": "2026"
+    },
+    "Automated Machine Learning and Its Applications": {
+      "title": "Automated Machine Learning and Its Applications",
+      "citations": 0,
+      "venue": "",
+      "year": "2023"
+    }
   }
 }
