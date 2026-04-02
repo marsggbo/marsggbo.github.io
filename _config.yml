@@ -206,6 +206,9 @@ kramdown:
 # Includes & excludes
 include: ["_pages", "assets"]
 exclude:
+  - analytics.html
+  - assets/citations.html
+  - assets/citations/
   - bin/
   - CONTRIBUTING.md
   - CUSTOMIZE.md
@@ -339,6 +342,9 @@ external_links:
   rel: external nofollow noopener
   target: _blank
   exclude:
+  - analytics.html
+  - assets/citations.html
+  - assets/citations/
 
 # -----------------------------------------------------------------------------
 # Responsive WebP Images
