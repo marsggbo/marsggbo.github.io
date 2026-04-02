@@ -294,8 +294,8 @@ let history = {};
 async function loadData() {
   try {
     const [dataResp, histResp] = await Promise.all([
-      fetch('/citation-tracker/data.json'),
-      fetch('/citation-tracker/papers_history.json')
+      fetch('/data.json'),
+      fetch('/papers_history.json')
     ]);
     
     if (!dataResp.ok) throw new Error('Failed to load papers');
