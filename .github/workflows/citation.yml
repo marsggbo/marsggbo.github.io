@@ -1,18 +1,30 @@
 name: Citation Tracker
 on:
   schedule:
-    - cron: '0 2 * * *'
+    - cron: '0 2 * * *'  # UTC 2:00 = 北京时间 10:00
   workflow_dispatch:
+
 jobs:
   update:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
+      
       - uses: actions/setup-python@v5
-        with: python-version: '3.11'
-      - run: pip install scholarly
-      - run: python scrape.py
-      - run: |
+        with:
+          python-version: '3.11'
+      
+      - name: Install dependencies
+        run: pip install scholarly
+      
+      - name: Run scraper
+        env:
+          SCHOLAR_ID: LYNKm_8AAAAJ
+        run: |
+          cd citation-tracker
+          python scrape.py
+          
+          # 转换 CSV 到 JSON
           python -c "
 import json, csv
 with open('history.csv') as f:
@@ -20,10 +32,11 @@ with open('history.csv') as f:
 with open('history.json', 'w') as f:
     json.dump({'history': rows}, f)
 "
-      - name: Commit
+      
+      - name: Commit changes
         run: |
           git config --local user.email "bot@github.com"
           git config --local user.name "Bot"
-          git add data.json history.csv history.json
-          git diff --staged --quiet || git commit -m "Update citations"
+          git add citation-tracker/
+          git diff --staged --quiet || git commit -m "📊 Update citations - $(date +'%Y-%m-%d')"
           git push
