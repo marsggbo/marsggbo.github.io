@@ -1,161 +1,112 @@
 {
-  "dates": [
-    "2026-04-03"
-  ],
-  "papers": [
-    {
-      "title": "AutoML: A survey of the state-of-the-art",
-      "citations": [
-        2630
-      ],
-      "total_citations": 2630
-    },
-    {
-      "title": "Virtual homogeneity learning: Defending against data heterogeneity in federated learning",
-      "citations": [
-        146
-      ],
-      "total_citations": 146
-    },
-    {
-      "title": "Benchmarking the performance and energy efficiency of AI accelerators for AI training",
-      "citations": [
-        126
-      ],
-      "total_citations": 126
-    },
-    {
-      "title": "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems",
-      "citations": [
-        124
-      ],
-      "total_citations": 124
-    },
-    {
-      "title": "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans",
-      "citations": [
-        67
-      ],
-      "total_citations": 67
-    },
-    {
-      "title": "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans",
-      "citations": [
-        57
-      ],
-      "total_citations": 57
-    },
-    {
-      "title": "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus",
-      "citations": [
-        47
-      ],
-      "total_citations": 47
-    },
-    {
-      "title": "EAGAN: Efficient two-stage evolutionary architecture search for GANs",
-      "citations": [
-        38
-      ],
-      "total_citations": 38
-    },
-    {
-      "title": "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling",
-      "citations": [
-        30
-      ],
-      "total_citations": 30
-    },
-    {
-      "title": "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification",
-      "citations": [
-        27
-      ],
-      "total_citations": 27
-    },
-    {
-      "title": "Computer-aided clinical skin disease diagnosis using CNN and object detection models",
-      "citations": [
-        24
-      ],
-      "total_citations": 24
-    },
-    {
-      "title": "Nas-lid: Efficient neural architecture search with local intrinsic dimension",
-      "citations": [
-        22
-      ],
-      "total_citations": 22
-    },
-    {
-      "title": "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing",
-      "citations": [
-        18
-      ],
-      "total_citations": 18
-    },
-    {
-      "title": "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression",
-      "citations": [
-        13
-      ],
-      "total_citations": 13
-    },
-    {
-      "title": "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification",
-      "citations": [
-        8
-      ],
-      "total_citations": 8
-    },
-    {
-      "title": "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework",
-      "citations": [
-        6
-      ],
-      "total_citations": 6
-    },
-    {
-      "title": "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated",
-      "citations": [
-        4
-      ],
-      "total_citations": 4
-    },
-    {
-      "title": "Autohete: An automatic and efficient heterogeneous training system for llms",
-      "citations": [
-        3
-      ],
-      "total_citations": 3
-    },
-    {
-      "title": "Routemark: A fingerprint for intellectual property attribution in routing-based model merging",
-      "citations": [
-        2
-      ],
-      "total_citations": 2
-    },
-    {
-      "title": "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models",
-      "citations": [
-        1
-      ],
-      "total_citations": 1
-    },
-    {
-      "title": "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective",
-      "citations": [
-        0
-      ],
-      "total_citations": 0
-    },
-    {
-      "title": "Automated Machine Learning and Its Applications",
-      "citations": [
-        0
-      ],
-      "total_citations": 0
+  "AutoML: A survey of the state-of-the-art": {
+    "citations": {
+      "2026-04-03": 2630
     }
-  ]
+  },
+  "Virtual homogeneity learning: Defending against data heterogeneity in federated learning": {
+    "citations": {
+      "2026-04-03": 146
+    }
+  },
+  "Benchmarking the performance and energy efficiency of AI accelerators for AI training": {
+    "citations": {
+      "2026-04-03": 126
+    }
+  },
+  "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems": {
+    "citations": {
+      "2026-04-03": 124
+    }
+  },
+  "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans": {
+    "citations": {
+      "2026-04-03": 67
+    }
+  },
+  "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans": {
+    "citations": {
+      "2026-04-03": 57
+    }
+  },
+  "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus": {
+    "citations": {
+      "2026-04-03": 47
+    }
+  },
+  "EAGAN: Efficient two-stage evolutionary architecture search for GANs": {
+    "citations": {
+      "2026-04-03": 38
+    }
+  },
+  "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling": {
+    "citations": {
+      "2026-04-03": 30
+    }
+  },
+  "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification": {
+    "citations": {
+      "2026-04-03": 27
+    }
+  },
+  "Computer-aided clinical skin disease diagnosis using CNN and object detection models": {
+    "citations": {
+      "2026-04-03": 24
+    }
+  },
+  "Nas-lid: Efficient neural architecture search with local intrinsic dimension": {
+    "citations": {
+      "2026-04-03": 22
+    }
+  },
+  "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing": {
+    "citations": {
+      "2026-04-03": 18
+    }
+  },
+  "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression": {
+    "citations": {
+      "2026-04-03": 13
+    }
+  },
+  "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification": {
+    "citations": {
+      "2026-04-03": 8
+    }
+  },
+  "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework": {
+    "citations": {
+      "2026-04-03": 6
+    }
+  },
+  "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated": {
+    "citations": {
+      "2026-04-03": 4
+    }
+  },
+  "Autohete: An automatic and efficient heterogeneous training system for llms": {
+    "citations": {
+      "2026-04-03": 3
+    }
+  },
+  "Routemark: A fingerprint for intellectual property attribution in routing-based model merging": {
+    "citations": {
+      "2026-04-03": 2
+    }
+  },
+  "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models": {
+    "citations": {
+      "2026-04-03": 1
+    }
+  },
+  "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective": {
+    "citations": {
+      "2026-04-03": 0
+    }
+  },
+  "Automated Machine Learning and Its Applications": {
+    "citations": {
+      "2026-04-03": 0
+    }
+  }
 }

@@ -61,12 +61,39 @@ let charts = {};
 fetch('/citations.json')
   .then(res => res.json())
   .then(data => {
-    globalDates = data.dates || [];
-    allPapers = data.papers || [];
+    let datesSet = new Set();
     
-    // Compute total sum from the latest available element
+    for (let title in data) {
+        let cites = data[title].citations || {};
+        for (let d in cites) {
+            datesSet.add(d);
+        }
+    }
+    globalDates = Array.from(datesSet).sort();
+    
     let sum = 0;
-    allPapers.forEach(p => sum += p.total_citations || 0);
+    for (let title in data) {
+        let citesDict = data[title].citations || {};
+        let dataArray = [];
+        let latestCite = 0;
+        
+        for (let d of globalDates) {
+            if (citesDict[d] !== undefined) {
+                latestCite = citesDict[d];
+            }
+            dataArray.push(latestCite);
+        }
+        
+        sum += latestCite;
+        
+        allPapers.push({
+            title: title,
+            citations: dataArray,
+            total_citations: latestCite
+        });
+    }
+    
+    allPapers.sort((a, b) => b.total_citations - a.total_citations);
     
     document.getElementById('totalCites').innerText = sum;
     document.getElementById('totalPapers').innerText = allPapers.length;
