@@ -1,0 +1,45 @@
+Date,Title,Citations
+2026-04-03,AutoML: A survey of the state-of-the-art,2630
+2026-04-03,Virtual homogeneity learning: Defending against data heterogeneity in federated learning,146
+2026-04-03,Benchmarking the performance and energy efficiency of AI accelerators for AI training,126
+2026-04-03,BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems,124
+2026-04-03,Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans,67
+2026-04-03,Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans,57
+2026-04-03,Fusionai: Decentralized training and deploying llms with massive consumer-level gpus,47
+2026-04-03,EAGAN: Efficient two-stage evolutionary architecture search for GANs,38
+2026-04-03,ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling,30
+2026-04-03,Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification,27
+2026-04-03,Computer-aided clinical skin disease diagnosis using CNN and object detection models,24
+2026-04-03,Nas-lid: Efficient neural architecture search with local intrinsic dimension,22
+2026-04-03,Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing,18
+2026-04-03,FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression,13
+2026-04-03,MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification,8
+2026-04-03,Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework,6
+2026-04-03,Ghost in the cloud: Your geo-distributed large language models training is easily manipulated,4
+2026-04-03,Autohete: An automatic and efficient heterogeneous training system for llms,3
+2026-04-03,Routemark: A fingerprint for intellectual property attribution in routing-based model merging,2
+2026-04-03,GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models,1
+2026-04-03,LLM Agent Memory: A Survey from a Unified Representation–Management Perspective,0
+2026-04-03,Automated Machine Learning and Its Applications,0
+2026-04-03,AutoML: A survey of the state-of-the-art,2630
+2026-04-03,Virtual homogeneity learning: Defending against data heterogeneity in federated learning,146
+2026-04-03,Benchmarking the performance and energy efficiency of AI accelerators for AI training,126
+2026-04-03,BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems,124
+2026-04-03,Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans,67
+2026-04-03,Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans,57
+2026-04-03,Fusionai: Decentralized training and deploying llms with massive consumer-level gpus,47
+2026-04-03,EAGAN: Efficient two-stage evolutionary architecture search for GANs,38
+2026-04-03,ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling,30
+2026-04-03,Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification,27
+2026-04-03,Computer-aided clinical skin disease diagnosis using CNN and object detection models,24
+2026-04-03,Nas-lid: Efficient neural architecture search with local intrinsic dimension,22
+2026-04-03,Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing,18
+2026-04-03,FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression,13
+2026-04-03,MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification,8
+2026-04-03,Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework,6
+2026-04-03,Ghost in the cloud: Your geo-distributed large language models training is easily manipulated,4
+2026-04-03,Autohete: An automatic and efficient heterogeneous training system for llms,3
+2026-04-03,Routemark: A fingerprint for intellectual property attribution in routing-based model merging,2
+2026-04-03,GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models,1
+2026-04-03,LLM Agent Memory: A Survey from a Unified Representation–Management Perspective,0
+2026-04-03,Automated Machine Learning and Its Applications,0
