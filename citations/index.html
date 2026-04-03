@@ -38,7 +38,7 @@ h1{text-align:center;margin-bottom:20px;color:#333}
 <div id="papers">加载中...</div>
 </div>
 <script>
-fetch('citations.csv')
+fetch('https://raw.githubusercontent.com/marsggbo/marsggbo.github.io/master/citations.csv')
   .then(r => r.text())
   .then(csv => {
     const lines = csv.trim().split('\n');
