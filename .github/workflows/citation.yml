@@ -8,7 +8,7 @@ on:
 jobs:
   update:
     runs-on: ubuntu-latest
-    timeout-minutes: 30
+    timeout-minutes: 10
     steps:
       - uses: actions/checkout@v4
       
@@ -16,13 +16,9 @@ jobs:
         with:
           python-version: '3.11'
       
-      - name: Install dependencies
-        run: |
-          pip install scholarly requests[socks] PySocks
-      
       - name: Run scraper
         run: python scrape.py
-        timeout-minutes: 25
+        timeout-minutes: 8
       
       - name: Commit
         run: |
