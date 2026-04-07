@@ -11,7 +11,7 @@ nav_order: 2
 <div style="background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); border-radius: 12px; padding: 1.5rem; margin-bottom: 2rem; color: white;">
     <h2 style="margin-bottom: 0.5rem; color: white;">📊 Citation Analytics</h2>
     <p style="margin-bottom: 1rem; opacity: 0.9;">Track citation trends, monitor paper performance, and visualize your academic impact over time.</p>
-    <a href="/citations/" style="display: inline-block; background: white; color: #667eea; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: transform 0.2s;">
+    <a href="https://marsggbo.github.io/citation-tracker/" style="display: inline-block; background: white; color: #667eea; padding: 0.75rem 1.5rem; border-radius: 8px; text-decoration: none; font-weight: 600; transition: transform 0.2s;">
         View Analytics →
     </a>
 </div>
