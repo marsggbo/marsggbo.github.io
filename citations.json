@@ -1,112 +1,134 @@
 {
   "AutoML: A survey of the state-of-the-art": {
     "citations": {
-      "2026-04-13": 2644
+      "2026-04-13": 2644,
+      "2026-04-14": 2644
     }
   },
   "Virtual homogeneity learning: Defending against data heterogeneity in federated learning": {
     "citations": {
-      "2026-04-13": 147
+      "2026-04-13": 147,
+      "2026-04-14": 147
     }
   },
   "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems": {
     "citations": {
-      "2026-04-13": 131
+      "2026-04-13": 131,
+      "2026-04-14": 134
     }
   },
   "Benchmarking the performance and energy efficiency of AI accelerators for AI training": {
     "citations": {
-      "2026-04-13": 127
+      "2026-04-13": 127,
+      "2026-04-14": 127
     }
   },
   "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans": {
     "citations": {
-      "2026-04-13": 67
+      "2026-04-13": 67,
+      "2026-04-14": 67
     }
   },
   "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans": {
     "citations": {
-      "2026-04-13": 57
+      "2026-04-13": 57,
+      "2026-04-14": 57
     }
   },
   "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus": {
     "citations": {
-      "2026-04-13": 47
+      "2026-04-13": 47,
+      "2026-04-14": 47
     }
   },
   "EAGAN: Efficient two-stage evolutionary architecture search for GANs": {
     "citations": {
-      "2026-04-13": 39
+      "2026-04-13": 39,
+      "2026-04-14": 39
     }
   },
   "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling": {
     "citations": {
-      "2026-04-13": 32
+      "2026-04-13": 32,
+      "2026-04-14": 32
     }
   },
   "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification": {
     "citations": {
-      "2026-04-13": 27
+      "2026-04-13": 27,
+      "2026-04-14": 27
     }
   },
   "Computer-aided clinical skin disease diagnosis using CNN and object detection models": {
     "citations": {
-      "2026-04-13": 24
+      "2026-04-13": 24,
+      "2026-04-14": 24
     }
   },
   "Nas-lid: Efficient neural architecture search with local intrinsic dimension": {
     "citations": {
-      "2026-04-13": 22
+      "2026-04-13": 22,
+      "2026-04-14": 22
     }
   },
   "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing": {
     "citations": {
-      "2026-04-13": 18
+      "2026-04-13": 18,
+      "2026-04-14": 18
     }
   },
   "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression": {
     "citations": {
-      "2026-04-13": 13
+      "2026-04-13": 13,
+      "2026-04-14": 13
     }
   },
   "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification": {
     "citations": {
-      "2026-04-13": 8
+      "2026-04-13": 8,
+      "2026-04-14": 8
     }
   },
   "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework": {
     "citations": {
-      "2026-04-13": 6
+      "2026-04-13": 6,
+      "2026-04-14": 6
     }
   },
   "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated": {
     "citations": {
-      "2026-04-13": 4
+      "2026-04-13": 4,
+      "2026-04-14": 4
     }
   },
   "Autohete: An automatic and efficient heterogeneous training system for llms": {
     "citations": {
-      "2026-04-13": 3
+      "2026-04-13": 3,
+      "2026-04-14": 3
     }
   },
   "Routemark: A fingerprint for intellectual property attribution in routing-based model merging": {
     "citations": {
-      "2026-04-13": 2
+      "2026-04-13": 2,
+      "2026-04-14": 2
     }
   },
   "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models": {
     "citations": {
-      "2026-04-13": 1
+      "2026-04-13": 1,
+      "2026-04-14": 1
     }
   },
   "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective": {
     "citations": {
-      "2026-04-13": 0
+      "2026-04-13": 0,
+      "2026-04-14": 0
     }
   },
   "Automated Machine Learning and Its Applications": {
     "citations": {
-      "2026-04-13": 0
+      "2026-04-13": 0,
+      "2026-04-14": 0
     }
   }
 }
