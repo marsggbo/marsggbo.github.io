@@ -1,11 +1,11 @@
 ---
 layout: post
-title: "用编译器「常量折叠」的思路压缩 LLM？这篇 EuroSys 2026 的工作把 FFN 参数砍了 80%"
+title: "EuroSys'26 | LLMFolder 用常量折叠把 FFN 参数砍 80%，精度反超剪枝方法 65%"
 date: 2026-05-14
 tags: [LLM, 推理优化, 模型压缩, 论文解读, EuroSys]
 ---
 
-# 用编译器「常量折叠」的思路压缩 LLM？这篇 EuroSys 2026 的工作把 FFN 参数砍了 80%
+# EuroSys'26 | LLMFolder 用常量折叠把 FFN 参数砍 80%，精度反超剪枝方法 65%
 
 > 原文：[LLMFolder: Revisiting Constant Folding in Large Language Models](https://dl.acm.org/doi/10.1145/3767295.3769339)（EuroSys 2026）
 > 作者：Gansen Hu, Zhaoguo Wang, Wei Huang, Jinglin Wei, Haibo Chen（上交 IPADS 实验室）
