@@ -11,7 +11,8 @@
       "2026-05-12": 2694,
       "2026-05-13": 2694,
       "2026-05-14": 2700,
-      "2026-05-16": 2705
+      "2026-05-16": 2705,
+      "2026-05-18": 2705
     }
   },
   "Virtual homogeneity learning: Defending against data heterogeneity in federated learning": {
@@ -26,7 +27,8 @@
       "2026-05-12": 149,
       "2026-05-13": 149,
       "2026-05-14": 149,
-      "2026-05-16": 149
+      "2026-05-16": 149,
+      "2026-05-18": 149
     }
   },
   "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems": {
@@ -41,7 +43,8 @@
       "2026-05-12": 148,
       "2026-05-13": 148,
       "2026-05-14": 148,
-      "2026-05-16": 148
+      "2026-05-16": 148,
+      "2026-05-18": 150
     }
   },
   "Benchmarking the performance and energy efficiency of AI accelerators for AI training": {
@@ -56,7 +59,8 @@
       "2026-05-12": 130,
       "2026-05-13": 130,
       "2026-05-14": 130,
-      "2026-05-16": 130
+      "2026-05-16": 130,
+      "2026-05-18": 131
     }
   },
   "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans": {
@@ -71,7 +75,8 @@
       "2026-05-12": 67,
       "2026-05-13": 67,
       "2026-05-14": 67,
-      "2026-05-16": 67
+      "2026-05-16": 67,
+      "2026-05-18": 67
     }
   },
   "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans": {
@@ -86,7 +91,8 @@
       "2026-05-12": 58,
       "2026-05-13": 58,
       "2026-05-14": 58,
-      "2026-05-16": 58
+      "2026-05-16": 58,
+      "2026-05-18": 58
     }
   },
   "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus": {
@@ -101,7 +107,8 @@
       "2026-05-12": 48,
       "2026-05-13": 48,
       "2026-05-14": 48,
-      "2026-05-16": 48
+      "2026-05-16": 48,
+      "2026-05-18": 48
     }
   },
   "EAGAN: Efficient two-stage evolutionary architecture search for GANs": {
@@ -116,7 +123,8 @@
       "2026-05-12": 39,
       "2026-05-13": 39,
       "2026-05-14": 40,
-      "2026-05-16": 40
+      "2026-05-16": 40,
+      "2026-05-18": 40
     }
   },
   "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling": {
@@ -131,7 +139,8 @@
       "2026-05-12": 32,
       "2026-05-13": 32,
       "2026-05-14": 32,
-      "2026-05-16": 32
+      "2026-05-16": 32,
+      "2026-05-18": 32
     }
   },
   "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification": {
@@ -146,7 +155,8 @@
       "2026-05-12": 27,
       "2026-05-13": 27,
       "2026-05-14": 27,
-      "2026-05-16": 27
+      "2026-05-16": 27,
+      "2026-05-18": 27
     }
   },
   "Computer-aided clinical skin disease diagnosis using CNN and object detection models": {
@@ -161,7 +171,8 @@
       "2026-05-12": 26,
       "2026-05-13": 26,
       "2026-05-14": 26,
-      "2026-05-16": 26
+      "2026-05-16": 26,
+      "2026-05-18": 26
     }
   },
   "Nas-lid: Efficient neural architecture search with local intrinsic dimension": {
@@ -176,7 +187,8 @@
       "2026-05-12": 22,
       "2026-05-13": 22,
       "2026-05-14": 22,
-      "2026-05-16": 22
+      "2026-05-16": 22,
+      "2026-05-18": 22
     }
   },
   "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing": {
@@ -191,7 +203,8 @@
       "2026-05-12": 18,
       "2026-05-13": 18,
       "2026-05-14": 18,
-      "2026-05-16": 18
+      "2026-05-16": 18,
+      "2026-05-18": 18
     }
   },
   "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression": {
@@ -206,7 +219,8 @@
       "2026-05-12": 13,
       "2026-05-13": 13,
       "2026-05-14": 13,
-      "2026-05-16": 13
+      "2026-05-16": 13,
+      "2026-05-18": 13
     }
   },
   "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification": {
@@ -221,7 +235,8 @@
       "2026-05-12": 9,
       "2026-05-13": 9,
       "2026-05-14": 9,
-      "2026-05-16": 9
+      "2026-05-16": 9,
+      "2026-05-18": 9
     }
   },
   "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework": {
@@ -236,7 +251,8 @@
       "2026-05-12": 6,
       "2026-05-13": 6,
       "2026-05-14": 6,
-      "2026-05-16": 6
+      "2026-05-16": 6,
+      "2026-05-18": 7
     }
   },
   "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated": {
@@ -251,7 +267,8 @@
       "2026-05-12": 4,
       "2026-05-13": 4,
       "2026-05-14": 4,
-      "2026-05-16": 4
+      "2026-05-16": 4,
+      "2026-05-18": 4
     }
   },
   "Autohete: An automatic and efficient heterogeneous training system for llms": {
@@ -266,7 +283,8 @@
       "2026-05-12": 3,
       "2026-05-13": 3,
       "2026-05-14": 3,
-      "2026-05-16": 3
+      "2026-05-16": 3,
+      "2026-05-18": 3
     }
   },
   "Routemark: A fingerprint for intellectual property attribution in routing-based model merging": {
@@ -281,7 +299,8 @@
       "2026-05-12": 2,
       "2026-05-13": 2,
       "2026-05-14": 2,
-      "2026-05-16": 2
+      "2026-05-16": 2,
+      "2026-05-18": 2
     }
   },
   "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models": {
@@ -296,7 +315,8 @@
       "2026-05-12": 1,
       "2026-05-13": 1,
       "2026-05-14": 1,
-      "2026-05-16": 1
+      "2026-05-16": 1,
+      "2026-05-18": 1
     }
   },
   "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective": {
@@ -311,7 +331,8 @@
       "2026-05-12": 0,
       "2026-05-13": 0,
       "2026-05-14": 0,
-      "2026-05-16": 0
+      "2026-05-16": 0,
+      "2026-05-18": 0
     }
   },
   "Automated Machine Learning and Its Applications": {
@@ -326,7 +347,8 @@
       "2026-05-12": 0,
       "2026-05-13": 0,
       "2026-05-14": 0,
-      "2026-05-16": 0
+      "2026-05-16": 0,
+      "2026-05-18": 0
     }
   }
 }
