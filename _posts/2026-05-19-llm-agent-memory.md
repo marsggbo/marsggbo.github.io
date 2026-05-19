@@ -1,222 +1,242 @@
 ---
 layout: post
-title: "LLM Agent 真的有「记忆」吗？这篇综述把问题挖到了根上"
+title: "LLM Agent Memory 全景拆解：从 RAG 到 KV Cache 到参数写入，100+ 篇工作的方法演进与真实取舍"
 date: 2026-05-19
 tags: [LLM, Agent, Memory, KV Cache, RAG, 论文解读]
 ---
 
-# LLM Agent 真的有「记忆」吗？这篇综述把问题挖到了根上
+# LLM Agent Memory 全景拆解：从 RAG 到 KV Cache 到参数写入，100+ 篇工作的方法演进与真实取舍
 
 > 原文：[LLM Agent Memory: A Survey from a Unified Representation–Management Perspective](https://www.preprints.org/frontend/manuscript/cb9b2d755639339002ad1d6da7a9e230/download_pub)
 > 作者：Zhenheng Tang, Xin He, Tiancheng Zhao 等（A\*STAR CFAR / HKUST）
 
 ---
 
-## 1. 前言：大家都在谈 memory，但很多时候根本不是一回事
+## 1. 先交代下背景：为什么我们觉得这篇综述有写的必要
 
-你会发现一个很奇怪的现象。
+你有没有发现一个现象：2024-2025 年几乎所有做 LLM agent 的团队都说自己"加了 memory"，但你去看它们的实现，有人在做向量库检索，有人在做 KV cache eviction，有人在做 LoRA 持续学习——**表面同名，底层完全不是一个问题**。
 
-有人说要给 agent 加 memory，最后做的是 RAG。有人说在做 long-term memory，最后讲的是 KV cache 压缩。还有人说 memory 写入，实际讨论的是 knowledge editing 或者 continual learning。
+这就导致了一个很尴尬的局面：reviewer 问你 "和 XXX memory system 比怎样"，你根本没法比，因为你们根本不在同一层解决问题。
 
-表面上都在说 memory，**但他们讨论的其实不是同一层问题**。
+所以这篇综述不是又列一遍论文清单。它想做的事情是：**把 memory 这个被滥用的词还原成一个可拆分、可比较、可设计的系统问题。**
 
-有的工作在解决“信息放哪儿”；有的工作在解决“信息怎么取”；还有的工作在解决“信息写进去之后会不会把原来的能力搞坏”。这些问题被一股脑装进 memory 这个词之后，整个领域就开始显得很乱。
+核心切法很清晰——任何 LLM memory 机制都可以拆成两个正交维度：
 
-这篇综述最有价值的地方，不是在于又列了一遍论文清单，而是在于它把问题拆开了：**LLM memory 不是一个单点技术，而是一整套表示与管理问题。**
+1. **表示层 (Representation)**：信息以什么形式存在——文本 token、KV cache 中间状态、还是模型参数？
+2. **管理层 (Management)**：信息怎么建、怎么改、怎么取——construction、update、query 三件事哪个是瓶颈？
 
-这个拆法，我觉得是值得认真看一眼的。
+下图是整个框架的总览：
 
----
+![LLM memory 统一框架](/assets/img/posts/llm-agent-memory/fig1_framework.png)
 
-## 2. 真问题不在“有没有记忆”，而在“记忆存在哪一层”
+上层是应用场景（多轮对话、文档问答），中间层是三种 memory 表示，下层是统一的管理接口抽象。这张图最有价值的地方不是分类本身，而是它揭示的一个事实：**不同 memory 方向的研究者其实在用同一套管理语义（构建、更新、查询）去操作不同的存储后端。**
 
-很多讨论一上来就在问：LLM agent 有没有记忆？
-
-这个问题其实问得有点糙。更准确的问法应该是：
-
-- 这份记忆是存在 prompt 里的文本片段？
-- 还是存在 attention 的中间状态，也就是 KV cache？
-- 还是已经被写进模型参数本身？
-
-一旦这么问，很多争论就会自动消失。
-
-因为这三类 memory 的能力边界完全不同：
-
-- **文本 memory** 可编辑、可审计，但贵，而且容易被长上下文拖垮
-- **KV cache memory** 快，但本质上是会话态、瞬时态，很难跨模型迁移
-- **参数 memory** 最持久，但写进去的代价高，改起来风险也最大
-
-也就是说，**所谓 memory，不是一个按钮，而是一套分层存储结构**。
-
-论文里的总览图把这个分层关系画得很清楚：
-
-![LLM memory 的统一框架总览](/assets/img/posts/llm-agent-memory/emb_001_p1.png)
-
-这张图最重要的点，不是把方法分了类，而是把一个经常被混在一起说的问题拆成了两层：
-
-- **Representation**：信息以什么形式存在
-- **Management**：信息如何被建立、更新、查询
-
-这个拆分一出来，很多 paper 的真实贡献就更好判断了。因为你终于能看清：它到底是在换一种 memory 表示，还是只是在优化其中某一个管理环节。
+一旦你接受了这个统一视角，很多看似不相关的工作就突然可以互相对话了。
 
 ---
 
-## 3. 这篇综述真正有洞察的地方：memory 本质上是 management 问题
+## 2. Token-level Memory：检索的演进远比你以为的深
 
-我觉得整篇文章里最值得反复看的，不是某个具体方法，而是它反复强调的一件事：
+### 2.1 RAG 的真实演进路线：从 naive retrieval 到可控 pipeline
 
-**选 memory，本质上是在选你的系统瓶颈会落在哪个管理环节。**
+大部分人对 RAG 的印象还停留在"向量检索 + 拼 prompt"，但如果你把最近两年的方法按技术路线排开，会发现它其实已经经历了三代演进：
 
-这句话很关键。
+**第一代：静态检索。** BM25 或 dense embedding 做一次检索，把 top-k 结果直接拼到 prompt 里。问题很明显——query 和检索 granularity 不匹配的时候，结果很差。
 
-很多人会下意识觉得，换一种 memory 设计，是在“解决记忆问题”。但这篇综述给出的视角更接近工程现实：你并没有消灭问题，你只是把问题从一个地方转移到了另一个地方。
+**第二代：Query 重构与增强。** 这里出现了一批很重要的工作：
+- **CoVe** (Dhuliawala et al., 2023)：先让模型对自己的答案做 verification，再检索，减少 hallucination
+- **Step-back prompting** (Zheng et al., 2024)：把具体 query 抽象成更高层的问题再去检索，拿到互补证据
+- **HyDE** (Gao et al., 2022)：先让模型生成一个假设性答案，再用这个假设答案去检索真正的文档
 
-论文里的这张表总结得非常好：
+这一代的共同 insight 是：**检索质量的瓶颈往往不在索引端，而在 query 端**。一个精心重构的 query 比更好的 embedding 模型带来的提升大得多。
 
-![LLM memory 的决策矩阵](/assets/img/posts/llm-agent-memory/table1_decision_matrix.png)
+**第三代：动态可控检索。** 这才是真正让 RAG 从"管道"变成"系统"的一步：
+- **DSP** (Khattab et al., 2022)：把检索和生成拆成可组合的模块化 pipeline
+- **FLARE** (Jiang et al., 2023)：在生成过程中动态判断何时需要检索——只在 confidence 低的时候触发
+- **Self-RAG** (Asai et al., 2023)：训练模型本身输出 reflection token，让它自己决定是否检索、检索的结果是否有用、自己的生成是否 faithful
 
-这张表可以读出三个非常重要的结论。
+Self-RAG 之所以重要，不只是因为它好用，而是它代表了一个范式转移：**检索不再是外部系统强加的，而是模型自身 reasoning 流程的一部分**。这就把 memory query 从 "engineering heuristic" 提升到了 "learnable decision"。
 
-第一，**Token-level memory 的核心瓶颈通常不在 construction，而在 query。**
+### 2.2 Agentic Memory：从 log 到 evolving knowledge
 
-你把资料塞进向量库不算太难，难的是在真正推理的时候，怎么把最相关、最短、最能帮助当前 reasoning 的那一小撮内容拿出来。检索错了，后面全错。检索多了，context 爆。检索少了，信息不够。很多所谓 agent memory 系统，最后崩就崩在 query 这一关。
+RAG 处理的是相对静态的外部语料。Agentic memory 要解决的是一个更难的问题：**agent 自己的交互历史怎么变成可复用的知识**。
 
-第二，**Intermediate latent memory 的瓶颈通常在 update。**
+关键区别在于：agent memory 不只是"存下来再查"，而是需要持续演化。
 
-KV cache 不是说存下来就结束了。它最痛苦的问题是：预算有限时，哪些该留，哪些该丢，哪些该合并，哪些该量化。说白了，这就是一个 runtime memory manager。你如果只把它看成“推理提速技巧”，其实是低估了这个方向。
+看一下这条技术线的演进：
 
-第三，**Parameter-level memory 的真正代价在写入。**
+- **MemoryBank / RET-LLM** (Zhong et al., 2024; Modarressi et al., 2023)：最早的做法，对对话历史做摘要存下来
+- **HippoRAG** (Gutiérrez et al., 2024)：引入 knowledge graph 结构，让记忆之间有 relation
+- **A-MEM** (Xu et al., 2025)：不只是存储，而是让 memory 自己去合并、裂变、重组
+- **Synapse** (Zheng et al., 2024) / **SCM** (Wang et al., 2024)：引入 self-reflection 和 memory blending
 
-把知识写进参数，听起来最优雅，因为它最持久。但工程上最难搞的恰恰也是它：你写进去的不只是一个新事实，而是在改一整个分布。于是 interference、forgetting、unexpected side effects 都会跟着来。knowledge editing 之所以一直争议很大，根子就在这儿。
+这里最值得注意的 insight 是：**区分一个 agentic memory 系统是不是真正有价值的，关键不在于它怎么存，而在于它怎么"忘"和怎么"变"。**
 
-所以这篇综述最有价值的 takeaway 其实不是“memory 分三类”，而是：
+单纯存得多没有用，甚至有害。一个 agent 跑 1000 轮之后，如果不做 memory evolution（选择性遗忘、冲突消解、抽象化），它的 memory 就会退化成一个高噪声的 log——这几乎必然拖垮 query 质量。
 
-**不要再把 LLM memory 当成一个功能模块来看，而要把它当成一个资源管理问题来看。**
-
-这也是为什么我会觉得，这篇综述不是在做“名词整理”，而是在给这个领域补一套更像系统论文的思考框架。
-
----
-
-## 4. 三类 memory，各自到底解决什么问题
-
-### 4.1 Token-level memory：最透明，也最容易把自己做成信息垃圾场
-
-Token-level memory 这条线，最典型的当然是 RAG 和 agentic memory。
-
-它的优点几乎人人都知道：
-
-- 好 debug
-- 好编辑
-- 好审计
-- 跟底层模型解耦，不容易被某个架构绑死
-
-但它的真正难点，其实不是“能不能存”，而是“存多了以后怎么不烂掉”。
-
-一个 agent 一旦真的开始长期运行，memory 很快就会从“有用的历史”退化成“高噪声历史堆积”。如果没有摘要、重组、冲突消解、遗忘机制，token memory 最后就只是一个更贵的日志系统。
-
-所以我觉得这条线真正值得看的，不是谁又做了一个 memory bank，而是谁把 **memory evolution** 做清楚了。也就是：
-
-- 什么该被保留
-- 什么该被压缩
-- 什么该被合并
-- 什么该被删除
-
-这其实已经非常接近数据库系统的设计问题，而不是单纯 prompting 技巧了。
-
-### 4.2 KV cache memory：大家以为自己在做推理优化，其实很多时候在做在线内存管理
-
-KV cache 这条线有个很有意思的误区。
-
-很多工作表面上是在做 inference optimization，但你仔细看会发现，它们真正要回答的是一个非常经典的系统问题：
-
-**当内存不够时，哪些状态最值得留下来？**
-
-这和操作系统、数据库、缓存系统里问的问题几乎是一模一样的。
-
-不同方法的区别，也大都可以还原成几类老问题：
-
-- eviction：谁先滚
-- compression：谁能压
-- merging：谁能合并
-- allocation：预算怎么分
-
-也正因为如此，我反而觉得这一支最值得继续吸收系统领域的成熟经验。现在很多方法还在用 attention score 之类的启发式作为重要性指标，但从工程视角看，这更像第一代办法，不像终局。
-
-真正强的系统，最后多半不会只看一个 token 此刻的重要性，而会看访问模式、任务阶段、未来复用概率，以及和上层 retrieval 的协同。
-
-### 4.3 Parameter memory：最稳，但也最危险
-
-把知识写进参数，是最容易让人产生“这才是真记住了”的那条路。
-
-这没错，但它也最容易让人忽略代价。
-
-因为参数 memory 的问题从来不只是“写进去”，而是：
-
-- 写进去之后能不能局部生效
-- 会不会污染相邻知识
-- 会不会把原本会的东西搞丢
-- 改完之后还能不能解释它到底改在了哪里
-
-这也是为什么 knowledge editing、continual learning、LoRA/PEFT、model merging 这些方向表面上看差异很大，底层其实在围着同一个矛盾打转：
-
-**如何在不破坏已有能力的前提下，让参数对新知识产生可控响应。**
-
-如果从这个角度看，参数 memory 更像“低层、慢速、昂贵、但持久的存储层”。它不是不能用，而是不适合承担所有类型的记忆任务。
+Reflexion (Shinn et al., 2024)、BoT (Yang et al., 2024) 和 ReAct (Yao et al., 2022) 代表了另一条相关的线：**让 agent 对自己的经验做 reasoning 和 self-reflection，把"经历"变成"教训"再存入 memory**。这比 raw experience replay 有效得多。
 
 ---
 
-## 5. 这篇综述给工程实践最大的启发：别再幻想“一种 memory 通吃所有问题”
+## 3. KV Cache Memory：一个被低估的系统问题
 
-如果只允许我从这篇文章里拿走一个观点，我会选这个：
+### 3.1 四条技术路线与它们的 OS 对应物
 
-**健壮的 LLM agent 系统，最后大概率不会只有一种 memory。**
+这是我个人觉得这篇综述整理得最有价值的一节。KV cache 的工作数量爆炸式增长，但如果你站远一步看，几乎所有方法都可以映射到操作系统或数据库里的经典问题：
 
-原因很简单。
+| KV Cache 方法类别 | OS/DB 对应概念 | 代表工作 |
+|:---|:---|:---|
+| Eviction & dropping | Page replacement (LRU/LFU) | H₂O, StreamingLLM, FastGen, NACL |
+| Merging & compression | Data deduplication / compaction | CaM, D2O, similarity-based merge |
+| Quantization & low-rank | Lossy compression / tiered storage | KIVI, KVQuant, Gear |
+| System-aware allocation | NUMA-aware / disaggregated memory | vLLM PagedAttention, Mooncake |
 
-不同 memory 层解决的是不同时间尺度、不同成本结构下的问题：
+**H₂O** (Zhang et al., 2023) 本质上做的事情是：统计每个 token 在过去所有 attention 计算中被关注的累积分数，优先保留"重度命中"的 token。这几乎就是 **LFU (Least Frequently Used)** 的翻版。
 
-- 文本 memory 适合高可编辑、强可解释的信息
-- KV cache 适合会话内高频复用的中间状态
-- 参数 memory 适合长期稳定、值得固化的知识
+**StreamingLLM** (Xiao et al., 2024) 更有意思：它发现"第一个 token 的 attention sink 现象"——模型总会把一些 attention 分配给第一个 token，不管内容是什么。于是它永久保留前几个 token + 最近几个 token 的 KV，中间全部丢掉。这本质上就是 **pinned pages + sliding window**。
 
-这更像一个 hierarchy，而不是三选一题。
+**QUEST** (Tang et al., 2024) 和 **TokenSelect** (Wu et al., 2025) 走的是 query-dependent selection：不是对所有 query 用同一套 cache，而是每次 attention 计算只选择和当前 query 最相关的 KV subset。这非常接近 **demand paging**——只有被"访问"到的 page 才加载进来。
 
-如果你非要让我用一句更直白的话概括，那就是：
+### 3.2 为什么我说 KV cache 不只是"推理优化"
 
-**RAG 像外存，KV cache 像内存，参数像固化到程序本身的常量。**
+很多人会把 KV cache 压缩归类到"推理加速"里。但从这篇综述的视角看，它其实在回答一个更本质的问题：
 
-所以真正有意思的问题从来不是“该选哪一种 memory”，而是：
+**当 context 越来越长，模型内部的 working memory 该怎么管理？**
 
-**你的系统要不要做 memory routing？什么时候该查文本，什么时候该复用 KV，什么时候该依赖参数本身？**
+考虑一个实际场景：一个 agent 在执行 100 步的长任务。每步生成都需要 attend to 前面所有步骤的 KV cache。到第 80 步时，可能 step 3-20 的信息完全不会再被用到了，但 step 45 的关键决策需要一直被记住。
 
-我觉得这反而是这篇综述向后延伸出来、但还没有被充分展开的方向。
+这时候 KV cache management 面对的就不是"压缩"问题，而是一个真正的**在线内存管理**问题——你需要在 latency constraint 下做出 evict/keep/merge 的实时决策，而且这个决策的质量直接决定了 agent 后续推理的正确性。
+
+Table 1 给出的判断非常精准：**Intermediate latent memory 的核心瓶颈在 update（什么时候丢什么），而不是 construction 或 query。**
+
+![Decision matrix](/assets/img/posts/llm-agent-memory/table1_clean.png)
+
+### 3.3 Steering Vectors：一种被低估的"行为记忆"
+
+这篇综述还把 steering vectors 归入了 intermediate latent memory，我觉得这个归类相当有洞察。
+
+Steering vectors 是什么？简单说就是一组方向向量，注入到模型中间层的 activation 里，可以持续改变模型的行为倾向（比如让它更 truthful、less toxic、或者更像某个 persona）。
+
+演进路线：
+- **PPLM** (Dathathri et al.)：最早的尝试，用梯度引导 hidden states
+- **Turner et al., 2023**：contrastive 方法——用"好行为"和"坏行为"的 activation 差作为 steering direction
+- **Arditi et al., 2024**：把 refusal behavior 定位到具体的 steering direction 并移除
+- **Hernandez et al., 2023**：optimization-based，用单个样本就能学出 steering vector
+
+为什么说它是"行为记忆"？因为 steering vector 本质上编码的是**持久的行为偏好**（不是事实知识），以一种不需要在每次推理时重新指定的方式存在于模型里。它和 KV cache 的区别是：KV cache 存的是"当前会话的上下文状态"，steering vector 存的是"跨会话的行为倾向"。
+
+但 steering vector 目前的局限也很明显：contrastive method 依赖精心构造的对比数据，很容易捕获到 spurious correlation 而非 causal direction。这也是为什么 probe-based 和 low-shot 方法（Li et al., 2024; Cao et al., 2024）在尝试解决鲁棒性问题。
 
 ---
 
-## 6. 还有哪些地方值得继续往下挖
+## 4. Parameter-level Memory：写入成本决定了研究格局
 
-这篇综述已经把框架搭得不错了，但从研究机会的角度看，我觉得至少还有三件事没被真正做透。
+### 4.1 为什么这条线的工作最"碎"
 
-**1. memory 层之间几乎没有联合调度。**
+如果你看参数层面的 memory 工作，会发现一个有趣现象：**研究方向极其分散**——continual learning、knowledge editing、PEFT、model merging、task arithmetic 都算，但大家之间几乎不互引。
 
-现在很多系统里，RAG 是一套逻辑，KV cache 是另一套逻辑，参数更新又是第三套逻辑。三者都在影响同一个目标：让模型在有限预算下保留最有价值的信息。但它们几乎没有统一的控制面。这件事如果能做好，价值会非常大。
+原因在于：参数写入的成本太高了，没有任何一个方法能做到"对所有类型的知识都通用"，于是每种方法都只能在自己的 niche 里深耕：
 
-**2. benchmark 还是太碎。**
+- **EWC / TaSL / POCL**：防灾难性遗忘——先算哪些参数对旧知识重要，再限制这些参数的更新幅度
+- **Knowledge editing** (ROME, MEMIT)：精准改一个事实，但只能处理"单跳事实"，multi-hop 效果就崩
+- **LoRA / PEFT**：轻量级适配，但本质上是在编码 task-specific bias，不是 factual memory
+- **Model merging** (TIES, DARE, Model Breadcrumbs)：把多个 fine-tuned model 合成一个，用参数空间的向量运算解决
 
-今天评测 RAG、KV compression、knowledge editing，用的几乎不是一套指标。结果就是大家都能在自己的赛道里赢，但你很难回答一个工程上最真实的问题：**同样的预算下，我到底该投在哪一层 memory 最划算？**
+这些方法看似差异巨大，但如果用这篇综述的框架来看，它们都在回答同一个问题：
 
-**3. 系统领域的经验还远没吃透。**
+**如何在不破坏已有能力的前提下，让参数空间对新信息产生可控的、局部的响应。**
 
-缓存替换、冷热分层、索引设计、版本管理，这些成熟问题在 LLM memory 里才刚刚被重新发明。后面我很看好的一类工作，不一定是“更 fancy 的 memory 结构”，而是把 OS/DB 这套成熟方法论更认真地移植过来。
+### 4.2 Task Arithmetic 与 Model Merging：参数空间的"向量记忆"
+
+这里面我觉得最有启发性的方向是 **task arithmetic**（Ilharco et al., 2023）。
+
+它的核心思想很简单但很漂亮：把 fine-tuning 后的模型减去 base model，得到一个"任务向量"（task vector）。这个向量可以被加减组合——**加上它就获得某种能力，减去它就移除某种能力**。
+
+这意味着参数 memory 在某种意义上可以被"可编辑化"了。你不需要重新训练，只需要做向量运算就能组合多种知识。
+
+当然，现实没这么美好。Task vector 之间会有 interference（两个任务向量加在一起可能互相抵消），这也催生了 TIES（修剪冲突参数）、DARE（随机 drop 低幅度参数）等后续工作。
+
+但方向是对的：**让参数层面的写入变得更 composable、更 reversible，是参数 memory 最有前景的演进方向之一。**
 
 ---
 
-## 7. 结尾
+## 5. 三层之间的真正 insight：瓶颈转移定律
 
-所以，回到最开始那个问题：LLM agent 真的有记忆吗？
+如果你把上面三节的分析放在一起看，会发现一个非常有意思的规律：
 
-我的答案是：**有，但前提是你先说清楚，你指的是哪一层记忆、哪一种管理机制、以及你愿意为它付出什么代价。**
+**Memory 的写入成本和查询成本成反比。写入越便宜的 memory，查询越贵；写入越贵的 memory，查询越廉价。**
 
-这篇综述真正做对的，不是告诉你“memory 很重要”，而是把这个已经被说滥了的词，重新拆回成了几个可讨论、可设计、可优化的工程问题。
+具体来说：
 
-这一点，挺重要的。
+- **Token memory**：写入几乎无成本（直接存文本），但查询极贵（要在海量文档中精确检索）
+- **KV cache**：写入成本中等（forward pass 自然产生），但维护成本高（要不断 evict/merge/compress）
+- **Parameter memory**：写入极贵（需要 fine-tune 或 editing），但查询几乎为零（推理时自动激活，不需要额外检索步骤）
+
+这不是巧合。这和计算机体系结构里的 **存储层次 (memory hierarchy)** 规律完全一致：寄存器快但小且贵，DRAM 大但慢，磁盘最大最便宜但最慢。
+
+所以论文给出的 practical guideline 非常实用：
+
+![设计指南](/assets/img/posts/llm-agent-memory/conclusion_guidelines.png)
+
+翻译成工程语言就是：
+- **频繁变动的信息** → token memory（向量库、RAG）
+- **会话内的推理状态** → KV cache（intermediate latent）
+- **稳定的长期知识** → 参数（fine-tune、model merge）
+
+**一个健壮的 LLM agent 系统，最终一定是多层 memory 的组合**，就像操作系统同时有 L1/L2 cache、RAM、SSD 一样。问题只是：谁来做跨层的 routing 和 scheduling。
+
+---
+
+## 6. 未来方向：不是更 fancy 的方法，而是更成熟的系统思维
+
+### 6.1 跨层 Memory Routing 与联合调度
+
+目前几乎所有系统都是各层独立工作：RAG 是一套检索逻辑，KV cache 有自己的 eviction policy，参数更新走单独的 fine-tuning pipeline。三者都在试图让模型"记住对的信息"，但**没有人在做统一的调度**。
+
+想象一下：如果一个 agent 发现某条信息被 RAG 检索了 50 次，是不是应该考虑把它"下沉"到 KV cache（prefix caching）甚至直接 consolidate 到参数里？反过来，如果某个参数化的知识过时了，是不是应该"浮上来"到 token memory 层用新数据覆盖？
+
+这就是 **memory tiering**——数据库和存储系统里早就成熟的东西，但在 LLM 领域几乎没有工作在认真做。
+
+### 6.2 从 OS 借鉴的不只是 eviction policy
+
+这篇综述在 Appendix C 明确指出了三个跨学科迁移方向：
+
+1. **OS page management → KV cache**：不只是 LRU/LFU，还有预取（prefetch）、copy-on-write、huge pages 等概念都有对应
+2. **数据库 query optimization → RAG query**：Cost-based optimizer、query plan selection、materialized view 都可以借鉴
+3. **分布式系统 → 多节点 memory 协同**：Mooncake、DistServe 这类工作已经开始把 KV cache 做成 disaggregated service
+
+最有潜力的方向可能是 **"LLM memory 也该有 garbage collector"**。目前 agent memory 几乎都是 append-only 的——信息只增不减（或者简单地按时间丢弃）。但一个真正长期运行的 agent 需要类似 GC 的机制：定期检测 unreachable 或 contradicted 的记忆碎片并回收。
+
+### 6.3 Unified Training–Inference：模糊训练和推理的边界
+
+这是最激进但也最有前景的方向。
+
+目前 LLM 的训练和推理是严格分离的：训练时学知识，推理时只能读。但长期运行的 agent 必然需要在使用过程中不断学习新东西。
+
+- **Continual learning**（EWC, TaSL）已经在做这件事，但成本太高
+- **PEFT + online fine-tuning** 能做轻量级适配，但精度有限
+- **Memory consolidation**——像人类睡眠时做的那样，把 episodic memory 定期整合进 semantic memory（参数）
+
+未来可能出现的架构：agent 在推理时用 token memory + KV cache 做"快思考"，定期（比如空闲时）把高频使用的 memory pattern consolidate 成参数更新，实现真正的"学习-使用"闭环。
+
+---
+
+## 7. 看完之后的一些个人 take
+
+1. **Memory research 的下一个爆发点不在任何单层，而在跨层协同**。谁先把 memory routing 做好，谁就定义了下一代 agent 基础设施。
+
+2. **KV cache 方向已经进入"方法论内卷期"**。eviction + merging + quantization 排列组合可以无限水文章，但真正有影响力的下一步应该是 **system-level memory management**（像 vLLM PagedAttention 那样改变整个范式的东西）。
+
+3. **Agentic memory 的关键不在"记住"而在"忘记"和"重组"**。A-MEM、Synapse 这类做 memory evolution 的工作比单纯做 memory bank 有前途得多。
+
+4. **Steering vectors 作为"行为记忆"被严重低估了**。如果未来每个 user 的 persona preference 都能编码成一个 steering vector 并在推理时注入，这就是真正 zero-cost 的个性化——不需要 per-user fine-tuning。
+
+5. **系统领域的同学应该认真看 LLM memory**。这里面大量问题（cache replacement、tiered storage、query optimization、garbage collection）都是你们已经解决过的——只是换了个 domain。
+
+---
+
+写到这里差不多了。如果让我用一句话总结这篇综述给我最大的启发：
+
+**LLM memory 不是一个功能模块的设计问题，而是一个完整的存储系统设计问题——带着所有存储系统该有的层次、调度、一致性和生命周期管理。**
+
+谁先用系统的视角去设计 memory，谁就能做出真正能长期运行的 agent。
