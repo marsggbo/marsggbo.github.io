@@ -5,6 +5,11 @@ date: 2026-05-14
 tags: [LLM, 推理优化, 模型压缩, 论文解读, EuroSys]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # EuroSys'26 | LLMFolder 用常量折叠把 FFN 参数砍 80%，精度反超剪枝方法 65%
 
 > 原文：[LLMFolder: Revisiting Constant Folding in Large Language Models](https://dl.acm.org/doi/10.1145/3767295.3769339)（EuroSys 2026）
