@@ -5,6 +5,11 @@ date: 2026-04-27
 tags: [LLM, KV Cache, 推理优化, 论文解读]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # KV Cache 也能「语义共享」？SemShareKV 用 LSH 做到了
 
 > 原文：[SemShareKV: Efficient KVCache Sharing for Semantically Similar Prompts via Token-Level LSH Matching](https://aclanthology.org/2025.findings-ijcnlp.25.pdf)
