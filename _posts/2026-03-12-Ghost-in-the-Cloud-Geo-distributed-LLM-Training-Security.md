@@ -9,6 +9,11 @@ toc:
   sidebar: left
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 > 🎉 本文已被 **ICLR 2026** 录用！
 >
 > 🎉 This paper has been accepted by **ICLR 2026**!
