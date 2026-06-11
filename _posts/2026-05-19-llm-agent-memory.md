@@ -5,6 +5,11 @@ date: 2026-05-19
 tags: [LLM, Agent, Memory, KV Cache, RAG, 论文解读]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # LLM Agent Memory 全景拆解：从 RAG 到 KV Cache 到参数写入，100+ 篇工作的方法演进与真实取舍
 
 > 原文：[LLM Agent Memory: A Survey from a Unified Representation–Management Perspective](https://www.preprints.org/frontend/manuscript/cb9b2d755639339002ad1d6da7a9e230/download_pub)
