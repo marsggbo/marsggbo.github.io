@@ -5,6 +5,11 @@ date: 2026-05-19
 tags: [LLM, Routing, Benchmark, 论文解读]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # LLMRouterBench：当所有 routing 方法被拉到同一起跑线，结果有些尴尬
 
 > 原文：[LLMRouterBench: A Massive Benchmark and Unified Framework for LLM Routing](https://arxiv.org/abs/2601.07206)
