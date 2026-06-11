@@ -5,6 +5,11 @@ date: 2026-04-26
 tags: [LLM, KV Cache, 论文解读, Agent]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # KV Cache 复用的第三条路：FAST 2026 CacheSlide 是怎么解决 Agent 推理的位置漂移问题的
 
 > 原文：[CacheSlide: Unlocking Cross Position-Aware KV Cache Reuse for Accelerating LLM Serving](https://www.usenix.org/system/files/fast26-liu-yang.pdf)
