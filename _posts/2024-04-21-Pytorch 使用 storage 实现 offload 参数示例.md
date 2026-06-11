@@ -9,6 +9,11 @@ toc:
   sidebar: left
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 
 
 在深入探讨 PyTorch 中的 `Storage` 类以及其在参数 offload 场景中的应用之前，让我们首先了解一下 PyTorch 和它的基础组件。PyTorch 是一个广泛使用的开源机器学习库，它不仅提供了强大的计算图功能和自动梯度计算，还允许开发者直接操作底层数据结构，这其中就包括 `Storage`。
