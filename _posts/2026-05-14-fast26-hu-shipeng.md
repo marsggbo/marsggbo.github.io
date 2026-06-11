@@ -5,6 +5,11 @@ date: 2026-05-14
 tags: [LLM, KV Cache, 论文解读, 系统优化, FAST]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # KV Cache 的两层存储到底卡在哪？FAST'26 这篇论文给出了答案
 
 > 原文：[Bidaw: Enhancing Key-Value Caching for Interactive LLM Serving via Bidirectional Computation–Storage Awareness](https://www.usenix.org/system/files/fast26-hu-shipeng.pdf)
