@@ -5,6 +5,11 @@ date: 2026-05-14
 tags: [LLM, 推理优化, 系统, 论文解读, FAST]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # LLM 推理启动慢？华为用一个「可编程 Page Cache」把模型加载砍了 79%
 
 > 原文：[Accelerating Model Loading in LLM Inference by Programmable Page Cache](https://www.usenix.org/system/files/fast26-liu-yubo.pdf)（USENIX FAST 2026）
