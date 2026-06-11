@@ -5,6 +5,11 @@ date: 2026-05-17
 tags: [AutoML, NAS, 超参数优化, 综述, 论文解读]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # KBS'21 | 我写的 AutoML 综述被引 2700+ 次，今天来聊聊这篇文章的来龙去脉
 
 > 原文：[AutoML: A Survey of the State-of-the-Art](https://arxiv.org/abs/1908.00709)
