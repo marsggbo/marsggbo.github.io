@@ -10,6 +10,11 @@ toc:
   sidebar: left
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # 1. Block 概览
 
 vLLM 的一个很大创新点是将物理层面的 GPU 和 CPU 可用内存切分成若干个 block,这样可以有效降低内存碎片化问题。具体而言，vLLM 的 block 分为逻辑层面（logical）和物理层面（physical），二者之间存在映射关系。下图很好解释了两个层面 block 的关系。
