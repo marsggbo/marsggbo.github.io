@@ -5,6 +5,11 @@ date: 2026-05-17
 tags: [LLM, MoE, 推理优化, 论文解读]
 ---
 
+> 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。
+>
+> ![动手学AutoML书籍封面](/assets/img/book_cover_automl.png)
+
+
 # DAC'26 | ExpertFlow：让 MoE 大模型在单卡上跑起来，内存省 93%、速度快 10 倍
 
 > 原文：[ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling](https://arxiv.org/abs/2410.17954)
