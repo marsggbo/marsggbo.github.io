@@ -10,7 +10,7 @@ tags: [AutoML, NAS, LLM, Agent, 进化算法]
 
 
 
-> 插播：以下内容节选自我们团队最近出版的书籍《动手学 AutoML：从 NAS 到大模型优化实战》，感兴趣的朋友可以前往 jd 搜索购买，感谢支持 https://item.jd.com/14945889.html
+> 插播：以下内容节选自我们团队最近出版的书籍《动手学 AutoML：从 NAS 到大模型优化实战》，感兴趣的朋友可以前往 jd 搜索购买，感谢支持 https://item.jd.com/15384990.html
 >
 > ![动手学AutoML书籍封面](https://github.com/marsggbo/marsggbo.github.io/blob/master/assets/img/book_cover_automl.png?raw=true)
 
