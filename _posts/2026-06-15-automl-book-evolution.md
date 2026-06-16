@@ -43,6 +43,7 @@ tags: [AutoML, NAS, LLM, Agent, 进化算法]
 理解这件事的第一步，是把进化算法那套生物学黑话，翻译成 NAS 的语言。下面这张对照表，我个人觉得是理解整件事的钥匙：
 
 ![进化算法关键术语及其在 NAS 中的对应关系](/assets/img/posts/20260615-automl-book-evolution/01_ea_terms.png)
+*（节选自《动手学 AutoML：从 NAS 到大语言模型优化实战》第 4 章 表 4-1）*
 
 你把右边那一列从「神经网络架构」换成「一个 agent」，整张表对 LLM agent 自进化照样成立：
 
@@ -61,6 +62,7 @@ tags: [AutoML, NAS, LLM, Agent, 进化算法]
 光有对照表还不够，得看它一轮循环里具体跑了哪几步。进化搜索可以拆成六步，流程如下图：
 
 ![进化算法在 NAS 中的迭代优化流程](/assets/img/posts/20260615-automl-book-evolution/02_ea_flow.png)
+*（节选自《动手学 AutoML：从 NAS 到大语言模型优化实战》第 4 章 图 4-2）*
 
 我用大白话过一遍：
 
@@ -86,6 +88,7 @@ tags: [AutoML, NAS, LLM, Agent, 进化算法]
 比如搜一个三层卷积网络，每层有「卷积核大小」和「激活函数」两个选择，各用一个比特表示。那么 `00 01 10` 就完整编码了一个网络。这时候交叉和变异就特别直观——交叉就是两个父代各切一半拼起来，变异就是随机翻转某几个比特：
 
 ![基于二进制编码的交叉和变异示意图](/assets/img/posts/20260615-automl-book-evolution/03_crossover_mutation.png)
+*（节选自《动手学 AutoML：从 NAS 到大语言模型优化实战》第 4 章 图 4-3）*
 
 代码也短得不像话，实现就这么几行：
 
@@ -134,6 +137,7 @@ def gene_mutation(arch_code, mutation_prob=0.1):
 处理这种多目标问题，业界最经典的算法叫 **NSGA-II**。它的核心是把种群按「非支配排序」分层，再用「拥挤度距离」保证留下来的解足够多样，流程如下图：
 
 ![NSGA-II 算法流程图](/assets/img/posts/20260615-automl-book-evolution/04_nsga2.png)
+*（节选自《动手学 AutoML：从 NAS 到大语言模型优化实战》第 11 章 图 11-6）*
 
 我贴一段核心的「支配关系判断」，你感受一下其实没那么玄：
 
@@ -162,6 +166,7 @@ def dominates(a: np.array, b: np.array):
 跑完之后，搜索结果长这样——横轴是模型大小，纵轴是验证准确率，每个点都是一个搜出来的子网：
 
 ![以 15MB 为上界的 ResNet 搜索空间进化搜索结果](/assets/img/posts/20260615-automl-book-evolution/05_pareto.png)
+*（节选自《动手学 AutoML：从 NAS 到大语言模型优化实战》第 11 章 图 11-8）*
 
 可以看到整条帕累托前沿上的子网表现都不错，准确率基本都在 85% 以上，最高能到 94% 左右。挑第一个帕累托模型做微调，最终的结果是：
 
@@ -181,7 +186,9 @@ def dominates(a: np.array, b: np.array):
 
 ---
 
-> 以上内容（术语对照、进化流程、交叉变异、NSGA-II 非支配排序与拥挤度距离、以及 hyperbox 上的 ResNet 压缩实战）节选自我写的《动手学 AutoML：从 NAS 到大语言模型优化实战》（机械工业出版社）。书里还有 NAS 各大范式、超参优化、以及 LLM 时代量化剪枝的内容，每个概念都尽量配了可运行的代码而不是 toy demo。有需要的同学可以看看：[京东链接](https://item.jd.com/15384990.html)。
+> 以上内容（术语对照、进化流程、交叉变异、NSGA-II 非支配排序与拥挤度距离、以及 hyperbox 上的 ResNet 压缩实战）节选自我写的《动手学 AutoML：从 NAS 到大语言模型优化实战》（机械工业出版社）。书里还有 NAS 各大范式、超参优化、以及 LLM 时代量化剪枝的内容，每个概念都尽量配了可运行的代码而不是 toy demo。有需要的同学可以前往京东搜索书名，或复制下方完整链接购买，感谢支持：
+>
+> https://item.jd.com/15384990.html
 
 
 照例，欢迎评论区聊——包括书里写得不清楚的地方，都可以直接来问。
