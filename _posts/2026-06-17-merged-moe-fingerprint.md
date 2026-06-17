@@ -17,6 +17,8 @@ tags: [MoE, Model Merging, 模型版权, IP, 论文解读]
 
 有分析团队（上海的 Nex-AGI）[放出了一套可复现的检测方法](https://aiweekly.co/alerts/iplanrio-rio-35-exposed-as-nex-qwen-weight-merge)，结论是：这个所谓的「主权模型」，**大概率是把别人的模型权重直接融合（merge）出来的**——大约 60% 来自 Nex N2 Pro，40% 来自 Qwen 3.5。证据也很硬核：
 
+> 来源： https://aiweekly.co/alerts/iplanrio-rio-35-exposed-as-nex-qwen-weight-merge
+
 - 跨 60 层算下来的**共线性高达 0.993**，这种程度的相似不可能是独立训练出来的；
 - 更离谱的是，把 system prompt 去掉之后，这个模型**有 79.2% 的概率自报家门说自己是「Nex」**，一次都没说过自己是「Rio」。
 
