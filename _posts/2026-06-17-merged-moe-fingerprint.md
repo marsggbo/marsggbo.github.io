@@ -1,23 +1,21 @@
 ---
 layout: post
-title: "RouteMark：给融合 MoE 里的每个专家，盖一枚抹不掉的「路由指纹」"
+title: "巴西「主权大模型」翻车：当模型可以随便融合，怎么证明它偷了你的权重？"
 date: 2026-06-17
 tags: [MoE, Model Merging, 模型版权, IP, 论文解读]
 ---
 
-# RouteMark：给融合 MoE 里的每个专家，盖一枚抹不掉的「路由指纹」
-
-> 原文：[RouteMark: A Fingerprint for Intellectual Property Attribution in Routing-based Model Merging](https://arxiv.org/abs/2508.01784)
+# 巴西「主权大模型」翻车：当模型可以随便融合，怎么证明它偷了你的权重？
 
 ---
 
 ## 1. 先从一个翻车现场说起
 
-前几天有个挺戏剧性的事：巴西里约热内卢市政的 IT 机构 iPlanRIO 高调发布了一个叫 **Rio 3.5 Open 397B** 的开源大模型，号称是公帑资助、自主研发，性能还吊打 DeepSeek v4 Pro 和 Qwen 3.7 Plus，背后是 50 万雷亚尔的公共投入。
+前几天有个挺戏剧性的事：巴西里约热内卢市政的 IT 机构 iPlanRIO 高调发布了一个叫 **Rio 3.5 Open 397B** 的开源大模型（[相关介绍](https://zhuanlan.zhihu.com/p/2049653119789928476)），号称是公帑资助、自主研发，性能还吊打 DeepSeek v4 Pro 和 Qwen 3.7 Plus，背后是 50 万雷亚尔的公共投入。
 
 听起来很提气是吧。结果没几天就被扒了。
 
-有分析团队（上海的 Nex-AGI）放出了一套可复现的检测方法，结论是：这个所谓的「主权模型」，**大概率是把别人的模型权重直接融合（merge）出来的**——大约 60% 来自 Nex N2 Pro，40% 来自 Qwen 3.5。证据也很硬核：
+有分析团队（上海的 Nex-AGI）[放出了一套可复现的检测方法](https://aiweekly.co/alerts/iplanrio-rio-35-exposed-as-nex-qwen-weight-merge)，结论是：这个所谓的「主权模型」，**大概率是把别人的模型权重直接融合（merge）出来的**——大约 60% 来自 Nex N2 Pro，40% 来自 Qwen 3.5。证据也很硬核：
 
 - 跨 60 层算下来的**共线性高达 0.993**，这种程度的相似不可能是独立训练出来的；
 - 更离谱的是，把 system prompt 去掉之后，这个模型**有 79.2% 的概率自报家门说自己是「Nex」**，一次都没说过自己是「Rio」。
@@ -76,6 +74,8 @@ MoE 的精髓就四个字：**稀疏激活**。它不是把所有参数一股脑
 
 一句话总结这个困境：**真正需要的，是一种能精确到「单个 expert 级别」、又能扛住各种篡改的指纹。** 这正是 RouteMark 想做的事。
 
+> 原文：[RouteMark: A Fingerprint for Intellectual Property Attribution in Routing-based Model Merging](https://arxiv.org/abs/2508.01784)
+
 ---
 
 ## 5. 核心 insight：会变的都靠不住，路由偏好不会变
@@ -114,15 +114,15 @@ RouteMark 的出发点是一个很朴素的问题：**融合之后，一个 expe
 
 **① RSF（Routing Score Fingerprint，路由强度指纹）**
 
-对每个任务 i、每个 expert j、每一层 l，统计「该 expert 在该任务数据上的平均 routing logit」，得到一个任务 × 层的矩阵。为了去掉不同层之间的尺度偏差，再做一个 **expert 维度上的 mean-centering**（减掉同层所有 expert 的均值）。
+对每个任务 i、每个 expert j、每一层 l，统计「该 expert 在该任务数据上的平均 routing logit」，得到一个任务 × 层的矩阵。为了去掉不同层之间的尺度偏差，再做一个 **expert 维度上的 mean-centering** （减掉同层所有 expert 的均值）。
 
-直观理解：RSF 刻画的是**「这个 expert 在各个任务、各层上被激活得有多强」**，是一张细粒度的行为画像。
+直观理解：RSF 刻画的是 **「这个 expert 在各个任务、各层上被激活得有多强」**，是一张细粒度的行为画像。
 
 **② RPF（Routing Preference Fingerprint，路由偏好指纹）**
 
 把 RSF 沿着层方向求和，再过一个 softmax，得到一个**在各任务上的概率分布**。
 
-直观理解：RPF 刻画的是**「这个 expert 整体上更偏爱哪个任务」**，是一张粗粒度的偏好画像。Victim 的真专家会在自己的目标任务上呈现一个**尖锐的尖峰**，哪怕被各种篡改过；而对手新加进来的「外来 expert」，因为没有这种任务对齐，分布会**相对均匀**——这一下就把「李逵」和「李鬼」区分开了。
+直观理解：RPF 刻画的是 **「这个 expert 整体上更偏爱哪个任务」**，是一张粗粒度的偏好画像。Victim 的真专家会在自己的目标任务上呈现一个**尖锐的尖峰**，哪怕被各种篡改过；而对手新加进来的「外来 expert」，因为没有这种任务对齐，分布会**相对均匀**——这一下就把「李逵」和「李鬼」区分开了。
 
 **匹配怎么做？** 给定 victim 的 expert j 和 suspect 的 expert k：
 
