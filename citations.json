@@ -19,7 +19,8 @@
       "2026-05-30": 2730,
       "2026-06-10": 2746,
       "2026-06-13": 2752,
-      "2026-06-21": 2758
+      "2026-06-21": 2758,
+      "2026-06-25": 2765
     }
   },
   "Virtual homogeneity learning: Defending against data heterogeneity in federated learning": {
@@ -42,7 +43,8 @@
       "2026-05-30": 149,
       "2026-06-10": 149,
       "2026-06-13": 150,
-      "2026-06-21": 153
+      "2026-06-21": 153,
+      "2026-06-25": 153
     }
   },
   "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems": {
@@ -65,7 +67,8 @@
       "2026-05-30": 156,
       "2026-06-10": 161,
       "2026-06-13": 162,
-      "2026-06-21": 167
+      "2026-06-21": 167,
+      "2026-06-25": 171
     }
   },
   "Benchmarking the performance and energy efficiency of AI accelerators for AI training": {
@@ -88,7 +91,8 @@
       "2026-05-30": 134,
       "2026-06-10": 137,
       "2026-06-13": 139,
-      "2026-06-21": 138
+      "2026-06-21": 138,
+      "2026-06-25": 140
     }
   },
   "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans": {
@@ -111,7 +115,8 @@
       "2026-05-30": 68,
       "2026-06-10": 69,
       "2026-06-13": 69,
-      "2026-06-21": 69
+      "2026-06-21": 69,
+      "2026-06-25": 69
     }
   },
   "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans": {
@@ -134,7 +139,8 @@
       "2026-05-30": 58,
       "2026-06-10": 58,
       "2026-06-13": 58,
-      "2026-06-21": 59
+      "2026-06-21": 59,
+      "2026-06-25": 59
     }
   },
   "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus": {
@@ -157,7 +163,8 @@
       "2026-05-30": 48,
       "2026-06-10": 48,
       "2026-06-13": 48,
-      "2026-06-21": 48
+      "2026-06-21": 48,
+      "2026-06-25": 48
     }
   },
   "EAGAN: Efficient two-stage evolutionary architecture search for GANs": {
@@ -180,7 +187,8 @@
       "2026-05-30": 40,
       "2026-06-10": 41,
       "2026-06-13": 41,
-      "2026-06-21": 41
+      "2026-06-21": 41,
+      "2026-06-25": 41
     }
   },
   "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling": {
@@ -203,7 +211,8 @@
       "2026-05-30": 32,
       "2026-06-10": 32,
       "2026-06-13": 33,
-      "2026-06-21": 33
+      "2026-06-21": 33,
+      "2026-06-25": 33
     }
   },
   "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification": {
@@ -226,7 +235,8 @@
       "2026-05-30": 27,
       "2026-06-10": 27,
       "2026-06-13": 27,
-      "2026-06-21": 28
+      "2026-06-21": 28,
+      "2026-06-25": 28
     }
   },
   "Computer-aided clinical skin disease diagnosis using CNN and object detection models": {
@@ -249,7 +259,8 @@
       "2026-05-30": 26,
       "2026-06-10": 26,
       "2026-06-13": 26,
-      "2026-06-21": 27
+      "2026-06-21": 27,
+      "2026-06-25": 27
     }
   },
   "Nas-lid: Efficient neural architecture search with local intrinsic dimension": {
@@ -272,7 +283,8 @@
       "2026-05-30": 22,
       "2026-06-10": 22,
       "2026-06-13": 22,
-      "2026-06-21": 22
+      "2026-06-21": 22,
+      "2026-06-25": 22
     }
   },
   "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing": {
@@ -295,7 +307,8 @@
       "2026-05-30": 18,
       "2026-06-10": 18,
       "2026-06-13": 18,
-      "2026-06-21": 18
+      "2026-06-21": 18,
+      "2026-06-25": 18
     }
   },
   "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression": {
@@ -318,7 +331,8 @@
       "2026-05-30": 15,
       "2026-06-10": 15,
       "2026-06-13": 15,
-      "2026-06-21": 15
+      "2026-06-21": 15,
+      "2026-06-25": 15
     }
   },
   "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification": {
@@ -341,7 +355,8 @@
       "2026-05-30": 9,
       "2026-06-10": 9,
       "2026-06-13": 9,
-      "2026-06-21": 9
+      "2026-06-21": 9,
+      "2026-06-25": 9
     }
   },
   "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework": {
@@ -364,7 +379,8 @@
       "2026-05-30": 8,
       "2026-06-10": 9,
       "2026-06-13": 9,
-      "2026-06-21": 10
+      "2026-06-21": 10,
+      "2026-06-25": 10
     }
   },
   "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated": {
@@ -387,7 +403,8 @@
       "2026-05-30": 4,
       "2026-06-10": 4,
       "2026-06-13": 4,
-      "2026-06-21": 4
+      "2026-06-21": 4,
+      "2026-06-25": 4
     }
   },
   "Autohete: An automatic and efficient heterogeneous training system for llms": {
@@ -410,7 +427,8 @@
       "2026-05-30": 3,
       "2026-06-10": 3,
       "2026-06-13": 3,
-      "2026-06-21": 3
+      "2026-06-21": 3,
+      "2026-06-25": 3
     }
   },
   "Routemark: A fingerprint for intellectual property attribution in routing-based model merging": {
@@ -433,7 +451,8 @@
       "2026-05-30": 3,
       "2026-06-10": 4,
       "2026-06-13": 4,
-      "2026-06-21": 5
+      "2026-06-21": 5,
+      "2026-06-25": 5
     }
   },
   "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models": {
@@ -456,7 +475,8 @@
       "2026-05-30": 1,
       "2026-06-10": 1,
       "2026-06-13": 1,
-      "2026-06-21": 1
+      "2026-06-21": 1,
+      "2026-06-25": 1
     }
   },
   "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective": {
@@ -499,7 +519,8 @@
       "2026-05-30": 0,
       "2026-06-10": 0,
       "2026-06-13": 0,
-      "2026-06-21": 0
+      "2026-06-21": 0,
+      "2026-06-25": 0
     }
   },
   "LLM Agents Make Collective Belief Dynamics Programmable: Challenges and Research Directions": {
@@ -510,14 +531,16 @@
       "2026-05-30": 0,
       "2026-06-10": 0,
       "2026-06-13": 0,
-      "2026-06-21": 0
+      "2026-06-21": 0,
+      "2026-06-25": 0
     }
   },
   "Llm agent memory: A survey from a unified representation–management perspective": {
     "citations": {
       "2026-06-10": 1,
       "2026-06-13": 1,
-      "2026-06-21": 1
+      "2026-06-21": 1,
+      "2026-06-25": 1
     }
   }
 }
