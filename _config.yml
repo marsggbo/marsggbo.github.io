@@ -194,6 +194,7 @@ latest_posts:
 markdown: kramdown
 highlighter: rouge
 kramdown:
+  math_engine: mathjax
   input: GFM
   syntax_highlighter_opts:
     css_class: "highlight"
