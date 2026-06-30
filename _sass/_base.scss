@@ -60,6 +60,14 @@ img {
   max-width: 90vw;
 }
 
+// Blog post images: cap at 700px and center
+.post-content img {
+  max-width: min(700px, 90vw);
+  height: auto;
+  display: block;
+  margin: 1rem auto;
+}
+
 blockquote {
   background: var(--global-bg-color);
   border-left: 5px solid var(--global-theme-color);
