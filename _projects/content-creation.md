@@ -33,10 +33,11 @@ Since my PhD, I've been writing Chinese tech articles — translating the math, 
 
 ## 代表内容 / Selected Posts
 
-- **[说人话理解 Speculative Decoding](https://marsggbo.github.io/blog/2026/20260630-self-spec-decoding/)** — Self-Speculative Decoding 原理详解，LLM 推理加速系列
+- **[AutoML 综述](https://arxiv.org/abs/1908.00709)** — KBS 2021，**2,700+ 引用**，知乎阅读量 10 万+ / 2,700+ citations on Google Scholar
+- **[ExpertFlow 论文解读](https://marsggbo.github.io/blog/2026/20260630-self-spec-decoding/)** — DAC 2026，稀疏 MoE 推理加速 / Sparse MoE inference optimization, DAC 2026
+- **[Self-Speculative Decoding 原理详解](https://marsggbo.github.io/blog/2026/20260630-self-spec-decoding/)** — LLM 推理加速系列 / LLM inference acceleration series
 - **[贝叶斯优化从零推导](https://marsggbo.github.io/blog/2026/20260630-bayesian-optimization/)** — 从高斯分布到自动调参，以 LLM 跳层搜索为例
-- **[AutoML 综述](https://arxiv.org/abs/1908.00709)** — KBS 2021，2200+ 引用，知乎阅读量 10 万+
-- **[NAS-LID 论文解读](https://zhuanlan.zhihu.com/p/591027254)** — AAAI 2023，知乎原创解读
+- **[Diffusion 模型全解析](https://marsggbo.github.io/blog/2026/20260630-diffusion-from-image-to-text/)** — 从图像到文本 Diffusion，结构、数学、训练推理全流程
 
 ---
 
