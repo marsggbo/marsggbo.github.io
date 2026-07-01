@@ -8,33 +8,59 @@ importance: 1
 category: work
 ---
 
-## Project Overview
+## Project Overview / 项目简介
 
-**Title:** Algorithm-System Co-Design for Efficient and IP-Protected LLMs: From Model Optimization to Cluster Deployment
+**Title / 题目：** Algorithm-System Co-Design for Efficient and IP-Protected LLMs: From Model Optimization to Cluster Deployment
+（面向高效与知识产权保护的大语言模型算法-系统协同设计：从模型优化到集群部署）
 
-**Role:** Principal Investigator (PI)
+**Role / 职责：** Principal Investigator (PI) / 项目负责人
 
-**Funding:** S$250,000
+**Funding / 经费：** S$250,000（约 135 万人民币）
 
-**Funder:** [A\*STAR Career Development Fund (CDF)](https://www.a-star.edu.sg/Scholarships/for-professionals/career-development-fund)
+**Funder / 资助方：** [A\*STAR Career Development Fund (CDF)](https://www.a-star.edu.sg/cfar/news/news/grant-awards/astar-cdf-2024-recipients)
+（新加坡科学技术研究局 职业发展基金）
 
-**Selection:** 31 recipients selected from 194 applicants
+**Selection / 遴选情况：** 194 位申请者中择优录取 31 位 / 31 recipients selected from 194 applicants
 
 ---
 
-## Objectives
+## Objectives / 研究目标
 
 This project tackles two intertwined challenges in deploying large language models (LLMs) at scale:
 
-1. **Efficiency** — reducing inference latency and memory footprint via algorithm-hardware co-design, covering sparse MoE routing, speculative decoding, and KV cache compression.
+本项目聚焦大规模 LLM 落地部署中两个相互交织的核心难题：
 
-2. **IP Protection** — embedding and verifying model ownership at the cluster level, so that LLM capabilities can be licensed and traced even after fine-tuning or distillation.
+### 1. Efficiency / 推理效率
 
-The project spans the full stack: from per-layer optimization algorithms, through runtime scheduling on GPU/NPU clusters, to end-to-end deployment pipelines.
+Reducing inference latency and memory footprint via algorithm-hardware co-design, covering:
+通过算法-硬件协同设计降低推理延迟和显存开销，涵盖：
+
+- **Sparse MoE routing / 稀疏 MoE 路由优化**
+- **Speculative decoding / 投机解码加速**
+- **KV cache compression / KV 缓存压缩**
+
+### 2. IP Protection / 知识产权保护
+
+Embedding and verifying model ownership at the cluster level, so that LLM capabilities can be licensed and traced even after fine-tuning or distillation.
+
+在集群层面嵌入并验证模型所有权，使 LLM 的能力在微调或蒸馏后仍可追溯、授权。
 
 ---
 
-## Affiliation
+## Scope / 研究范围
 
-[Agency for Science, Technology and Research (A\*STAR)](https://www.a-star.edu.sg/), Singapore  
-Centre for Frontier AI Research (CFAR)
+The project spans the full stack:
+项目覆盖完整技术栈：
+
+- Per-layer optimization algorithms / 逐层优化算法
+- Runtime scheduling on GPU/NPU clusters / GPU/NPU 集群运行时调度
+- End-to-end deployment pipelines / 端到端部署 Pipeline
+
+---
+
+## Affiliation / 所属机构
+
+[Agency for Science, Technology and Research (A\*STAR)](https://www.a-star.edu.sg/), Singapore
+（新加坡科学技术研究局）
+
+Centre for Frontier AI Research (CFAR) / 未来人工智能研究中心
