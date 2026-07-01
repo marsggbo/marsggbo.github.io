@@ -2,65 +2,86 @@
 layout: page
 title: "A*STAR CDF | Algorithm-System Co-Design for Efficient and IP-Protected LLMs"
 description: >
-  PI. Funded by A*STAR Career Development Fund (CDF).
-  31 awardees selected from 194 applicants. S$250,000.
+  PI. A*STAR Career Development Fund (CDF). S$250,000.
+  31 recipients selected from 194 applicants.
 importance: 1
 category: work
 ---
 
-## Project Overview / 项目简介
+## English
 
-**Title / 题目：** Algorithm-System Co-Design for Efficient and IP-Protected LLMs: From Model Optimization to Cluster Deployment
-（面向高效与知识产权保护的大语言模型算法-系统协同设计：从模型优化到集群部署）
+**Title:** Algorithm-System Co-Design for Efficient and IP-Protected LLMs: From Model Optimization to Cluster Deployment
 
-**Role / 职责：** Principal Investigator (PI) / 项目负责人
+**Role:** Principal Investigator (PI)
 
-**Funding / 经费：** S$250,000（约 135 万人民币）
+**Funding:** S$250,000
 
-**Funder / 资助方：** [A\*STAR Career Development Fund (CDF)](https://www.a-star.edu.sg/cfar/news/news/grant-awards/astar-cdf-2024-recipients)
-（新加坡科学技术研究局 职业发展基金）
+**Funder:** A\*STAR Career Development Fund (CDF)
+Official announcement: [A\*STAR CDF 2024 Recipients](https://www.a-star.edu.sg/cfar/news/grant-awards/astar-cdf-2024-recipients)
 
-**Selection / 遴选情况：** 194 位申请者中择优录取 31 位 / 31 recipients selected from 194 applicants
-
----
-
-## Objectives / 研究目标
-
-This project tackles two intertwined challenges in deploying large language models (LLMs) at scale:
-
-本项目聚焦大规模 LLM 落地部署中两个相互交织的核心难题：
-
-### 1. Efficiency / 推理效率
-
-Reducing inference latency and memory footprint via algorithm-hardware co-design, covering:
-通过算法-硬件协同设计降低推理延迟和显存开销，涵盖：
-
-- **Sparse MoE routing / 稀疏 MoE 路由优化**
-- **Speculative decoding / 投机解码加速**
-- **KV cache compression / KV 缓存压缩**
-
-### 2. IP Protection / 知识产权保护
-
-Embedding and verifying model ownership at the cluster level, so that LLM capabilities can be licensed and traced even after fine-tuning or distillation.
-
-在集群层面嵌入并验证模型所有权，使 LLM 的能力在微调或蒸馏后仍可追溯、授权。
+**Selection:** 31 recipients selected from 194 applicants
 
 ---
 
-## Scope / 研究范围
+### Objectives
 
-The project spans the full stack:
-项目覆盖完整技术栈：
+This project addresses two core challenges in large-scale LLM deployment:
 
-- Per-layer optimization algorithms / 逐层优化算法
-- Runtime scheduling on GPU/NPU clusters / GPU/NPU 集群运行时调度
-- End-to-end deployment pipelines / 端到端部署 Pipeline
+**1. Inference Efficiency**
+
+Algorithm-system co-design to reduce inference latency and memory footprint, focusing on:
+- Sparse Mixture-of-Experts (MoE) routing and expert caching
+- Token scheduling and batch management at cluster scale
+
+**2. Intellectual Property Protection**
+
+Designing fingerprinting and attribution mechanisms so that model ownership can be verified even after fine-tuning or distillation:
+- Routing-based model fingerprinting
+- IP attribution in model merging and deployment pipelines
 
 ---
 
-## Affiliation / 所属机构
+### Affiliation
 
 [Agency for Science, Technology and Research (A\*STAR)](https://www.a-star.edu.sg/), Singapore
-（新加坡科学技术研究局）
+Centre for Frontier AI Research (CFAR)
 
-Centre for Frontier AI Research (CFAR) / 未来人工智能研究中心
+---
+
+## 中文版本
+
+**项目名称：** 面向高效与知识产权保护的大语言模型算法-系统协同设计：从模型优化到集群部署
+
+**职责：** 项目负责人（PI）
+
+**经费：** 25 万新加坡元（约 135 万人民币）
+
+**资助方：** 新加坡科学技术研究局职业发展基金（A\*STAR Career Development Fund, CDF）
+官方公告：[A\*STAR CDF 2024 获奖名单](https://www.a-star.edu.sg/cfar/news/grant-awards/astar-cdf-2024-recipients)
+
+**遴选：** 194 位申请者中择优录取 31 位
+
+---
+
+### 研究目标
+
+本项目聚焦大规模 LLM 集群部署中两个核心难题：
+
+**1. 推理效率**
+
+通过算法与系统协同设计降低推理延迟和显存开销，重点方向：
+- 稀疏混合专家（MoE）路由优化与专家缓存
+- 集群级别的 Token 调度与批处理管理
+
+**2. 知识产权保护**
+
+设计模型指纹与归属认证机制，使模型所有权在微调或蒸馏后仍可被验证：
+- 基于路由路径的模型指纹嵌入
+- 模型合并与部署流水线中的 IP 归属认证
+
+---
+
+### 所属机构
+
+[新加坡科学技术研究局（A\*STAR）](https://www.a-star.edu.sg/)
+未来人工智能研究中心（CFAR）
