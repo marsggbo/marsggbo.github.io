@@ -8,14 +8,14 @@ profile:
   image: ggbo_xiaoxin2.png
   image_circular: true
   more_info: >
-    <p>📍 Singapore </p>
-    <p>Open to collabs🤝</p>
+    <p>📍 Singapore · A*STAR CFAR</p>
+    <p>Open to research collabs & content partnerships 🤝</p>
 news: true
 selected_papers: true
 social: true
 ---
 
-\| [Zhihu](https://www.zhihu.com/people/hexin_marsggbo/posts) \| [Wechat Official Account](../assets/img/WeChat.jpeg) \| [Cnblogs](https://www.cnblogs.com/marsggbo/) \| [Tencent Cloud](https://cloud.tencent.com/developer/column/1851) \| [Source code](https://github.com/marsggbo/marsggbo.github.io) \|
+\| [Zhihu](https://www.zhihu.com/people/hexin_marsggbo/posts) \| [Wechat Official Account](../assets/img/WeChat.jpeg) \| [Cnblogs](https://www.cnblogs.com/marsggbo/) \| [Tencent Cloud](https://cloud.tencent.com/developer/column/1851) \| [Source code](https://github.com/marsggbo/marsggbo.github.io) \| [中文](/zh/) \|
 
 I am currently a Research Scientist at [A\*STAR CFAR](https://www.a-star.edu.sg/cfar), Singapore, working with [Prof. Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en) and [Prof. Ivor W. Tsang](https://scholar.google.com.sg/citations?user=rJMOlVsAAAAJ&hl=en). Prior to this, I completed my Ph.D. in Computer Science at Hong Kong Baptist University (HKBU), advised by [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen). I earned my Bachelor degree from the School of Electronic Information and Communications at Huazhong University of Science & Technology (HUST).
 
