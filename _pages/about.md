@@ -8,8 +8,8 @@ profile:
   image: ggbo_xiaoxin2.png
   image_circular: true
   more_info: >
-    <p>📍 Singapore · A*STAR CFAR</p>
-    <p>Open to research collabs & content partnerships 🤝</p>
+    <p>📍 Singapore</p>
+    <p>Open to collabs 🤝</p>
 news: true
 selected_papers: true
 social: true
