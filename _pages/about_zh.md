@@ -17,13 +17,9 @@ social: true
 
 \| [知乎](https://www.zhihu.com/people/hexin_marsggbo/posts) \| [微信公众号](../assets/img/WeChat.jpeg) \| [博客园](https://www.cnblogs.com/marsggbo/) \| [腾讯云+社区](https://cloud.tencent.com/developer/column/1851) \| [源码](https://github.com/marsggbo/marsggbo.github.io) \| [English](/) \|
 
-目前担任新加坡科技研究局 [A\*STAR CFAR](https://www.a-star.edu.sg/cfar) 研究科学家，合作导师为 [王耀荪教授](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en) 和 [曾岳文教授](https://scholar.google.com.sg/citations?user=rJMOlVsAAAAJ&hl=en)。博士毕业于香港浸会大学计算机系，师从 [朱晓文教授](https://sites.google.com/view/chuxiaowen)；本科毕业于华中科技大学电子信息与通信学院。
+目前担任新加坡科技研究局 [A\*STAR CFAR](https://www.a-star.edu.sg/cfar) 研究科学家，合作导师为 [Prof. Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en) 和 [Prof. Ivor W. Tsang](https://scholar.google.com.sg/citations?user=rJMOlVsAAAAJ&hl=en)。博士毕业于香港浸会大学计算机系，师从 [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen)；本科毕业于华中科技大学电子信息与通信学院。
 
-研究方向聚焦于大规模 AI 模型的高效化、可部署化与可信化：
-
-- **LLM 推理优化** — 稀疏 MoE 路由、推测解码、KV Cache 压缩、Token 调度
-- **知识产权保护** — 面向集群部署的 LLM 模型指纹与 IP 归因
-- **神经架构搜索（NAS）& AutoML** — One-shot NAS、多目标搜索、资源感知优化
+研究方向聚焦于大规模 AI 模型的高效化、可部署化与可信化。
 
 #### 代表成果
 

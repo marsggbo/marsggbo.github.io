@@ -19,11 +19,7 @@ social: true
 
 I am currently a Research Scientist at [A\*STAR CFAR](https://www.a-star.edu.sg/cfar), Singapore, working with [Prof. Ong Yew Soon](https://scholar.google.com/citations?user=h9oWOsEAAAAJ&hl=en) and [Prof. Ivor W. Tsang](https://scholar.google.com.sg/citations?user=rJMOlVsAAAAJ&hl=en). Prior to this, I completed my Ph.D. in Computer Science at Hong Kong Baptist University (HKBU), advised by [Prof. Chu Xiaowen](https://sites.google.com/view/chuxiaowen). I earned my Bachelor degree from the School of Electronic Information and Communications at Huazhong University of Science & Technology (HUST).
 
-My research focuses on making large-scale AI models efficient, deployable, and trustworthy:
-
-- **LLM Inference Optimization** — Sparse MoE routing, speculative decoding, KV cache compression, token scheduling
-- **Intellectual Property Protection** — Model fingerprinting and IP attribution for LLMs at cluster scale
-- **Neural Architecture Search (NAS) & AutoML** — One-shot NAS, multi-objective search, resource-aware optimization
+My research focuses on making large-scale AI models efficient, deployable, and trustworthy.
 
 #### Highlights
 
