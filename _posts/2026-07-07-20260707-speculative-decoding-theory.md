@@ -489,6 +489,106 @@ for layer_idx in range(L):
 
 **一句话总结两者的差异**：MoE 的动态是"图中每个节点的 input size 在变"，CG 用 padding 填平就行；SSD dynamic skip 的动态是"图中的节点集合在变"，padding 没法解决，只能要么固化节点集合（静态 skip），要么接受 no-op 的冗余计算，要么预捕获多图切换。工程取舍的核心永远是：**动态性换来多少加速收益，值不值得为了 CG 兼容性付出对应的代价**。
 
+### 7.10 实际案例：SparseSpec 怎么做的
+
+上面讨论的都是理论层面的方案，来看一个真实实现：[SparseSpec](https://github.com/sspec-project/SparseSpec)，一个针对 RLM（推理大模型，即做 CoT 推理的那类）的批量推理加速框架，主打"稀疏自推测解码"（Sparse Self-Speculative Decoding），声称最高 2.3x 吞吐量提升。
+
+#### SparseSpec 的核心思路：动态不是层的 skip，而是 attention 的 KV 范围
+
+SparseSpec 的 SSD 变体和传统 skip layer 有一个本质区别：**它 skip 的不是 transformer block，而是 attention 的 KV 访问范围**。
+
+具体做法叫 PillarAttn：
+1. **验证阶段**：跑完整 attention，同时把每个 token 的 attention score 转储到全局内存（`dump_logits`）
+2. **Top-K 筛选**：从这批 attention score 里找出对当前 query 贡献最大的 Top-K 个 KV 位置，作为下一轮草稿的"重要 token"集合
+3. **草稿阶段**：不访问完整 KV cache，只访问这 Top-K 个稀疏位置
+
+这样 skip 的是"大量不重要的 KV"，而不是"整个 transformer 层"。skip 的粒度细得多，也不会破坏激活路径的一致性（每层都还是完整执行的）。
+
+#### CUDA Graph 适配：同一张图处理三种请求类型
+
+SparseSpec 的 CG 方案是本文讨论思路里最干净的实现之一——**不改变图的拓扑，把所有动态性压进 GPU tensor，通过 `request_type` 在一张图里同时处理 NORMAL / DRAFT / VERIFY 三种请求**。
+
+核心在 attention kernel 的 InputTransform（`serve/attention/backend.py`）：
+
+```cpp
+// CUDA JIT attention kernel 内部
+if (request_type == 1) {   // DRAFT：用稀疏索引
+    indices = params.flatten_indices + kv_head_idx * MAX_TOTAL_DRAFT_KV_LEN;
+} else {                   // NORMAL / VERIFY：用完整索引
+    indices = params.kv_indices;
+}
+```
+
+`request_type` 是一个 GPU tensor，每次 replay 前按实际请求更新，图拓扑本身不动。同一张图，草稿请求走稀疏 KV 路径，验证请求走完整 KV 路径，混在一个 batch 里一起跑。
+
+验证阶段的 attention score 转储也类似（`LogitsTransform`）：
+
+```cpp
+if (request_type == 2) {   // VERIFY 才写分数
+    params.dump_logits[offset + kv_idx] = __float2half(logits / packed_qo_len);
+}
+```
+
+只有 VERIFY 请求的 kernel 执行会写入 `dump_logits`，DRAFT 请求执行时写入目标不同，结果被自然隔离。
+
+#### 双缓冲 CG：消除 CPU 准备和 GPU 执行之间的同步气泡
+
+SparseSpec 的另一个工程细节值得记一下：**双缓冲 CUDA Graph**（`serve/model/model.py` 的 `KVPool` 类）。
+
+```python
+class KVPool:
+    def __init__(self, ...):
+        self.phase_idx = 0
+        self._wrappers = []           # 两份 wrapper
+        self._attn_fwd_metadata = []  # 两份 metadata
+    
+    def step(self):
+        self.phase_idx ^= 1           # 0 ↔ 1 交替
+```
+
+标准 CG 的流程是：CPU 准备元数据 → GPU replay 图 → 等 GPU 完成 → CPU 准备下一批 → …，中间有等待的 bubble。双缓冲的做法：两张预捕获的图交替使用，第 0 张在 GPU 上 replay 时，CPU 已经在准备第 1 张图的输入参数，GPU 执行完第 0 张立刻 replay 第 1 张，不需要等待。
+
+捕获时也预捕获了一系列 batch size 的图（余弦分桶：1, 2, 4, 8, 16, 32, 64, 128, 256...），每个 batch size 下捕获两张（双缓冲各一张）：
+
+```python
+def eager_cuda_graph_mode(self, max_batch_size=256, num_cuda_graphs=16):
+    captured_args = [1, 2, 4, 8, 16, 32, 64, 128, 256, 384, 512, 640]
+    for batch_size in captured_args:
+        for phase in range(2):      # 双缓冲
+            runner = _CUDAGraphModelRunner(self.model)
+            runner.capture(batch_size=batch_size, ...)
+            self.graph_runners[batch_size].append(runner)
+```
+
+实际 forward 时，按当前 batch size 选最近的已捕获档位（允许 padding 到上一档），再按当前 `phase` 选双缓冲里的哪一张：
+
+```python
+def forward(self, **kwargs):
+    batch_size = kwargs["token_ids"].size(0)
+    idx = np.searchsorted(self.captured_bsz, batch_size, side="left")
+    # 在 padding 比例允许范围内走 CG，否则 eager fallback
+    model_executor = self.graph_runners[padded_bsz][self.kv_cache.phase]
+    return model_executor(**kwargs)
+```
+
+#### SparseSpec 和本文讨论方案的对应关系
+
+回头看 7.5-7.8 节讨论的几个方案，SparseSpec 实际走的是**方案 1（topology-preserving）的精细版**：
+
+- **不是 layer-level 的 no-op**，而是 **attention KV-range 的条件访问**——代价比整层 no-op 小得多，被跳过的只是 attention 里不重要的 KV 读取，transformer block 本身的 MLP、归一化等还是完整执行
+- **同一张图支持三种请求类型**，不需要 multi-graph 切换，靠 `request_type` tensor 在运行时路由
+- **双缓冲消除同步气泡**，这是在 7.7 节 pointer swap 思路之外的另一个工程优化维度
+
+这个设计也解释了为什么 SparseSpec 不需要显式处理 skip layer 的 KV 复用问题（第 4.2 节）：它的稀疏性在 attention 的 KV 索引层面而非 transformer 层层面，$r_\text{reuse}$ 的分析框架对它并不直接适用——它的"跳过"不改变激活路径，所有层的 hidden state 仍然是 full-path 计算出来的。
+
+| | 本文理论方案 | SparseSpec 实现 |
+|---|---|---|
+| 动态性来源 | transformer layer 级别的 skip | attention KV range 的稀疏访问 |
+| CG 适配思路 | no-op mask / multi-graph | 单图 + `request_type` tensor 路由 |
+| 冗余计算 | 整层 no-op（代价大） | 仅 attention 的冗余 KV 访问（代价小） |
+| KV 复用 | 依赖 contiguous prefix | 不适用（层不 skip，复用问题不存在） |
+| batch 内混合 | 需要多图切换 | 天然支持（三种类型共享一张图） |
+
 ---
 
 ## 8. 最优草稿长度的 closed-form 近似
