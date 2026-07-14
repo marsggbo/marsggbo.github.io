@@ -1,452 +1,302 @@
 ---
 layout: post
-title: "vllm v1 源码精读（五）：Speculative Decoding 的接口设计、计算流与自投机推理"
+title: "vllm v1 源码精读（五）：从 generate() 到 Speculative Decoding 的完整计算流"
 date: 2026-07-09
 tags: [LLM, vLLM, Speculative Decoding, 推理优化, 源码解析]
 ---
 
-# vllm v1 源码精读（五）：Speculative Decoding 的接口设计、计算流与自投机推理
+# vllm v1 源码精读（五）：从 generate() 到 Speculative Decoding 的完整计算流
 
-> 本文基于 vllm [`https://github.com/vllm-project/vllm/tree/ba22152`](https://github.com/vllm-project/vllm/tree/ba22152)，源码链接均指向该 commit 的固定行号。
+> 本文基于 vllm [commit ba22152](https://github.com/vllm-project/vllm/tree/ba22152)，所有代码均来自本地 clone 的真实源文件，标注了文件路径和行号。
 
 **系列文章**：
 - [（一）为什么要重写，以及 LLM() 这行代码背后发生了什么](https://marsggbo.github.io/blog/2026/20260706-vllm-v1-01-arch/)
 - [（二）generate() 计算流——model.forward() 在哪里被调用？](https://marsggbo.github.io/blog/2026/20260706-vllm-v1-02-generate/)
 - [（三）KV Cache 管理、Chunked Prefill 与异步架构](https://marsggbo.github.io/blog/2026/20260706-vllm-v1-03-kvcache/)
 - [（四）插件系统——用 Python entry_points 实现零侵入扩展](https://marsggbo.github.io/blog/2026/20260706-vllm-v1-04-plugins/)
-- **（五）Speculative Decoding 的接口设计、计算流与自投机推理**（本文）
+- **（五）从 generate() 到 Speculative Decoding 的完整计算流**（本文）
 
 ---
 
 ## 1. 前言
 
-Speculative Decoding（投机推理）的算法原理并不复杂——用小模型先生成一批 draft tokens，再用大模型一次性验证，接受则保留，拒绝则回退，理论上能在不损失输出质量的前提下显著提升 throughput。
+Speculative Decoding（SD）的算法原理不难理解：用小模型提前猜几个 token，大模型一次性验证，接受就保留，拒绝就从第一个错误位置重新采样。
 
-但一旦落到工程实现里，问题就多了：
+但落到 vllm 的工程实现里，有一个问题论文里不会告诉你：**这套逻辑具体怎么嵌进 vllm 的推理流水线？谁调用谁？数据怎么流？**
 
-- batch 里不同请求的 draft 步数不一样，怎么对齐？
-- draft 模型和 target 模型的 KV cache 怎么管理？
-- EAGLE、Medusa、ngram 这些算法风格差异这么大，接口怎么统一？
-- rejection sampling 的 Triton kernel 里到底跑的是什么逻辑？
-
-这篇就结合 vllm v1 的源码把这些问题一一拆开来看。代码主要在两个目录：
-
-- [`vllm/v1/spec_decode/`](https://github.com/vllm-project/vllm/tree/ba22152/vllm/v1/spec_decode)：proposer 层，负责生成 draft tokens
-- [`vllm/v1/worker/gpu/spec_decode/`](https://github.com/vllm-project/vllm/tree/ba22152/vllm/v1/worker/gpu/spec_decode)：speculator/worker 层，负责 draft 执行和 rejection sampling
+这篇文章从这个问题出发，先给完整时序，再逐层拆模块细节。
 
 ---
 
-## 2. 整体架构：三层分工
+## 2. 全局视角：SD 在 vllm 里的计算流
 
-vllm v1 的 SD 实现分三层，职责非常清晰：
+### 2.1 接入点：两步执行模型
 
-```
-[Proposer 层]      负责"生成 draft tokens"的算法逻辑
-      ↓
-[Speculator 层]    负责在 GPU 上执行 draft forward，管理 KV cache
-      ↓
-[RejectionSampler] 负责对比 draft/target 分布，接受或拒绝
-```
+上一篇（二）讲过，`GPUModelRunner` 的推理逻辑拆成两步：
 
-对应代码：
+- `execute_model()`：target model forward，结果存入 `execute_model_state`，返回 None
+- `sample_tokens()`：从 `execute_model_state` 取 logits，采样输出 token
 
-- Proposer：[`llm_base_proposer.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/llm_base_proposer.py)、[`eagle.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/eagle.py)、[`draft_model.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/draft_model.py)、[`medusa.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/medusa.py)、[`ngram_proposer.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/ngram_proposer.py)
-- Speculator：[`worker/gpu/spec_decode/speculator.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/speculator.py)、[`autoregressive/speculator.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py)
-- RejectionSampler：[`rejection_sampler.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler.py)、[`rejection_sampler_utils.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py)
+SD 就嵌在这两步里：
+- `execute_model()` 把**上一轮的 draft tokens** 打包进 input，一次 forward 全部验证
+- `sample_tokens()` 顺序做三件事：rejection sampling → CPU bookkeeping → 生成下一轮 draft
+
+### 2.2 多轮时序：draft 如何跨轮流转
+
+下图是多轮推理的完整时序，这是理解后面所有细节的基础：
+
+![多轮推理时序图](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/diagram_seq.png)
+
+三个关键点，记住这三点后面的细节就全部有了锚：
+
+**第一**：**propose 生成的是下一轮的 draft，不是当前轮的**。第 N 轮 propose，第 N+1 轮 verify。是流水线，不是同轮闭环。
+
+**第二**：**target forward 吃的是 draft tokens**。把 K 步串行 decode 变成一次 batched prefill，这是 SD 能提速的根本原因——prefill 是 compute-bound，GPU 利用率远高于 decode 的 memory-bound。
+
+**第三**：**EAGLE/DraftModel 的 propose 可以和 CPU bookkeeping 重叠**。它们消费的是 GPU tensor，不等 CPU 同步就能提前开跑，隐藏 CPU 同步延迟。
+
+### 2.3 模块全景
+
+`GPUModelRunner` 是 SD 相关逻辑的宿主，持有两个 SD 专用成员和一个数据载体：
+
+![整体架构：模块与依赖关系](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/diagram_arch.png)
+
+- **`self.drafter`**：Proposer，负责生成 draft tokens，有 EAGLE/DraftModel/Medusa/ngram 四种实现
+- **`self.rejection_sampler`**：做 rejection sampling，在 `vllm/v1/sample/` 下（不在 `spec_decode/`），因为它属于采样层而非 draft 算法层
+- **`SpecDecodeMetadata`**：贯穿 execute_model 和 sample_tokens 的数据胶水，在 `_prepare_inputs()` 构建
+
+有了这个全景，接下来逐层看细节。
 
 ---
 
-## 3. 计算流：一轮推理里发生了什么
+## 3. execute_model()：target forward 吃 draft tokens
 
-先把整个 pipeline 的调用链看清楚，再拆细节。
+非第一轮推理时，`input_ids` 里包含上一轮 propose 出的 draft tokens（第 4352 行）：
 
-`GPUModelRunner.execute_model()` 里，一轮 SD 推理的顺序是这样的：
-
-```
-① target_model.forward(input_ids=上一轮的 draft_tokens)
-      ↓ 输出 target_logits 和 target_hidden_states
-② RejectionSampler.__call__(target_logits, draft_logits)
-      ↓ 输出 sampled_token_ids, num_sampled, num_rejected
-③ speculator.propose(
-       last_hidden_states=target_hidden_states,
-       num_sampled=..., num_rejected=...,
-       last_sampled=sampled_token_ids)
-      ↓ 输出 draft_tokens [num_reqs, num_spec_steps]（供下一轮使用）
+```python
+# gpu_model_runner.py，第 4352 行
+model_output = self._model_forward(
+    input_ids=input_ids,   # 含上一轮的 K 个 draft tokens + 1 个 bonus token
+    positions=positions,
+    ...
+)
 ```
 
-有几个值得注意的地方：
+forward 完之后，把 logits 和 hidden states 打包进 `execute_model_state`，返回 None。此时 rejection 和 propose 都还没跑：
 
-**target 模型 forward 的 input 是 draft tokens，不是真实 tokens**。target 模型一次性处理上一轮所有 draft tokens（相当于一次 prefill），这正是 SD 加速的核心——把 K 步串行 decode 换成 1 次 batched prefill，prefill 是 compute-bound 的，GPU 利用率远高于 decode 的 memory-bound。
+```python
+# gpu_model_runner.py，第 4418~4437 行
+self.execute_model_state = ExecuteModelState(
+    scheduler_output,
+    logits,
+    spec_decode_metadata,
+    hidden_states,
+    ...
+)
+return None  # sampling 留给 sample_tokens() 做
+```
 
-**propose 在 rejection 之后**，用的是 target 模型刚跑出来的 hidden states。也就是说，draft 是为**下一轮**准备的，而不是当前轮。这个 pipeline 设计让 GPU 几乎没有空闲：target forward 出来的 hidden states 立刻喂给 draft model，draft model 在生成 tokens 的同时，下一批请求的 prefill 已经可以开始了。
+---
 
-**`SpecDecodeMetadata`** 是连接三个阶段的数据结构（[`metadata.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/metadata.py)），核心字段：
+## 4. sample_tokens()：rejection → bookkeeping → propose
+
+`sample_tokens()` 拿到 `execute_model_state` 后，顺序做三件事：
+
+![sample_tokens() 调用流程](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/diagram_flow.png)
+
+**第一步：`_sample()` 做 rejection**
+
+把 target logits 和 draft token ids（来自 `SpecDecodeMetadata`）传给 `self.rejection_sampler`，逐 token 按概率比检验：接受的 draft 直接保留，第一个被拒绝的位置截断，从 target 分布采样一个修正 token。全程在 GPU 上跑 Triton kernel，不涉及 CPU 同步。
+
+**第二步：`_bookkeeping_sync()` 做 CPU 同步**
+
+把每个请求实际接受了几个 draft token 同步到 CPU，更新 KV cache 的 block table，回收被拒绝的 draft token 对应的 slot。
+
+**第三步：`propose_draft_token_ids()` 生成下一批 draft**
+
+调 `self.drafter.propose()`，用 target forward 的 hidden states 猜下一批 draft tokens。EAGLE/DraftModel 在 `_bookkeeping_sync()` 之前就可以开跑（第 4554 行），ngram 要等 bookkeeping 之后（第 4626 行）。
+
+---
+
+## 5. SpecDecodeMetadata：三步之间的数据胶水
+
+`SpecDecodeMetadata` 在 `_prepare_inputs()` 第 2212 行构建：
 
 | 字段 | 形状 | 作用 |
 |---|---|---|
-| `draft_token_ids` | `[num_tokens]` | 所有请求的 draft tokens 扁平拼接 |
+| `draft_token_ids` | `[total_num_draft_tokens]` | 所有请求的 draft tokens 扁平拼接 |
 | `num_draft_tokens` | `list[int]` | 每个请求各自 draft 了多少步 |
-| `cu_num_draft_tokens` | `[batch_size]` | inclusive cumsum，供 kernel 按请求切分 |
-| `logits_indices` | `[num_tokens + batch_size]` | 在 target logits 中 gather 对应行的索引 |
+| `logits_indices` | `[num_draft + batch_size]` | 在 target logits 中 gather 对应行的索引 |
 | `bonus_logits_indices` | `[batch_size]` | 每个请求 bonus token 在 target logits 中的位置 |
 
-`logits_indices` 是 `target_logits_indices` 和 `bonus_logits_indices` 的拼接，让 rejection sampler 一次 gather 就能拿到所有需要的 logits，不用两次 IO。
+`logits_indices` 把所有请求的 draft 位置和 bonus 位置拼在一起，让 `RejectionSampler` 一次 gather 拿到所有需要的 logits，不用按请求循环——因为 batch 里不同请求的 draft 步数可以不一样，位置对应关系不规则。
 
 ---
 
-## 4. Proposer 层：五种算法，两套继承体系
+## 6. Proposer 层：接口设计与四种实现
 
-vllm v1 目前支持五种 draft 算法，分两个体系：
+### 6.1 为什么要抽象 Proposer 接口
 
-### 4.1 基于 LLM 的 Proposer：SpecDecodeBaseProposer
+四种算法生成 draft 的方式差异极大，但 `propose_draft_token_ids()` 只需要调一个 `self.drafter.propose()`，不关心里面是什么算法。
 
-[`SpecDecodeBaseProposer`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/llm_base_proposer.py#L69) 是 EAGLE、DraftModel 等所有需要神经网络的 proposer 的公共基类，提供完整的 autoregressive drafting 循环。
-
-`propose()` 方法（[第 502 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/llm_base_proposer.py#L502)）的主循环结构：
+`self.drafter` 在 `GPUModelRunner.__init__()` 第 565~632 行根据 `speculative_config.method` 初始化：
 
 ```python
-# vllm/v1/spec_decode/llm_base_proposer.py
-class SpecDecodeBaseProposer:
-    def propose(self, ...):
-        # 第一步 forward
-        self.set_inputs_first_pass(...)         # 准备第一步的 input_ids / positions
-        self.model(...)                         # draft 模型第一步 forward
-        self._sample_draft_tokens(...)          # 采样第一个 draft token
-
-        # 剩余 K-1 步循环
-        for token_index in range(K - 1):
-            self._update_positions_dependent_metadata(...)  # positions / slot_mapping + 1
-            self.model(...)
-            self._sample_draft_tokens(...)
-
-        return torch.stack(draft_tokens)        # [batch_size, K]
+if spec_config.method == "ngram":
+    self.drafter = NgramProposer(self.vllm_config)
+elif spec_config.uses_draft_model():
+    self.drafter = DraftModelProposer(self.vllm_config, self.device, self)
+elif spec_config.use_eagle():
+    self.drafter = EagleProposer(self.vllm_config, self.device, self)
+elif spec_config.method == "medusa":
+    self.drafter = MedusaProposer(...)
 ```
 
-**`EagleProposer`**（[`eagle.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/eagle.py)）继承自这个基类，整个文件只有 23 行，唯一的区别是初始化时传了 `pass_hidden_states_to_model=True`。
+四种实现的继承关系：
 
-这个 `True` 影响深远：基类在每次 forward 时会把 target model 的 hidden states 拼入 EAGLE head 的输入（[第 730 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/llm_base_proposer.py#L730)），这正是 EAGLE 架构的核心——draft head 消费 target 的 residual stream，而不是独立跑一个小模型。
+![Proposer 继承关系](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/diagram_proposer.png)
 
-**`DraftModelProposer`**（[`draft_model.py`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/draft_model.py)）传的是 `pass_hidden_states_to_model=False`（[第 29 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/draft_model.py#L29)），有自己完整的 LM head，不共享任何 target 权重（`_maybe_share_embeddings` 和 `_maybe_share_lm_head` 均为空实现）。
+**EAGLE 和 DraftModel 继承同一个基类，Medusa 和 ngram 独立实现**——因为三种范式的根本差异：autoregressive 循环（EAGLE/DraftModel）、并行多头（Medusa）、纯 CPU 文本匹配（ngram），强行统一基类会扭曲设计。
 
-这两种方案的本质区别：
+### 6.2 SpecDecodeBaseProposer：autoregressive 循环
 
-| | EAGLE | DraftModel |
-|---|---|---|
-| Draft 来源 | 消费 target hidden states | 独立小模型，自给自足 |
-| 额外显存 | 只有 EAGLE head（轻量） | 完整小模型（较重） |
-| 依赖关系 | 强耦合 target 架构 | 与 target 架构无关 |
-| 典型场景 | 与 target 同架构系列 | 跨模型族加速 |
-
-### 4.2 MedusaProposer：并行多头预测
-
-[`MedusaProposer`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/medusa.py#L40) 完全不继承基类，是独立实现。
-
-原因很简单：Medusa 不是 autoregressive 的。它直接拿 target hidden states，让多个独立的 Medusa head 并行预测 K 个位置，没有循环、没有 KV cache、没有 slot mapping，`propose()` 的核心就三行：
+基类核心是一个 autoregressive 循环（第 682 行），每步用上一步的 draft token 作为输入，循环 K-1 次：
 
 ```python
-# vllm/v1/spec_decode/medusa.py
-class MedusaProposer:
-    def propose(self, ...):
-        blocks = self.model(target_hidden_states)
-        logits = self.model.compute_logits(blocks)
-        return argmax(logits)  # [batch_size, num_heads]
+for token_index in range(self.num_speculative_tokens - 1):
+    input_ids = draft_token_ids_list[-1].int()
+    model_kwargs = {"input_ids": input_ids, "positions": ...}
+    if self.pass_hidden_states_to_model:
+        model_kwargs["hidden_states"] = self.hidden_states[:input_batch_size]
+    ret_hidden_states = self.model(**model_kwargs)
+    draft_token_ids, _ = self._sample_draft_tokens(sample_hidden_states, ...)
+    draft_token_ids_list.append(draft_token_ids)
 ```
 
-极简，但有局限：各 head 之间完全独立，接受率通常比 EAGLE 低，尤其是 speculative steps 多的时候。
+子类唯一的定制点是构造函数里的 `pass_hidden_states_to_model` 开关。
 
-### 4.3 NgramProposer：不需要模型，纯 CPU
+### 6.3 EagleProposer：23 行的秘密
 
-[`NgramProposer`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/ngram_proposer.py) 的 `load_model()` 是空实现——它根本不需要神经网络。
+EAGLE 的 insight 是 draft model 不自己独立预测，而是"寄生"在 target 的 residual stream 上——把 target hidden states 和 draft model 的 embedding 拼接起来作为输入，接受率因此高得多。
 
-核心算法是 **KMP 变体的 n-gram 匹配**（[`_find_longest_matched_ngram_and_propose_tokens`，第 207 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/ngram_proposer.py#L207)）：
+代码层面就体现在一个布尔开关：
 
-1. 把 context token 序列翻转，把"找最长后缀匹配"变成"找最长前缀匹配"
-2. 用 KMP 的 lps（Longest Proper Suffix）数组在整个 context 里找最长满足 `[min_n, max_n]` 的匹配
-3. 取匹配位置之后 K 个 token 作为 draft
+```python
+# eagle.py，第 10 行
+class EagleProposer(SpecDecodeBaseProposer):
+    def __init__(self, vllm_config, device, runner):
+        super().__init__(
+            vllm_config, device,
+            pass_hidden_states_to_model=True,  # ← EAGLE 相比 DraftModel 的全部差异
+            runner=runner,
+        )
+```
 
-整个 batch 并行处理用了 `@njit(parallel=True)`（Numba JIT，[第 177 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/spec_decode/ngram_proposer.py#L177)）。
+整个文件 23 行，没有任何业务逻辑，全靠基类跑通。
 
-**什么场景适合 ngram？** RAG、code completion、文档摘要这类有大量重复 pattern 的场景，接受率相当高，而且零额外显存开销，成本极低。
+### 6.4 MedusaProposer：并行多头
+
+Medusa 一次 forward 出所有 K 个 draft，不需要 autoregressive 循环：
+
+```python
+def propose(self, num_speculative_tokens, target_hidden_states, ...):
+    blocks = self.model(target_hidden_states)   # 多 head 并行 forward
+    logits = self.model.compute_logits(blocks)  # [batch, num_heads, vocab]
+    return logits.argmax(dim=-1)                # [batch, num_heads]
+```
+
+代价是各 head 完全独立，接受率通常比 EAGLE 低。
+
+### 6.5 NgramProposer：连 draft model 都不需要
+
+`load_model()` 是空实现，直接在 context 里找重复 pattern。核心是 KMP lps 数组找最长后缀匹配，整个 batch 用 Numba `@njit(parallel=True)` 并行加速，零额外显存。对 RAG、code completion 等有大量重复 pattern 的场景接受率相当高。
 
 ---
 
-## 5. Speculator 层：Worker 上如何执行 Draft
+## 7. RejectionSampler：四阶段 Triton kernel
 
-[`BaseSpeculator`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/speculator.py#L31) 定义了三个抽象方法：
+数学原理：给定 target 分布 p 和 draft 分布 q，对每个 draft token x，以 `min(1, p(x)/q(x))` 的概率接受；拒绝时从残差分布 `max(p - q, 0)` 里重新采样，保证输出分布仍是 p，和原始自回归采样等价。
 
-```python
-# vllm/v1/worker/gpu/spec_decode/speculator.py
-class BaseSpeculator(ABC):
-    def init_cudagraph_manager(self, cudagraph_mode): ...
-    def capture(self, attn_states): ...
-    def propose(self,
-                last_hidden_states, aux_hidden_states,
-                num_sampled, num_rejected,
-                last_sampled, next_prefill_tokens,
-                temperature, seeds, ...): ...
-```
+`rejection_sample()`（`rejection_sampler_utils.py` 第 864 行）分四个 Triton kernel 执行：
 
-`propose` 的 signature 包含了 `num_sampled`/`num_rejected`——上一轮 rejection sampling 的结果，draft model 需要用这个信息来"回退"被拒绝的 KV cache slots，把 positions 和 slot mapping 重置到正确状态。
+![RejectionSampler 四阶段 kernel](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/diagram_rejection.png)
 
-[`AutoRegressiveSpeculator`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py#L30) 是核心实现，`propose()` 的执行流（[第 127 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py#L127)）：
+Step 3 的核心 kernel（第 459 行）：
 
 ```python
-# vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py
-class AutoRegressiveSpeculator(DraftModelSpeculator):
-    def propose(self, ...):
-        self.prepare_prefill_inputs(...)    # Triton kernel：shift input_ids，定位 last_token_indices
-        self._prefill(...)                  # draft 模型第 0 步 forward，写 KV，生成 draft_tokens[:,0]
-        self.prepare_decode_inputs(...)     # positions/seq_lens + 1，input_ids ← draft_tokens[:,0]
-        self._multi_step_decode(...)
-
-    def _multi_step_decode(self, ...):
-        for step in range(1, K):
-            self._build_draft_attn_metadata(...)  # 重算 slot mapping
-            self._run_model(...)                   # draft forward，写新 KV
-            self.sample_draft(...)                 # argmax / gumbel
-            self.update_draft_inputs(...)          # Triton kernel：更新 input_ids/positions
-```
-
-**KV cache 怎么管的？** Prefill 阶段直接复用 target 模型的 `attn_metadata` 和 `slot_mappings`（代码注释在 [第 223 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/autoregressive/speculator.py#L223)），因为 draft 的 batch shape 与 target 完全一致。Decode 阶段每步调 `block_tables.compute_slot_mappings()` 重算，draft 模型把新 KV 写入自己专属的 layer（`draft_attn_layer_names`），不覆盖 target 的 KV。
-
-[`EagleSpeculator`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/eagle/speculator.py#L12) 继承自 `AutoRegressiveSpeculator`，同样只重写了一个方法 `load_draft_model()`，用 `load_eagle_model()` 加载 EAGLE 专用架构。所有 draft 执行逻辑完全继承，没有多余代码。
-
----
-
-## 6. RejectionSampler：四个 Triton Kernel
-
-[`RejectionSampler.__call__()`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler.py#L101) 的核心在 [`rejection_sample()`](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py#L864)，分四个 Triton kernel 阶段执行（[第 923 行起](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py#L923)）：
-
-**Step 1：`_compute_local_logits_stats_kernel`**
-按 `VOCAB_BLOCK_SIZE=8192` 分块，并行计算每个位置的 logit 统计量：greedy 模式下求 block-local argmax；非 greedy 模式下求 max 和 sum-exp，为后续 log-sum-exp 准备。
-
-**Step 2（block verification 模式专有）**
-- `_compute_cumulative_log_p_kernel`：计算前缀联合接受率 `log_p_i = sum min(log(p/q), 0)`
-- `_compute_local_residual_mass_kernel`：计算残差质量 `max(p_i * M_b(x) - M_s(x), 0)` 的分块偏积
-
-**Step 3：`_rejection_kernel`**（[第 459 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py#L459)）
-每个请求一个 warp，顺序检查每个 draft token：
-
-```python
-# vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py
-# _rejection_kernel（Triton kernel，第 459 行，每个请求一个 warp）
-
 @triton.jit
 def _rejection_kernel(...):
     for i in range(num_draft_tokens):
-        # 标准 rejection sampling（非 greedy，Leviathan et al. 2023）
-        accepted &= target_log_prob > log(u) + draft_log_prob  # 概率比检验
-
-        # greedy 模式
+        accepted &= target_log_prob > tl.log(u) + draft_log_prob  # 非 greedy
         target_argmax = compute_global_target_argmax(...)
-        accepted &= (target_argmax == draft_sampled)            # 精确匹配
+        accepted &= (target_argmax == draft_sampled)               # greedy
 
     rejected_steps[req] = first_rejected_index
 ```
 
-**Step 4：`_resample_kernel` + `_insert_resampled_kernel`**
-对被拒绝位置和 bonus token 重采样：
-- 有 draft logits → 从残差分布 `max(p - q, 0)` 采样（[第 752 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py#L752)）
-- 无 draft logits（one-hot draft，如 ngram）→ 把被拒绝 token 在 target 分布里置 `-inf`，再采样（[第 768 行](https://github.com/vllm-project/vllm/blob/ba22152/vllm/v1/worker/gpu/spec_decode/rejection_sampler_utils.py#L768)）
-
-Resample 用的是 **gumbel block argmax**（`RESAMPLE_BLOCK_SIZE=1024`），并行分块，不需要全 vocab 的 softmax 展开。
+一旦某个位置被拒绝，后续 draft 全部作废（基于错误前缀生成的），所以顺序检查并记录第一个拒绝位置即可。
 
 ---
 
-## 7. 如何扩展自定义 SD 算法
+## 8. 另一套路径：Speculator（TP/EP 场景）
 
-看完这套架构，扩展点很清晰。举个最简单的例子：实现一个**基于 prompt 前缀重复模式的 draft proposer**——如果当前 context 末尾 token 和 prompt 里某段相同，就拿后续 token 作为 draft，不需要任何模型推理。
+前面讲的是主路径（`gpu_model_runner.py`），drafter 只管算法逻辑，KV cache 由外层统一管。
 
-这种算法不依赖神经网络，也不需要 autoregressive 循环，最适合直接独立实现 `propose()` 接口，和 `NgramProposer` 的扩展方式一致：
-
-```python
-# my_proposer.py
-from vllm.v1.spec_decode.ngram_proposer import NgramProposer
-
-class MyPrefixProposer:
-    """
-    在 prompt token 里找与 context 末尾匹配的前缀，
-    取后续 num_speculative_tokens 个 token 作为 draft。
-    """
-    def __init__(self, vllm_config, device):
-        self.num_speculative_tokens = (
-            vllm_config.speculative_config.num_speculative_tokens
-        )
-
-    def load_model(self, target_model, target_attn_layer_names):
-        pass  # 不需要模型
-
-    def propose(
-        self,
-        requests,              # List[CachedRequestState]
-        token_ids_cpu,         # numpy array，所有请求的 token 序列
-        position_ids_cpu,
-        input_batch,
-        ...
-    ):
-        draft_token_ids = []
-        num_draft_tokens = []
-
-        for req in requests:
-            ctx = token_ids_cpu[req.start : req.end]  # 当前 context
-            prompt = ctx[: req.prompt_len]            # prompt 部分
-            suffix = ctx[-3:]                         # 取末尾 3 token 做匹配 key
-
-            # 在 prompt 里找 suffix，取后续 token 作为 draft
-            drafts = self._find_continuation(prompt, suffix,
-                                             self.num_speculative_tokens)
-            draft_token_ids.extend(drafts)
-            num_draft_tokens.append(len(drafts))
-
-        return SpecDecodeMetadata(
-            draft_token_ids=torch.tensor(draft_token_ids, device="cuda"),
-            num_draft_tokens=num_draft_tokens,
-            ...
-        )
-
-    def _find_continuation(self, prompt, suffix, k):
-        for i in range(len(prompt) - len(suffix)):
-            if (prompt[i : i + len(suffix)] == suffix).all():
-                return prompt[i + len(suffix) : i + len(suffix) + k].tolist()
-        return []
-```
-
-核心只有两步：在 prompt 里找匹配，拼 `SpecDecodeMetadata` 返回。rejection sampling 和 verify 完全复用 vllm 已有的逻辑，不需要动任何其他文件。
-
-如果算法是 autoregressive 的（需要 draft model forward），则继承 `SpecDecodeBaseProposer`，覆写三个方法：
+在 `vllm/v1/worker/gpu/model_runner.py`（DeepSeek 等 TP/EP 多 GPU 场景），SD 改用 `self.speculator`，**speculator 同时负责 draft forward 和 KV cache 管理**：
 
 ```python
-# vllm/v1/spec_decode/draft_model.py（参考）
-class DraftModelProposer(SpecDecodeBaseProposer):
-
-    @override
-    def _create_draft_vllm_config(self) -> VllmConfig:
-        # 把 draft 模型的 model_config / parallel_config 替换进去
-        return replace(base, model_config=spec.draft_model_config, ...)
-
-    @override
-    def _get_model(self) -> nn.Module:
-        # 加载 draft 模型权重
-        return get_model(vllm_config=self._create_draft_vllm_config(), ...)
-
-    @override
-    def _maybe_share_lm_head(self, target_language_model: nn.Module) -> None:
-        pass  # DraftModel 不共享权重；EAGLE 子类这里会做权重绑定
+# vllm/v1/worker/gpu/model_runner.py，第 1466 行
+draft_tokens = self.speculator.propose(
+    input_batch,
+    attn_metadata,
+    slot_mappings_by_layer,
+    spec_hidden_states,
+    num_sampled,    # 上一轮 rejection 结果
+    num_rejected,   # 用于 KV cache 回退
+    ...
+)
 ```
 
-`propose()` 的主循环不需要动，基类已经实现好了。
+`num_rejected` 出现在 propose 参数里，是因为 speculator 上一轮已经把 draft KV 写入 GPU——被拒掉的 KV slot 需要在下一轮 propose 前回退，speculator 自己负责这块。
 
-**目前的限制**：vllm v1 的 SD 实现强假设 draft 和 target 共享同一套 block table，如果要实现完全独立的 KV 管理（如稀疏 KV），需要改动 `BlockSpaceManager` 和 `DraftModelSpeculator.set_attn()`，改动面较大。
+继承链：`EagleSpeculator → AutoRegressiveSpeculator → DraftModelSpeculator → BaseSpeculator`
 
 ---
 
-## 8. 聊聊 Self-Speculative Decoding
+## 9. 延伸：Self-Speculative Decoding
 
-上面说的都是 **draft model 是独立模型** 的方案。另一个思路是 Self-Speculative Decoding（SSD）——不引入额外模型，用同一个模型生成 draft。
+前面讲的都是"独立 draft 模型"方案。另一个思路是 Self-Speculative Decoding（SSD）——不引入额外模型，用同一个模型本身的子网络生成 draft。
 
-主要有三条路：
+| 方案 | 核心思路 |
+|---|---|
+| Early Exit | 前几层 transformer 输出直接过 LM head |
+| Layer Skip | 跳过部分中间层，用稀疏子网络做 draft |
+| Sparse Attention | draft 阶段只加载部分 KV，verify 阶段全量 |
 
-| 方案 | 核心思路 | 代表工作 |
-|---|---|---|
-| Early Exit | 前几层 transformer 输出直接过 LM head 得 draft | 多篇论文均有实现 |
-| Layer Skip | 跳过部分中间层，用稀疏子网络做 draft | Self-SD (Tang et al.) |
-| Sparse Attention | draft 阶段只加载部分 KV cache，verify 全量 | SparseSpec |
+vllm v1 目前原生不支持 SSD，有两个根本冲突：`self.drafter` 和 target model 是独立对象（SSD 需要两用同一个模型）；KV cache 假设 draft 和 target 各自独立（SSD 的稀疏/全量切换和 block table 不兼容）。
 
-vllm v1 目前原生不支持 SSD，原因正如上节说的——架构上强依赖独立 draft model 的抽象。
+SparseSpec（arXiv 2512.01278）是稀疏 attention 路线的代表，直接绕开 vllm 实现了整套 serving stack：
 
-[SparseSpec](https://github.com/sspec-project/SparseSpec)（arXiv 2512.01278）是稀疏 attention 路线的一个工程实现，核心思路是：**draft 阶段只读 Top-K 重要 token 的 KV，verify 阶段才用全量 KV**，从而把 draft 的显存带宽消耗压缩到 5% 左右（`budget_ratio=0.05`），专门针对 Reasoning LLM 长序列 decode 的 memory-bound 瓶颈。
+![SparseSpec 自定义 serving stack 架构](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/diagram_sparsespec.png)
 
-因为这套思路和 vllm 的标准 SD 接口不兼容（vllm 假设 draft 和 target 共用同一套 block table，没有稀疏索引的概念），SparseSpec 选择完全绕开 vllm，**重新实现了整个 serving stack**，主要改了三层：
-
-**1. 注意力后端（`serve/attention/backend.py`）**
-
-基于 FlashInfer JIT 扩展，实现了两个自定义注意力变体：
-
-```python
-# serve/attention/backend.py
-class BatchTopKAttention:
-    # Draft 模式：REGISTER_INPUT_TRANSFORM 把 KV index 重定向到 flatten_indices（稀疏索引）
-    core_variant_decl = """
-    REGISTER_INPUT_TRANSFORM(sparse_kv_transform, {
-        if (request_type[request_idx] == DRAFT) {
-            kv_idx = flatten_indices[kv_idx];  // 只读 Top-K token 的 KV
-        }
-    });
-    """
-
-class BatchAttentionScore:
-    # Verify 模式：REGISTER_LOGITS_TRANSFORM 把注意力 logits dump 出来
-    score_variant_decl = """
-    REGISTER_LOGITS_TRANSFORM(dump_attn_scores, {
-        if (request_type[request_idx] == VERIFY) {
-            dump_logits[...] = logits;  // 供后续 Top-K 更新使用
-        }
-    });
-    """
-```
-
-draft 和 verify 通过 `request_type` 枚举在同一个 batch 里混跑，不需要两次单独的 forward。
-
-**2. KV Cache 管理（`serve/request/kv_cache_ptr/pillar.py`）**
-
-实现了 `PillarCachePtr`，在标准 KV cache 之上维护一套动态更新的稀疏索引：
-
-```python
-# serve/request/kv_cache_ptr/pillar.py
-class PillarCachePtr(StreamingCachePtr):
-
-    def dispatch_prepare_fwd_metadata(self, ...):
-        # 每步 draft 前：把 Top-K 索引打包成 flatten_indices，传给注意力 kernel
-        self.concat_kv_indices_contiguous_kernel(
-            self.selected_indices_buffer_gpu,  # Top-K token 索引
-            self.recent_indices,               # 最近 token 索引（anchor）
-            self.flatten_indices,              # 输出：拼接后的稀疏索引
-        )
-
-    def dispatch_update_selected_indices(self, ...):
-        # 每次 verify 后：用 dump_logits 跑 Top-K，更新 Pillars
-        self.topk_wrapper.run(
-            self.dump_logits_snapshot,         # verify 阶段 dump 的注意力分数
-            self.selected_indices_buffer_gpu,  # 更新 Top-K 索引
-            k=self.num_selected_tokens,
-        )
-```
-
-每隔 `spec_stride`（默认 16）步做一次全量 verify，同时更新 Pillars；draft 阶段只读当前 Pillars 对应的 KV。
-
-**3. 调度器（`serve/scheduler/spec_scheduler.py`）**
-
-引入了**错位编排**（staggered scheduling）：新请求进来时分配一个偏移 `cur_spec_idx`，使 batch 内不同请求的 verify 时机错开，把 verify 的计算峰值均摊到每一步。同时引入了 4 个请求状态：
-
-```python
-# serve/request/request.py
-class ReqExecType(Enum):
-    NORMAL = 0   # 普通 prefill
-    DRAFT  = 1   # 稀疏 KV draft
-    VERIFY = 2   # 全量 KV verify + rejection sampling
-    STALL  = 3   # 等待 CPU 侧 Top-K 计算完成
-```
-
-`STALL` 是因为 Top-K 更新涉及 CPU→GPU 的 index 拷贝，需要一个缓冲状态等待结果就绪，才能进入下一轮 draft。
-
-这套设计灵活，但代价是完全脱离了 vllm 生态——无法作为 vllm 插件直接部署，要用 SparseSpec 需要换掉整个 serving stack。README 里也明确说 "We plan to upstream a subset of features to vLLM in the future"，但目前还是 PoC 状态。
+这套设计目前还是 PoC，README 明确说"We plan to upstream a subset of features to vLLM in the future"。
 
 ---
 
-## 9. 小结
+## 10. 小结
 
-回顾一下这篇聊的内容：
+**接入点**：SD 嵌在 execute_model() + sample_tokens() 两步里。execute_model 把 draft tokens 打包进 target forward，sample_tokens 按顺序做 rejection → bookkeeping → propose。**propose 生成的是下一轮的 draft**，是流水线关系。
 
-- **整体分三层**：Proposer（算法逻辑）→ Speculator（GPU 执行 + KV 管理）→ RejectionSampler
-- **计算流**：target forward → rejection sampling → speculator.propose（为**下一轮**准备 draft）
-- **Proposer 两套体系**：基于 LLM 的（EAGLE/DraftModel 共用基类，`pass_hidden_states_to_model` 是核心开关）+ 独立实现的（Medusa 并行多头，ngram 纯 CPU）
-- **RejectionSampler 四阶段 Triton kernel**：logit 统计 → block verification（可选）→ 逐 token 接受/拒绝 → 残差重采样
-- **扩展点**：继承 `SpecDecodeBaseProposer` 改动最小；实现 SSD 类算法需要更深层改动
+**模块归属**：`self.drafter` 和 `self.rejection_sampler` 挂在 `GPUModelRunner` 下。`SpecDecodeMetadata` 是数据胶水，在 `_prepare_inputs()` 构建。
 
-Self-Speculative Decoding 整体还很早期，尤其是怎么优雅地 fit 进 vllm 这套 block table 架构，是个值得深挖的工程问题。如果你也在做这个方向，欢迎评论区交流。
+**Proposer 设计**：四种实现对外统一调 `propose()`。EAGLE/DraftModel 共用 `SpecDecodeBaseProposer`（autoregressive 循环），核心差异只有 `pass_hidden_states_to_model` 一个开关；Medusa 并行多头，独立实现；ngram 不需要模型。
+
+**RejectionSampler**：四阶段 Triton kernel，数学上保证输出分布和原始自回归采样等价。
+
+如果你在做 Self-Speculative Decoding 方向，怎么 fit 进 vllm 的 block table 架构是个值得深挖的工程问题，欢迎评论区交流。
 
 ---
 
-> 如果你对大模型方向感兴趣，我们团队也出了一本[《动手学 AutoML：从 NAS 到大语言模型优化实战》](https://item.jd.com/14945889.html)——书的核心是 AutoML 和 NAS，以及它们在大模型上的应用（NAS for LLM、AutoML for LLM Agent 等），和本文的推理优化方向相邻，感兴趣的话可以翻翻。
+> 另外，我们团队最近出版了[《动手学 AutoML：从 NAS 到大语言模型优化实战》](https://item.jd.com/14945889.html)，感兴趣的话可以看看。
 >
 > ![动手学AutoML书籍封面](https://github.com/marsggbo/marsggbo.github.io/blob/master/assets/img/book_cover_automl.png?raw=true)
