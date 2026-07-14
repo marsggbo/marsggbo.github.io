@@ -99,7 +99,9 @@ SD 就嵌在这两步里，没有引入新的函数：
 非第一轮推理时，`input_ids` 里包含上一轮 propose 出的 draft tokens（第 4352 行）：
 
 ```python
-# gpu_model_runner.py，第 4352 行
+# vllm/v1/worker/gpu_model_runner.py
+# class GPUModelRunner
+# def execute_model(self, scheduler_output)  第 4352 行
 model_output = self._model_forward(
     input_ids=input_ids,   # 含上一轮的 K 个 draft tokens + 1 个 bonus token
     positions=positions,
@@ -110,7 +112,9 @@ model_output = self._model_forward(
 forward 完之后，把 logits 和 hidden states 打包进 `execute_model_state`，返回 None。此时 rejection 和 propose 都还没跑：
 
 ```python
-# gpu_model_runner.py，第 4418~4437 行
+# vllm/v1/worker/gpu_model_runner.py
+# class GPUModelRunner
+# def execute_model(self, scheduler_output)  第 4418~4437 行
 self.execute_model_state = ExecuteModelState(
     scheduler_output,
     logits,
@@ -167,6 +171,9 @@ return None  # sampling 留给 sample_tokens() 做
 `self.drafter` 在 `GPUModelRunner.__init__()` 第 565~632 行根据 `speculative_config.method` 初始化：
 
 ```python
+# vllm/v1/worker/gpu_model_runner.py
+# class GPUModelRunner
+# def __init__(self, vllm_config, ...)  第 565~632 行
 if spec_config.method == "ngram":
     self.drafter = NgramProposer(self.vllm_config)
 elif spec_config.uses_draft_model():
@@ -188,6 +195,9 @@ elif spec_config.method == "medusa":
 基类核心是一个 autoregressive 循环（第 682 行），每步用上一步的 draft token 作为输入，循环 K-1 次：
 
 ```python
+# vllm/v1/worker/spec_decode/llm_base_proposer.py
+# class SpecDecodeBaseProposer
+# def propose(self, ...)  第 682 行
 for token_index in range(self.num_speculative_tokens - 1):
     input_ids = draft_token_ids_list[-1].int()
     model_kwargs = {"input_ids": input_ids, "positions": ...}
@@ -207,14 +217,14 @@ EAGLE 的 insight 是 draft model 不自己独立预测，而是"寄生"在 targ
 代码层面就体现在一个布尔开关：
 
 ```python
-# eagle.py，第 10 行
-class EagleProposer(SpecDecodeBaseProposer):
-    def __init__(self, vllm_config, device, runner):
-        super().__init__(
-            vllm_config, device,
-            pass_hidden_states_to_model=True,  # ← EAGLE 相比 DraftModel 的全部差异
-            runner=runner,
-        )
+# vllm/v1/worker/spec_decode/eagle.py
+# class EagleProposer(SpecDecodeBaseProposer)  第 10 行
+def __init__(self, vllm_config, device, runner):
+    super().__init__(
+        vllm_config, device,
+        pass_hidden_states_to_model=True,  # ← EAGLE 相比 DraftModel 的全部差异
+        runner=runner,
+    )
 ```
 
 整个文件 23 行，没有任何业务逻辑，全靠基类跑通。
@@ -224,10 +234,12 @@ class EagleProposer(SpecDecodeBaseProposer):
 Medusa 一次 forward 出所有 K 个 draft，不需要 autoregressive 循环：
 
 ```python
-def propose(self, num_speculative_tokens, target_hidden_states, ...):
-    blocks = self.model(target_hidden_states)   # 多 head 并行 forward
-    logits = self.model.compute_logits(blocks)  # [batch, num_heads, vocab]
-    return logits.argmax(dim=-1)                # [batch, num_heads]
+# vllm/v1/worker/spec_decode/medusa.py
+# class MedusaProposer
+# def propose(self, num_speculative_tokens, target_hidden_states, ...)
+blocks = self.model(target_hidden_states)   # 多 head 并行 forward
+logits = self.model.compute_logits(blocks)  # [batch, num_heads, vocab]
+return logits.argmax(dim=-1)                # [batch, num_heads]
 ```
 
 代价是各 head 完全独立，接受率通常比 EAGLE 低。
@@ -249,6 +261,8 @@ def propose(self, num_speculative_tokens, target_hidden_states, ...):
 Step 3 的核心 kernel（第 459 行）：
 
 ```python
+# vllm/v1/sample/rejection_sampler_utils.py
+# 第 459 行，Triton kernel（不在任何 class 下，是模块级函数）
 @triton.jit
 def _rejection_kernel(...):
     for i in range(num_draft_tokens):
@@ -270,7 +284,9 @@ def _rejection_kernel(...):
 在 `vllm/v1/worker/gpu/model_runner.py`（DeepSeek 等 TP/EP 多 GPU 场景），SD 改用 `self.speculator`，**speculator 同时负责 draft forward 和 KV cache 管理**：
 
 ```python
-# vllm/v1/worker/gpu/model_runner.py，第 1466 行
+# vllm/v1/worker/gpu/model_runner.py
+# class GPUModelRunner（TP/EP 版本，与主路径的 gpu_model_runner.py 不同）
+# def sample_tokens(self, ...)  第 1466 行
 draft_tokens = self.speculator.propose(
     input_batch,
     attn_metadata,
