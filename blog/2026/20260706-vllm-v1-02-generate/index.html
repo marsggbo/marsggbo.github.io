@@ -79,7 +79,23 @@
         <span class="n">self</span><span class="p">.</span><span class="n">waiting</span><span class="p">.</span><span class="nf">remove</span><span class="p">(</span><span class="n">request</span><span class="p">)</span>
     
     <span class="k">return</span> <span class="nc">SchedulerOutput</span><span class="p">(</span><span class="n">num_scheduled_tokens</span><span class="o">=</span><span class="p">{...},</span> <span class="p">...)</span>
-</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">SchedulerOutput</code> 是调度结果的载体：</p> <ul> <li> <code class="language-plaintext highlighter-rouge">NewRequestData</code>：第一次被调度的请求，带完整数据</li> <li> <code class="language-plaintext highlighter-rouge">CachedRequestData</code>：后续步骤，只带 diff（新分配的块 id、新 token）</li> <li> <code class="language-plaintext highlighter-rouge">num_scheduled_tokens</code>：每个请求本步要处理多少 token</li> </ul> <blockquote> <p><strong>这里有个重要的设计决策</strong>：<code class="language-plaintext highlighter-rouge">CachedRequestData</code> 只传 diff，而不是每步都传完整请求。这意味着 Worker 侧需要自己维护每个请求的状态（通过 <code class="language-plaintext highlighter-rouge">_update_states</code> 应用 diff）。好处是序列化开销接近零；代价是 Worker 侧的状态管理变复杂了——这是一个典型的”以复杂性换性能”的工程取舍。</p> </blockquote> <p>调度结果出来之后，就可以交给 GPU 执行了。</p> <hr> <h2 id="6-第四步execute_model-modelforward-在这里">6. 第四步：execute_model() ——model.forward() 在这里</h2> <p><img src="/assets/img/posts/20260706-vllm-v1-02-generate/diagram_execute_model.png" alt="execute_model() 内部六步"></p> <p><code class="language-plaintext highlighter-rouge">EngineCore.step()</code> 拿到 <code class="language-plaintext highlighter-rouge">SchedulerOutput</code> 后，调用链向下穿三层：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># LLM.generate() → LLM._run_engine() → LLMEngine.step()
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">SchedulerOutput</code> 是调度结果的载体：</p> <ul> <li> <code class="language-plaintext highlighter-rouge">NewRequestData</code>：第一次被调度的请求，带完整数据</li> <li> <code class="language-plaintext highlighter-rouge">CachedRequestData</code>：后续步骤，只带 diff（新分配的块 id、新 token）</li> <li> <code class="language-plaintext highlighter-rouge">num_scheduled_tokens</code>：每个请求本步要处理多少 token</li> </ul> <blockquote> <p><strong>这里有个重要的设计决策</strong>：<code class="language-plaintext highlighter-rouge">CachedRequestData</code> 只传 diff，而不是每步都传完整请求。这意味着 Worker 侧需要自己维护每个请求的状态（通过 <code class="language-plaintext highlighter-rouge">_update_states</code> 应用 diff）。好处是序列化开销接近零；代价是 Worker 侧的状态管理变复杂了——这是一个典型的”以复杂性换性能”的工程取舍。</p> </blockquote> <p>调度结果出来之后，就可以交给 GPU 执行了。</p> <hr> <h2 id="6-第四步execute_model-modelforward-在这里">6. 第四步：execute_model() ——model.forward() 在这里</h2> <pre><code class="language-mermaid">graph TD
+    S1["① _update_states()&lt;br/&gt;gpu_model_runner.py:1148&lt;br/&gt;应用 SchedulerOutput diff，更新 InputBatch / block table"]
+    S2["② _prepare_inputs()&lt;br/&gt;gpu_model_runner.py:1910&lt;br/&gt;输出 input_ids / positions，形状 [N_tokens]&lt;br/&gt;不同请求直接拼接，零 padding，FlashAttention varlen 格式"]
+    S3["③ _build_attention_metadata()&lt;br/&gt;gpu_model_runner.py:2237&lt;br/&gt;生成 slot_mapping [N_tokens] 和 block_table [num_reqs, max_blocks]&lt;br/&gt;KV Cache 物理槽寻址"]
+    S4["④ set_forward_context() + model.forward()&lt;br/&gt;gpu_model_runner.py:4335 / 4352&lt;br/&gt;attn_metadata 存入线程局部变量（不改模型接口）&lt;br/&gt;model(input_ids, positions) → hidden_states [N_tokens, d]"]
+    S5["⑤ model.compute_logits()&lt;br/&gt;gpu_model_runner.py:~4390&lt;br/&gt;hidden_states[logits_indices]，只取每请求最后一个 token&lt;br/&gt;[N_tokens, d] → [N_req, vocab_size]"]
+    S6["⑥ 存入 ExecuteModelState，return None&lt;br/&gt;gpu_model_runner.py:4418&lt;br/&gt;logits 暂存，等 sample_tokens() 取&lt;br/&gt;GPU forward 与 CPU 语法计算真正并行"]
+
+    S1 --&gt; S2 --&gt; S3 --&gt; S4 --&gt; S5 --&gt; S6
+
+    style S1 fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    style S2 fill:#fef9c3,stroke:#eab308,color:#713f12
+    style S3 fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+    style S4 fill:#f3e8ff,stroke:#a855f7,color:#4a1d96
+    style S5 fill:#dcfce7,stroke:#22c55e,color:#14532d
+    style S6 fill:#dbeafe,stroke:#3b82f6,color:#1e3a5f
+</code></pre> <p><code class="language-plaintext highlighter-rouge">EngineCore.step()</code> 拿到 <code class="language-plaintext highlighter-rouge">SchedulerOutput</code> 后，调用链向下穿三层：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># LLM.generate() → LLM._run_engine() → LLMEngine.step()
 #   → EngineCoreClient.step() → EngineCore.step() → Executor.execute_model()
 # EngineCore.step()  —  vllm/v1/engine/core.py
 </span><span class="n">self</span><span class="p">.</span><span class="n">executor</span><span class="p">.</span><span class="nf">execute_model</span><span class="p">(</span><span class="n">scheduler_output</span><span class="p">)</span>
@@ -91,7 +107,29 @@
 </span></code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">GPUModelRunner.execute_model()</code> 是重点，分 6 个子步骤：</p> <h3 id="61-_update_states应用-diff">6.1 _update_states：应用 diff</h3> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># GPUModelRunner._update_states()  —  gpu_model_runner.py（精简）
 </span></code></pre></div></div> <p>把 <code class="language-plaintext highlighter-rouge">SchedulerOutput</code> 里的 diff 应用到 <code class="language-plaintext highlighter-rouge">InputBatch</code>（模型运行器维护的 CPU 状态结构）：</p> <ul> <li>新请求：分配 InputBatch 中的槽位，初始化 block table 行</li> <li>结束请求：释放槽位</li> <li>新 KV 块：更新 block table</li> </ul> <p>状态更新完成，才能准备这步的 GPU 输入。</p> <h3 id="62-_prepare_inputs为什么是-1d">6.2 _prepare_inputs：为什么是 1D？</h3> <p>这一步把 CPU 侧的 <code class="language-plaintext highlighter-rouge">InputBatch</code> 打包成 GPU tensor，输出两个核心 tensor：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">input_ids</span><span class="p">:</span> <span class="n">torch</span><span class="p">.</span><span class="n">Tensor</span>   <span class="c1"># shape [N_tokens]
 </span><span class="n">positions</span><span class="p">:</span> <span class="n">torch</span><span class="p">.</span><span class="n">Tensor</span>   <span class="c1"># shape [N_tokens]
-</span></code></pre></div></div> <p>注意：<strong>是 1D 的，不是 <code class="language-plaintext highlighter-rouge">[batch, seq_len]</code> 的 2D</strong>。为什么？</p> <p><img src="/assets/img/posts/20260706-vllm-v1-02-generate/forward_input.png" alt="为什么 model.forward() 的输入是 1D tensor？"></p> <p>同一个 batch 里，不同请求当前步的 token 数差异极大：prefill 中的请求可能有几百个 token，decode 中的请求只有 1 个。如果 padding 成 <code class="language-plaintext highlighter-rouge">[batch, max_len]</code>，灰色的 PAD 位置全是无效计算，浪费率极高。</p> <p>vllm 的做法是把所有请求的 token 直接<strong>拼成 1D</strong>，配合 <code class="language-plaintext highlighter-rouge">cu_seqlens</code>（各序列长度的累积前缀和）告诉 attention 层每个请求的边界在哪里。4 个请求（5+1+3+1 个 token）拼成 <code class="language-plaintext highlighter-rouge">[10]</code>，只有 10 次有效计算，零浪费。</p> <p>FlashAttention（一种 IO-aware 的高效注意力算法）的 2/3 版本原生支持这种 varlen 格式（<code class="language-plaintext highlighter-rouge">flash_attn_varlen_func</code>），这是两者的配合点。</p> <h3 id="63-_build_attention_metadata寻址-kv-cache-的关键">6.3 _build_attention_metadata：寻址 KV Cache 的关键</h3> <p>有了 1D 的输入，还需要告诉 attention 层每个 token 对应的 KV Cache 在哪里：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">attn_metadata</span> <span class="o">=</span> <span class="n">FlashAttentionMetadataBuilder</span><span class="p">.</span><span class="nf">build</span><span class="p">(</span>
+</span></code></pre></div></div> <p>注意：<strong>是 1D 的，不是 <code class="language-plaintext highlighter-rouge">[batch, seq_len]</code> 的 2D</strong>。为什么？</p> <p>同一个 batch 里，不同请求当前步的 token 数差异极大：prefill 中的请求可能有几百个 token，decode 中的请求只有 1 个。如果 padding 成 <code class="language-plaintext highlighter-rouge">[batch, max_len]</code>，灰色的 PAD 位置全是无效计算，浪费率极高。</p> <p>vllm 的做法是把所有请求的 token 直接<strong>拼成 1D</strong>，配合 <code class="language-plaintext highlighter-rouge">cu_seqlens</code>（各序列长度的累积前缀和）告诉 attention 层每个请求的边界在哪里：</p> <pre><code class="language-mermaid">graph TB
+    subgraph BAD["❌ Padding 成 2D — shape[4, 8] = 32 次运算，22/32 = 69% 是 PAD"]
+        direction LR
+        RA["Req A (prefill 5)&lt;br/&gt;■ ■ ■ ■ ■ □ □ □"]
+        RB["Req B (decode 1)&lt;br/&gt;■ □ □ □ □ □ □ □"]
+        RC["Req C (prefill 3)&lt;br/&gt;■ ■ ■ □ □ □ □ □"]
+        RD["Req D (decode 1)&lt;br/&gt;■ □ □ □ □ □ □ □"]
+    end
+
+    subgraph GOOD["✅ 1D varlen 拼接 — shape[10] = 10 次运算，0 浪费"]
+        direction TB
+        IDS["input_ids[10]&lt;br/&gt;A0 A1 A2 A3 A4 | B0 | C0 C1 C2 | D0"]
+        POS["positions&lt;br/&gt;0  1  2  3  4  | 0  | 0  1  2  | 0"]
+        CU["cu_seqlens: [0, 5, 6, 9, 10]&lt;br/&gt;告诉 FlashAttention 每个请求的边界"]
+        FA["flash_attn_varlen_func&lt;br/&gt;原生支持 varlen，高吞吐的基础之一"]
+        IDS --&gt; POS --&gt; CU --&gt; FA
+    end
+
+    BAD --&gt;|"vllm 改用 1D varlen，消除 PAD 浪费"| GOOD
+
+    style BAD fill:#3b1219,stroke:#ef4444,color:#fca5a5
+    style GOOD fill:#14291e,stroke:#22c55e,color:#86efac
+</code></pre> <p>4 个请求（5+1+3+1 个 token）拼成 <code class="language-plaintext highlighter-rouge">[10]</code>，只有 10 次有效计算，零浪费。FlashAttention 2/3 原生支持这种 varlen 格式（<code class="language-plaintext highlighter-rouge">flash_attn_varlen_func</code>），这是两者的配合点。</p> <h3 id="63-_build_attention_metadata寻址-kv-cache-的关键">6.3 _build_attention_metadata：寻址 KV Cache 的关键</h3> <p>有了 1D 的输入，还需要告诉 attention 层每个 token 对应的 KV Cache 在哪里：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="n">attn_metadata</span> <span class="o">=</span> <span class="n">FlashAttentionMetadataBuilder</span><span class="p">.</span><span class="nf">build</span><span class="p">(</span>
     <span class="n">block_table</span><span class="o">=</span><span class="n">block_table_gpu</span><span class="p">,</span>  <span class="c1"># [num_reqs, max_blocks]
 </span>    <span class="n">slot_mapping</span><span class="o">=</span><span class="n">slot_mapping</span><span class="p">,</span>    <span class="c1"># [N_tokens]
 </span>    <span class="n">seq_lens</span><span class="o">=</span><span class="n">seq_lens</span><span class="p">,</span>
