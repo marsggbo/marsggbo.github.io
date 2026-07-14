@@ -71,7 +71,11 @@ SD 就嵌在这两步里，没有引入新的函数：
 
 **第 1 轮 bookkeeping**：rejection 结果（接受了几个 token）从 GPU 同步到 CPU，更新 block table，回收被拒绝的 draft token 占用的 KV Cache slot。这步是纯 CPU 操作。
 
-**第 1 轮 propose**：drafter 用 target 刚算出的 hidden states，预测下一批 K 个 draft token，供第 2 轮使用。**注意这里的时机**：有些 drafter（比如后面会讲到的 EAGLE）直接消费 GPU tensor，不需要等 bookkeeping 完成就能开跑，和 bookkeeping 形成 GPU/CPU 的并行重叠；而 ngram 需要 CPU 侧的 token ids，必须等 bookkeeping 完成后才能 propose。
+**第 1 轮 propose**：drafter 预测下一批 K 个 draft token，供第 2 轮使用。不同的 drafter 依赖的输入不同：
+
+- **EAGLE / Medusa**：依赖 target model 刚算出的 hidden states。EAGLE 把 target hidden states 和 draft model 的 embedding 拼在一起作为输入；Medusa 直接用 target 最后一层的 hidden states 驱动多个预测头并行输出。因为它们消费的都是 GPU tensor，不需要等 CPU 侧的 bookkeeping 完成就可以提前开跑，和 bookkeeping 形成 GPU/CPU 的并行重叠。
+- **DraftModel（独立小模型）**：小模型自己做 autoregressive decode，每步用上一步采样出的 draft token 作为输入，**不依赖 target 的 hidden states**，和 target model 是两个完全独立的模型。同样消费 GPU tensor，可以提前 propose。
+- **ngram**：纯 CPU 文本匹配，在 context token 序列里找最长后缀匹配，预测接下来的 token。需要 CPU 侧完整的 token ids，必须等 bookkeeping 完成后才能 propose。
 
 **之后每轮循环上述流程**，直到生成 EOS 或达到最大长度。
 
