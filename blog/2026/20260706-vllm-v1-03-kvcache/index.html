@@ -134,7 +134,25 @@ cu_seqlens = [0, 254, 255]
 
 # Req A 的 attention：token[0..253] 互相 attend（prefill，O(N²) 计算）
 # Req B 的 attention：token[254] attend 它的全部历史 KV cache（decode，从 block_table 读）
-</code></pre></div></div> <p>对 GPU 来说，这就是一次 forward pass，处理一个 <code class="language-plaintext highlighter-rouge">[255]</code> 长的 1D tensor。FlashAttention 的 varlen 接口会按 <code class="language-plaintext highlighter-rouge">cu_seqlens</code> 的边界分别处理每个请求的 attention，prefill 段和 decode 段互不干扰。Req B 始终在每步的 batch 里，每步都能产出一个新 token，不会因为 Req A 的 prefill 被阻塞。</p> <blockquote> <p><strong><code class="language-plaintext highlighter-rouge">max_num_batched_tokens</code> 怎么设？</strong> 控制每步最多处理多少 token（prefill + decode 合计）。设太小，长 prompt 的 prefill 被切很碎，TTFT 变慢；设太大，GPU 单步计算量过大，latency 抖动。官方建议从 2048~8192 开始，根据目标 latency SLO 和 GPU 显存决定。</p> </blockquote> <h3 id="43-抢占kv-cache-不够时的兜底">4.3 抢占：KV Cache 不够时的兜底</h3> <p>调度器发现 KV Cache 不够给 running 队列用时，会抢占优先级最低的请求：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># vllm/v1/core/sched/scheduler.py
+</code></pre></div></div> <p>对 GPU 来说，这就是一次 forward pass，处理一个 <code class="language-plaintext highlighter-rouge">[255]</code> 长的 1D tensor。FlashAttention 的 varlen 接口会按边界分别处理每个请求的 attention，prefill 段和 decode 段互不干扰。</p> <p><strong>FlashAttention varlen 接口怎么同时处理 prefill 和 decode？</strong></p> <p>关键是 <code class="language-plaintext highlighter-rouge">flash_attn_varlen_func</code> 接受两组独立的 <code class="language-plaintext highlighter-rouge">cu_seqlens</code>：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="nf">flash_attn_varlen_func</span><span class="p">(</span>
+    <span class="n">q</span><span class="o">=</span><span class="n">query</span><span class="p">,</span>           <span class="c1"># [N_tokens_q, num_heads, head_dim]，所有请求的 Q 拼在一起
+</span>    <span class="n">k</span><span class="o">=</span><span class="n">key_cache</span><span class="p">,</span>       <span class="c1"># GPU KV cache tensor（paged，不连续）
+</span>    <span class="n">v</span><span class="o">=</span><span class="n">value_cache</span><span class="p">,</span>
+    <span class="n">cu_seqlens_q</span><span class="o">=</span><span class="p">...,</span>  <span class="c1"># Q 的累积长度边界，每个请求这步送了多少个新 token
+</span>    <span class="n">cu_seqlens_k</span><span class="o">=</span><span class="p">...,</span>  <span class="c1"># K 的累积长度边界，每个请求能 attend 的历史总长度
+</span>    <span class="n">block_table</span><span class="o">=</span><span class="p">...,</span>   <span class="c1"># KV cache 的物理块索引，告诉 FlashAttention 去哪读历史 K/V
+</span><span class="p">)</span>
+</code></pre></div></div> <p><code class="language-plaintext highlighter-rouge">cu_seqlens_q</code> 和 <code class="language-plaintext highlighter-rouge">cu_seqlens_k</code> 可以不一样——这正是混排的关键：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>Step 1 的 batch（Req A prefill chunk 254 token，Req B decode 1 token）：
+
+cu_seqlens_q = [0, 254, 255]
+# Req A：Q 有 254 个 token（本步新 token）
+# Req B：Q 有 1 个 token（本步新 token）
+
+cu_seqlens_k = [0, 254, 756]
+# Req A：K/V 也只有 254（全新，无历史 cache）
+# Req B：K/V 有 755（1 个新 token + 754 个历史 cache token）
+#         历史 K/V 通过 block_table 从 GPU KV cache 里读，不需要先 gather 成连续 buffer
+</code></pre></div></div> <p>FlashAttention 对每个序列独立计算 attention：</p> <ul> <li> <strong>Req A（prefill）</strong>：254 个 Q token，attend 自身的 254 个 K/V，标准的 prefill attention，计算量 O(254²)</li> <li> <strong>Req B（decode）</strong>：1 个 Q token，attend 全部 755 个历史 K/V（从 block_table 找到各个物理块读出来），计算量 O(755)</li> </ul> <p>两个序列共享同一次 kernel 调用，在 GPU 内部并行处理，不存在串行等待。Req B 始终在每步的 batch 里，每步都能产出一个新 token，不会因为 Req A 的 prefill 被阻塞。</p> <blockquote> <p><strong><code class="language-plaintext highlighter-rouge">max_num_batched_tokens</code> 怎么设？</strong> 控制每步最多处理多少 token（prefill + decode 合计）。设太小，长 prompt 的 prefill 被切很碎，TTFT 变慢；设太大，GPU 单步计算量过大，latency 抖动。官方建议从 2048~8192 开始，根据目标 latency SLO 和 GPU 显存决定。</p> </blockquote> <h3 id="43-抢占kv-cache-不够时的兜底">4.3 抢占：KV Cache 不够时的兜底</h3> <p>调度器发现 KV Cache 不够给 running 队列用时，会抢占优先级最低的请求：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># vllm/v1/core/sched/scheduler.py
 # class Scheduler
 # def _preempt(self, request)
 </span><span class="k">def</span> <span class="nf">_preempt</span><span class="p">(</span><span class="n">self</span><span class="p">,</span> <span class="n">request</span><span class="p">):</span>
