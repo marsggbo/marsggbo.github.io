@@ -10,13 +10,20 @@
 <span class="k">elif</span> <span class="n">spec_config</span><span class="p">.</span><span class="n">method</span> <span class="o">==</span> <span class="sh">"</span><span class="s">medusa</span><span class="sh">"</span><span class="p">:</span>
     <span class="n">self</span><span class="p">.</span><span class="n">drafter</span> <span class="o">=</span> <span class="nc">MedusaProposer</span><span class="p">(...)</span>
 </code></pre></div></div> <p>以 EagleProposer 为例，完整初始化链路如下：</p> <div class="language-plaintext highlighter-rouge"><div class="highlight"><pre class="highlight"><code>GPUModelRunner.__init__()
-  └─ EagleProposer.__init__()          # eagle.py:10
-       └─ SpecDecodeBaseProposer.__init__()  # llm_base_proposer.py
-            └─ self.load_model()        # 加载 draft model 权重到 GPU
-                 └─ self.model = get_model(draft_model_config)
-                    # self.model 是一个独立的 nn.Module（更小的 LLM）
-                    # 和 GPUModelRunner.self.model 共用同一块 GPU 显存
-</code></pre></div></div> <p>NgramProposer 的 <code class="language-plaintext highlighter-rouge">load_model()</code> 是空实现——它不需要任何模型，不占显存。</p> <hr> <h2 id="5-运行时主线execute_model--sample_tokens--propose">5. 运行时主线：execute_model() → sample_tokens() → propose()</h2> <p>有了架构和初始化的认知，再来看每轮推理里代码按什么顺序跑。</p> <h3 id="51-execute_modeldraft-tokens-怎么打包进-input_ids关键">5.1 execute_model()：draft tokens 怎么打包进 input_ids（关键）</h3> <p>普通 decode 每步只送 1 个 token 给 target model；开启 SD 后，<strong>从第二轮起，<code class="language-plaintext highlighter-rouge">input_ids</code> 里会包含上一轮 propose 出的 K 个 draft tokens，加上 1 个 bonus token（来自上一轮 target 自己采样的结果），共 K+1 个 token 一次性送进 target forward</strong>。</p> <p>这是 SD 提速的核心工程实现——把原来需要串行跑 K 次的 decode，压缩成一次 batched prefill。prefill 是 compute-bound，GPU 利用率远高于 memory-bound 的 decode。</p> <p><code class="language-plaintext highlighter-rouge">_prepare_inputs()</code> 里负责拼接这段 input_ids（第 2212 行），同时构建 <code class="language-plaintext highlighter-rouge">SpecDecodeMetadata</code>：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># vllm/v1/worker/gpu_model_runner.py
+  └─ EagleProposer.__init__()              # eagle.py:10
+       └─ SpecDecodeBaseProposer.__init__()    # llm_base_proposer.py
+            # 此时 __init__ 不加载权重，只做配置初始化
+
+GPUModelRunner.load_model()               # 加载 target model 权重后
+  └─ if hasattr(self, "drafter"):
+       self.drafter.load_model(self.model)  # 把 target model 传进去
+            # ↑ SpecDecodeBaseProposer.load_model(target_model)
+            └─ self.model = self._get_model()    # 加载 draft model 权重
+                 # EAGLE/Medusa: set_model_tag("eagle_head") + get_model()
+                 # DraftModelProposer: set_model_tag("draft_model") + get_model()
+            └─ self._maybe_share_embeddings(target_model)  # 共享 target 的 embedding
+            └─ self._maybe_share_lm_head(target_model)     # 共享 target 的 lm_head
+</code></pre></div></div> <p><strong>为什么 <code class="language-plaintext highlighter-rouge">load_model()</code> 需要传入 target model？</strong> EAGLE 的 draft head 通常共用 target model 的 embedding 层和 lm_head——draft 不需要自己学词表映射，直接复用 target 的，既节省显存又保证两者语义空间对齐。<code class="language-plaintext highlighter-rouge">set_model_tag</code> 的作用是给 <code class="language-plaintext highlighter-rouge">torch.compile</code> 做命名空间区分，避免 target 和 draft 的编译 graph 混淆（<code class="language-plaintext highlighter-rouge">DraftModelProposer</code> 用 <code class="language-plaintext highlighter-rouge">"draft_model"</code> tag，EAGLE/Medusa 基类默认用 <code class="language-plaintext highlighter-rouge">"eagle_head"</code> tag）。</p> <p>NgramProposer 的 <code class="language-plaintext highlighter-rouge">load_model()</code> 是空实现——它不需要任何模型，不占显存。</p> <hr> <h2 id="5-运行时主线execute_model--sample_tokens--propose">5. 运行时主线：execute_model() → sample_tokens() → propose()</h2> <p>有了架构和初始化的认知，再来看每轮推理里代码按什么顺序跑。</p> <h3 id="51-execute_modeldraft-tokens-怎么打包进-input_ids关键">5.1 execute_model()：draft tokens 怎么打包进 input_ids（关键）</h3> <p>普通 decode 每步只送 1 个 token 给 target model；开启 SD 后，<strong>从第二轮起，<code class="language-plaintext highlighter-rouge">input_ids</code> 里会包含上一轮 propose 出的 K 个 draft tokens，加上 1 个 bonus token（来自上一轮 target 自己采样的结果），共 K+1 个 token 一次性送进 target forward</strong>。</p> <p>这是 SD 提速的核心工程实现——把原来需要串行跑 K 次的 decode，压缩成一次 batched prefill。prefill 是 compute-bound，GPU 利用率远高于 memory-bound 的 decode。</p> <p><code class="language-plaintext highlighter-rouge">_prepare_inputs()</code> 里负责拼接这段 input_ids（第 2212 行），同时构建 <code class="language-plaintext highlighter-rouge">SpecDecodeMetadata</code>：</p> <div class="language-python highlighter-rouge"><div class="highlight"><pre class="highlight"><code><span class="c1"># vllm/v1/worker/gpu_model_runner.py
 # class GPUModelRunner
 # def _prepare_inputs(self, scheduler_output)  第 2212 行
 </span>
