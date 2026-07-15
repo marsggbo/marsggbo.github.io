@@ -240,9 +240,9 @@ return draft_token_ids_list  # list[Tensor]，长度 K，每个 shape [batch_siz
 # ↑ 这个返回值最终进入 execute_model_state，下一轮被打包进 input_ids
 ```
 
-### 6.3 EAGLE vs DraftModel：一个布尔开关的实质差异
+### 6.3 EAGLE vs DraftModel：运行时的关键差异
 
-两者唯一的代码差异就是构造函数里的 `pass_hidden_states_to_model`：
+从 propose 循环的角度看，两者的差异只有一个布尔开关 `pass_hidden_states_to_model`：
 
 ```python
 # vllm/v1/worker/spec_decode/eagle.py
@@ -250,24 +250,32 @@ return draft_token_ids_list  # list[Tensor]，长度 K，每个 shape [batch_siz
 def __init__(self, vllm_config, device, runner):
     super().__init__(
         vllm_config, device,
-        pass_hidden_states_to_model=True,   # ← EAGLE
+        pass_hidden_states_to_model=True,   # ← EAGLE：draft model 需要 target hidden_states
         runner=runner,
     )
 
-# DraftModelProposer 对应的是：
-# pass_hidden_states_to_model=False          ← DraftModel
+# vllm/v1/spec_decode/draft_model.py
+# class DraftModelProposer(SpecDecodeBaseProposer)
+def __init__(self, ...):
+    super().__init__(
+        ...,
+        pass_hidden_states_to_model=False,  # ← DraftModel：完全独立，不消费 target 特征
+    )
 ```
 
-这个开关在基类循环里（6.2 节代码的 `if self.pass_hidden_states_to_model` 分支）产生实质差异：
+这个开关在基类循环（6.2 节）的 `if self.pass_hidden_states_to_model` 分支产生实质差异：
 
 | | EAGLE | DraftModel |
 |---|---|---|
 | draft model 的输入 | `input_ids` + target `hidden_states` 拼接 | 只有 `input_ids` |
 | 依赖 target forward | 是，消费 target 最后一层特征 | 否，完全独立 |
 | 接受率 | 更高（站在 target 肩膀上猜） | 较低（独立猜） |
-| 代码差异 | 23 行，只有这一个开关 | 只有这一个开关 |
+| `_get_model()` | 使用基类默认实现，tag = `"eagle_head"` | **override**，tag = `"draft_model"`，配置构建逻辑也不同 |
+| embedding/lm_head | 与 target 共享 | **override** 为不共享 |
 
-EAGLE 的 insight 是：不让 draft model 从零开始猜，而是让它"寄生"在 target 的 residual stream 上——把 target hidden states 和 draft model 的 embedding 拼在一起作为输入，draft model 相当于在 target 已经理解的语义基础上再细化预测。
+`DraftModelProposer` 除了这个开关外，还 override 了 `_get_model()`（加载时用 `"draft_model"` tag）、`_create_draft_vllm_config()`（独立的 parallel config）、以及 `_maybe_share_embeddings` 和 `_maybe_share_lm_head`（独立小模型不共享 target 词表）。EAGLE 的 `EagleProposer` 整个文件只有 23 行，全靠基类默认行为跑通。
+
+EAGLE 的 insight 是：不让 draft model 从零开始猜，而是让它"寄生"在 target 的 residual stream 上——把 target hidden states 和 draft model 的 embedding 拼在一起作为输入，draft model 相当于在 target 已经理解的语义基础上再细化预测，接受率因此高得多。
 
 ### 6.4 MedusaProposer：并行多头，无 autoregressive 循环
 
