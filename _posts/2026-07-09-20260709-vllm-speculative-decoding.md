@@ -84,15 +84,19 @@ SD 就嵌在这两步里，没有引入新的函数：
 - **target forward 一次吃 K 个 draft token**，相当于把 K 步串行 decode 压缩成一次 prefill
 - **propose 和 bookkeeping 可以重叠**，进一步隐藏 CPU 同步延迟
 
-### 2.4 模块全景
+### 2.4 模块结构与数据流全景
 
-`GPUModelRunner` 是 SD 相关逻辑的宿主，持有两个 SD 专用成员和一个数据载体：
+`GPUModelRunner` 是 SD 相关逻辑的宿主。下图展示了它内部的对象层级、draft model 在哪里、以及运行时数据怎么在 target model 和 drafter 之间流动：
 
-![整体架构：模块与依赖关系](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/diagram_arch.png)
+![GPUModelRunner 内部结构与数据流](/assets/img/posts/20260709-vllm-v1-05-speculative-decoding/sd_internal_structure.png)
 
-- **`self.drafter`**：Proposer，负责 propose，有四种实现（第 6 节展开）
-- **`self.rejection_sampler`**：负责 rejection sampling，在 `vllm/v1/sample/` 下而不是 `spec_decode/`——因为 rejection sampling 在概念上属于"采样"而非"draft 算法"
-- **`SpecDecodeMetadata`**：贯穿 execute_model 和 sample_tokens 的数据胶水，在 `_prepare_inputs()` 构建
+几个关键问题这张图都能回答：
+
+**draft model 在哪里初始化？** `GPUModelRunner.__init__()` 第 565 行根据 `speculative_config.method` 创建对应的 Proposer 对象（`self.drafter`），Proposer 构造函数内部再调 `load_model()` 把 draft 模型权重加载到 GPU。整个链路：`GPUModelRunner.__init__()` → `EagleProposer.__init__()` → `SpecDecodeBaseProposer.load_model()` → draft 权重进 GPU。
+
+**target model 和 draft model 是进程间通信还是同进程？** 同进程，同一块 GPU。两者都是 `nn.Module`，挂在同一个 Worker 进程里。它们之间的"信息交换"就是普通的 Python 函数调用——把一个 GPU tensor 当参数传过去，零拷贝，零 IPC，没有任何跨进程或跨 GPU 的开销。
+
+**`SpecDecodeMetadata`** 是贯穿 execute_model 和 sample_tokens 的数据胶水，在 `_prepare_inputs()` 第 2212 行构建，存放每个请求的 draft token ids、draft 步数、logits 索引等，第 5 节展开。
 
 有了这个全景，接下来逐层看细节。
 
