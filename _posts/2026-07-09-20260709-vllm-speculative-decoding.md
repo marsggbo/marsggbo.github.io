@@ -82,13 +82,22 @@ elif spec_config.method == "medusa":
 
 ```
 GPUModelRunner.__init__()
-  └─ EagleProposer.__init__()          # eagle.py:10
-       └─ SpecDecodeBaseProposer.__init__()  # llm_base_proposer.py
-            └─ self.load_model()        # 加载 draft model 权重到 GPU
-                 └─ self.model = get_model(draft_model_config)
-                    # self.model 是一个独立的 nn.Module（更小的 LLM）
-                    # 和 GPUModelRunner.self.model 共用同一块 GPU 显存
+  └─ EagleProposer.__init__()              # eagle.py:10
+       └─ SpecDecodeBaseProposer.__init__()    # llm_base_proposer.py
+            # 此时 __init__ 不加载权重，只做配置初始化
+
+GPUModelRunner.load_model()               # 加载 target model 权重后
+  └─ if hasattr(self, "drafter"):
+       self.drafter.load_model(self.model)  # 把 target model 传进去
+            # ↑ SpecDecodeBaseProposer.load_model(target_model)
+            └─ self.model = self._get_model()    # 加载 draft model 权重
+                 # EAGLE/Medusa: set_model_tag("eagle_head") + get_model()
+                 # DraftModelProposer: set_model_tag("draft_model") + get_model()
+            └─ self._maybe_share_embeddings(target_model)  # 共享 target 的 embedding
+            └─ self._maybe_share_lm_head(target_model)     # 共享 target 的 lm_head
 ```
+
+**为什么 `load_model()` 需要传入 target model？** EAGLE 的 draft head 通常共用 target model 的 embedding 层和 lm_head——draft 不需要自己学词表映射，直接复用 target 的，既节省显存又保证两者语义空间对齐。`set_model_tag` 的作用是给 `torch.compile` 做命名空间区分，避免 target 和 draft 的编译 graph 混淆（`DraftModelProposer` 用 `"draft_model"` tag，EAGLE/Medusa 基类默认用 `"eagle_head"` tag）。
 
 NgramProposer 的 `load_model()` 是空实现——它不需要任何模型，不占显存。
 
