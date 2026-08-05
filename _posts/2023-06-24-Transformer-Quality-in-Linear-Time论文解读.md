@@ -16,7 +16,7 @@ toc:
 
 原本的Transformer的Block遵循如下的设计范式：MHSA（多头自注意力）+ 一层或者两层的FFN（全连接层），如下图所示。我们只考虑FFN的话，其数学表达式如下：T表示句子长度，d表示词向量维度（也表示模型隐藏层维度），e表示expanded intermediate 特征大小。
 
-![{\cal O}=\phi(X W_{u})W_{o}\mathrm{~Where~}\,\, X\in\mathbb{R}^{T\times d}, W _{u}\in\mathbb{R}^{d\times e},W_{o}\in\mathbb{R}^{e\times d} \\](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6874334c.jpg)
+![{\cal O}=\phi(X W_{u})W_{o}\mathrm{\~Where\~}\,\, X\in\mathbb{R}^{T\times d}, W _{u}\in\mathbb{R}^{d\times e},W_{o}\in\mathbb{R}^{e\times d} \\](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6874334c.jpg)
 
 ![](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/ed1c599d.jpg)
 

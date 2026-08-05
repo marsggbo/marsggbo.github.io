@@ -104,7 +104,7 @@ BP算法示意图如下：
 
 将上式中的 ![n_l-1](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning上/68fbf924.jpg) 与 ![n_l](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning上/9eb67c7f.jpg) 的关系替换为 ![l与l+1](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning上/bf00a753.jpg) 的关系即可得到前面的残差。
 
-将上面的结果带入**权值更新**的表达式中便可顺利的执行BackPropagation啦~~~
+将上面的结果带入**权值更新**的表达式中便可顺利的执行BackPropagation啦\~\~\~
 
 > 但是！！！需要注意的是上面式子中反复出现的 ![f '(z_i^{(l)})](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning上/f8ada1b0.jpg) ，表示激活函数的导数。这个在刚开始的确困惑到我了，因为视频里老师在演示计算![δ](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning上/e28ab5f6.jpg)的时候根本就乘以这一项，难道老师错了？其实不是的，解释如下： 常用的激活函数有好几种，但使用是分情况的：
 
