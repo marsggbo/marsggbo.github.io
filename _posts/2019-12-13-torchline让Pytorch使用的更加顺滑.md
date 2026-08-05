@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "torchline：让Pytorch使用的更加顺滑"
-date: 2019-12-13
+title: torchline：让Pytorch使用的更加顺滑
+date: '2019-12-13'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/97244535

@@ -1,9 +1,9 @@
 ---
 layout: post
-title: "Lang-PINN: 从自然语言到物理信息神经网络的多智能体框架 | From Language to PINNs via a Multi-Agent Framework"
-date: 2026-03-12 15:10:00
+title: 'Lang-PINN: 从自然语言到物理信息神经网络的多智能体框架 | From Language to PINNs via a Multi-Agent Framework'
+date: '2026-03-12'
+tags: [PINN, LLM, Multi-Agent, Physics-Informed, ICLR]
 category: research
-tags: PINN LLM Multi-Agent Physics-Informed ICLR
 related_posts: false
 toc:
   sidebar: left

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "投机解码到底能快多少？从理论建模到 closed-form 的完整推导"
-date: 2026-07-07
+title: 投机解码到底能快多少？从理论建模到 closed-form 的完整推导
+date: '2026-07-07'
 tags: [LLM, 推理优化, 投机解码, 理论分析]
 ---
 
@@ -15,7 +15,7 @@ tags: [LLM, 推理优化, 投机解码, 理论分析]
 
 图里的那个公式（我看到有人分享的参考）给了一个很漂亮的 closed form：
 
-$$\text{Speedup} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)(\gamma c + 1)}$$
+$$\text{Speedup} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)(\gamma c + 1)}$$
 
 其中 $\alpha$ 是逐 token 接受率，$\gamma$ 是草稿长度，$c$ 是草稿模型 vs. 验证（大）模型单 token 推理的计算成本比。
 
@@ -65,21 +65,21 @@ $$T_\text{round} = \gamma \cdot t_\text{draft} + t_\text{big} = (\gamma c + 1) \
 
 每轮接受 token 数的期望（别忘了最后大模型还会贡献一个新 token）：
 
-$$\mathbb{E}[\#\text{tokens per round}] = \sum_{k=0}^{\gamma} \alpha^k = \frac{1 - \alpha^{\gamma+1}}{1 - \alpha}$$
+$$\mathbb{E}[\#\text{tokens per round}] = \sum_{k=0}^{\gamma} \alpha^k = \frac{1 - \alpha^{\gamma+1}{1 - \alpha}$$
 
 推导：设 $X$ = 接受的 token 数（从 0 到 $\gamma$），最后大模型总会产出一个 token，所以：
 
-$$\mathbb{E}[\#] = 1 + \sum_{k=1}^{\gamma} P(\text{前 } k \text{ 个都接受}) = 1 + \alpha + \alpha^2 + \cdots + \alpha^\gamma = \frac{1 - \alpha^{\gamma+1}}{1 - \alpha}$$
+$$\mathbb{E}[\#] = 1 + \sum_{k=1}^{\gamma} P(\text{前 } k \text{ 个都接受}) = 1 + \alpha + \alpha^2 + \cdots + \alpha^\gamma = \frac{1 - \alpha^{\gamma+1}{1 - \alpha}$$
 
 ### 3.3 Speedup 的 closed form
 
-每轮耗时 $(\gamma c + 1) \cdot t_\text{big}$，产出 $\frac{1-\alpha^{\gamma+1}}{1-\alpha}$ 个 token。
+每轮耗时 $(\gamma c + 1) \cdot t_\text{big}$，产出 $\frac{1-\alpha^{\gamma+1}{1-\alpha}$ 个 token。
 
-标准自回归产出同样数量 token 需要 $\frac{1-\alpha^{\gamma+1}}{1-\alpha} \cdot t_\text{big}$。
+标准自回归产出同样数量 token 需要 $\frac{1-\alpha^{\gamma+1}{1-\alpha} \cdot t_\text{big}$。
 
 因此加速比为：
 
-$$\boxed{\text{Speedup}_\text{SD} = \frac{1 - \alpha^{\gamma+1}}{(1 - \alpha)(\gamma c + 1)}}$$
+$$\boxed{\text{Speedup}_\text{SD} = \frac{1 - \alpha^{\gamma+1}{(1 - \alpha)(\gamma c + 1)}$$
 
 这就是图里的那个公式，完整推导到这里。
 
@@ -154,7 +154,7 @@ $$T_\text{round}^\text{SSD} = \gamma \cdot r_\text{draft} \cdot t_\text{big} + (
 
 对应的 closed form：
 
-$$\boxed{\text{Speedup}_\text{SSD-general} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)[\gamma r_\text{draft} + (1 - r_\text{reuse})]}}$$
+$$\boxed{\text{Speedup}_\text{SSD-general} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)[\gamma r_\text{draft} + (1 - r_\text{reuse})]}$$
 
 这个公式涵盖了所有 SSD 变体：
 
@@ -171,11 +171,11 @@ $$\boxed{\text{Speedup}_\text{SSD-general} = \frac{1 - \alpha^{\gamma+1}}{(1-\al
 
 并排放三个公式：
 
-$$\text{Speedup}_\text{SD} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)(\gamma c + 1)}$$
+$$\text{Speedup}_\text{SD} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)(\gamma c + 1)}$$
 
-$$\text{Speedup}_\text{SSD-contiguous} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)[1 + (\gamma-1)r]}$$
+$$\text{Speedup}_\text{SSD-contiguous} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)[1 + (\gamma-1)r]}$$
 
-$$\text{Speedup}_\text{SSD-general} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)[\gamma r_\text{draft} + (1 - r_\text{reuse})]}$$
+$$\text{Speedup}_\text{SSD-general} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)[\gamma r_\text{draft} + (1 - r_\text{reuse})]}$$
 
 Contiguous SSD 之所以分母更小（$1 + (\gamma-1)r$ vs $\gamma c + 1$，当 $c \approx r$ 时差了 $1 - r$ 项），正是 KV 复用的贡献。非连续 skip 一旦让 $r_\text{reuse}$ 接近 0，这个优势就彻底没了。
 
@@ -227,7 +227,7 @@ $$\mathbb{E}[\#\text{tokens}] = 1 + \sum_{k=1}^{\gamma} \prod_{j=1}^{k} \alpha_j
 
 SSD 里，$r_\text{draft}$ 越大（draft 用更多层），draft model 能力越强，$\alpha$ 也越高。但草稿成本也高了。这构成一个联合优化问题：
 
-$$\text{Speedup}(r_\text{draft}, r_\text{reuse}, \gamma) = \frac{1 - \alpha(r_\text{draft})^{\gamma+1}}{(1-\alpha(r_\text{draft}))[\gamma r_\text{draft} + (1 - r_\text{reuse})]}$$
+$$\text{Speedup}(r_\text{draft}, r_\text{reuse}, \gamma) = \frac{1 - \alpha(r_\text{draft})^{\gamma+1}{(1-\alpha(r_\text{draft}))[\gamma r_\text{draft} + (1 - r_\text{reuse})]}$$
 
 其中 $\alpha(r_\text{draft})$ 是 $r_\text{draft}$ 的单调递增函数，而 $r_\text{reuse}$ 由 skip 模式决定（见第 4 节）。最优 $(r^*, \gamma^*)$ 需要联合搜索，没有解析解，但 grid search 配合实测 $\alpha$ 可以很快找到。
 
@@ -251,7 +251,7 @@ $$M_\text{kv} = M_\text{total} - M_\text{weight}$$
 
 KV cache 的大小正比于 $B \times L_\text{seq} \times d_\text{kv} \times L$（batch size × 序列长度 × 头维度 × 层数），所以在相同硬件上能支撑的最大 batch size：
 
-$$B_\text{max} \propto \frac{M_\text{kv}}{L_\text{seq} \cdot d_\text{kv} \cdot L}$$
+$$B_\text{max} \propto \frac{M_\text{kv}{L_\text{seq} \cdot d_\text{kv} \cdot L}$$
 
 对于 SD：需要额外维护 draft model 权重，$M_\text{weight}^\text{SD} = M_\text{big} + M_\text{draft}$
 
@@ -259,7 +259,7 @@ $$B_\text{max} \propto \frac{M_\text{kv}}{L_\text{seq} \cdot d_\text{kv} \cdot L
 
 因此 SSD 能支撑的 batch size 更大：
 
-$$\frac{B_\text{max}^\text{SSD}}{B_\text{max}^\text{SD}} = \frac{M_\text{total} - M_\text{big}}{M_\text{total} - M_\text{big} - M_\text{draft}}$$
+$$\frac{B_\text{max}^\text{SSD}{B_\text{max}^\text{SD} = \frac{M_\text{total} - M_\text{big}{M_\text{total} - M_\text{big} - M_\text{draft}$$
 
 这个比值在 $M_\text{draft}$ 较大时可以相当显著。举个例子：70B 大模型在 A100 80G 上量化后约占 35-40GB，如果 draft model 是 7B（约 3.5-4GB），释放这部分显存可以让 batch size 多出 ~10%。
 
@@ -267,11 +267,11 @@ $$\frac{B_\text{max}^\text{SSD}}{B_\text{max}^\text{SD}} = \frac{M_\text{total} 
 
 把 batch size 优势代入 throughput：
 
-$$\text{Throughput} = \frac{B \times \mathbb{E}[\#\text{tokens per round}]}{T_\text{round}}$$
+$$\text{Throughput} = \frac{B \times \mathbb{E}[\#\text{tokens per round}]}{T_\text{round}$$
 
 定义 $\beta = B_\text{max}^\text{SSD} / B_\text{max}^\text{SD} \geq 1$，SSD 相对 SD 的 throughput 比：
 
-$$\frac{\text{Throughput}_\text{SSD}}{\text{Throughput}_\text{SD}} = \beta \cdot \frac{\text{Speedup}_\text{SSD}}{\text{Speedup}_\text{SD}}$$
+$$\frac{\text{Throughput}_\text{SSD}{\text{Throughput}_\text{SD} = \beta \cdot \frac{\text{Speedup}_\text{SSD}{\text{Speedup}_\text{SD}$$
 
 当 $\beta > 1$ 时（显存确实受限），SSD 的 throughput 优势 = 加速比的差距 + 显存带来的 batch 增益。
 
@@ -607,11 +607,11 @@ $$\alpha^{\gamma+1} \approx \frac{-1}{\gamma^* \ln\alpha}$$
 
 因为 $\ln\alpha < 0$（$\alpha < 1$），令 $|\ln\alpha| = -\ln\alpha$：
 
-$$\gamma^* \approx \frac{1}{|\ln\alpha|} \cdot \frac{1}{\alpha^{\gamma^*+1}}$$
+$$\gamma^* \approx \frac{1}{|\ln\alpha|} \cdot \frac{1}{\alpha^{\gamma^*+1}$$
 
 这是个隐式方程，但可以用一阶近似：令右边的 $\gamma^*$ 用初始猜测 $\gamma_0 = \frac{1}{|\ln\alpha|}$ 代入，迭代一次：
 
-$$\gamma^* \approx \frac{1}{|\ln\alpha|} \cdot e^{(\gamma_0+1)|\ln\alpha|} = \frac{e^{(\frac{1}{|\ln\alpha|}+1)|\ln\alpha|}}{|\ln\alpha|}$$
+$$\gamma^* \approx \frac{1}{|\ln\alpha|} \cdot e^{(\gamma_0+1)|\ln\alpha|} = \frac{e^{(\frac{1}{|\ln\alpha|}+1)|\ln\alpha|}{|\ln\alpha|}$$
 
 这个近似在 $\alpha$ 接近 1 时比较准，但说实话不够优雅。工程上直接 grid search 更实用。
 
@@ -627,7 +627,7 @@ $$\text{Speedup} = \frac{1 - 0.9^9}{(1-0.9)(8 \times 0.05 + 1)} = \frac{1 - 0.38
 
 ### 场景 B：$c = 0.0005, \alpha = 0.95, \gamma = 64$
 
-$$\text{Speedup} = \frac{1 - 0.95^{65}}{(1-0.95)(64 \times 0.0005 + 1)} = \frac{1 - 0.0356}{0.05 \times 1.032} = \frac{0.964}{0.0516} \approx 18.7$$
+$$\text{Speedup} = \frac{1 - 0.95^{65}{(1-0.95)(64 \times 0.0005 + 1)} = \frac{1 - 0.0356}{0.05 \times 1.032} = \frac{0.964}{0.0516} \approx 18.7$$
 
 图里显示约 16-17，稍有偏差，说明在 $\gamma = 64$ 时验证 overhead $f(\gamma) > 1$ 的影响已经不可忽略了，实际比理想值低一点，这是预期内的。
 
@@ -651,13 +651,13 @@ $$\text{Speedup} = \frac{1 - 0.95^{65}}{(1-0.95)(64 \times 0.0005 + 1)} = \frac{
 
 把所有 closed form 并排放一起：
 
-$$\text{Speedup}_\text{SD} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)(\gamma c + 1)}$$
+$$\text{Speedup}_\text{SD} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)(\gamma c + 1)}$$
 
-$$\text{Speedup}_\text{SSD-contiguous} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)[1 + (\gamma-1)r]}$$
+$$\text{Speedup}_\text{SSD-contiguous} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)[1 + (\gamma-1)r]}$$
 
-$$\text{Speedup}_\text{SSD-general} = \frac{1 - \alpha^{\gamma+1}}{(1-\alpha)[\gamma r_\text{draft} + (1 - r_\text{reuse})]}$$
+$$\text{Speedup}_\text{SSD-general} = \frac{1 - \alpha^{\gamma+1}{(1-\alpha)[\gamma r_\text{draft} + (1 - r_\text{reuse})]}$$
 
-$$\text{Throughput}_\text{SSD} = \beta \cdot \text{Speedup}_\text{SSD} \cdot \text{Throughput}_\text{baseline}, \quad \beta = \frac{M_\text{total} - M_\text{big}}{M_\text{total} - M_\text{big} - M_\text{draft}}$$
+$$\text{Throughput}_\text{SSD} = \beta \cdot \text{Speedup}_\text{SSD} \cdot \text{Throughput}_\text{baseline}, \quad \beta = \frac{M_\text{total} - M_\text{big}{M_\text{total} - M_\text{big} - M_\text{draft}$$
 
 这几个公式说清楚了几件事：
 

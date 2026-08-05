@@ -1,9 +1,10 @@
 ---
 layout: post
-title: "RouteMark: 基于路由行为指纹的模型合并知识产权归属 | A Fingerprint for IP Attribution in Routing-based Model Merging"
-date: 2026-03-12 15:50:00
+title: 'RouteMark: 基于路由行为指纹的模型合并知识产权归属 | A Fingerprint for IP Attribution in Routing-based
+  Model Merging'
+date: '2026-03-12'
+tags: [Model-Merging, MoE, Intellectual-Property, Fingerprint, Security]
 category: research
-tags: Model-Merging MoE Intellectual-Property Fingerprint Security
 related_posts: false
 toc:
   sidebar: left

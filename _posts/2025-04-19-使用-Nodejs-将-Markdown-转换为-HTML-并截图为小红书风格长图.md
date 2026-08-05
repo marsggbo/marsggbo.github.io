@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "使用 Node.js 将 Markdown 转换为 HTML 并截图为小红书风格长图"
-date: 2025-04-19
+title: 使用 Node.js 将 Markdown 转换为 HTML 并截图为小红书风格长图
+date: '2025-04-19'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/1896974320389038875
@@ -104,7 +105,7 @@ Markdown 中使用的图片、代码块、公式都将被正确渲染。
 
 1. 数学公式不显示？
 
-确保你写的是 $E = mc^2$ 或 ![f(x) = \int_{a}^{b} x^2dx](/assets/img/marsggbo/2025-04-19-使用-Nodejs-将-Markdown-转换为-HTML-并截图为小红书风格长图/08363537.jpg) 这类标准格式，并启用了 KaTeX。
+确保你写的是 $E = mc^2$ 或 $f(x) = \int_{a}^{b} x^2dx$ 这类标准格式，并启用了 KaTeX。
 
 ✅ 总结
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Latex 算法怎么写？（一）：algorithm, algorithmic算法包到底什么区别？"
-date: 2020-06-01
+title: Latex 算法怎么写？（一）：algorithm, algorithmic算法包到底什么区别？
+date: '2020-06-01'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/145195565

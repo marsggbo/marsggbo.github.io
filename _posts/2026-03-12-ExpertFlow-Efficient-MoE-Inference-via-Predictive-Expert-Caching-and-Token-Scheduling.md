@@ -1,9 +1,10 @@
 ---
 layout: post
-title: "ExpertFlow: 基于预测性专家缓存与令牌调度的高效MoE推理 | Efficient MoE Inference via Predictive Expert Caching and Token Scheduling"
-date: 2026-03-12 15:00:00
+title: 'ExpertFlow: 基于预测性专家缓存与令牌调度的高效MoE推理 | Efficient MoE Inference via Predictive Expert
+  Caching and Token Scheduling'
+date: '2026-03-12'
+tags: [MoE, Inference, Expert-Caching, Token-Scheduling, DAC, LLM]
 category: research
-tags: MoE Inference Expert-Caching Token-Scheduling DAC LLM
 related_posts: false
 toc:
   sidebar: left

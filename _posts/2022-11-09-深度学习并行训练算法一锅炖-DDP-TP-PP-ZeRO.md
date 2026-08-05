@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "深度学习并行训练算法一锅炖: DDP, TP, PP, ZeRO"
-date: 2022-11-09
+title: '深度学习并行训练算法一锅炖: DDP, TP, PP, ZeRO'
+date: '2022-11-09'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/581677880
@@ -74,7 +75,7 @@ Tensor Parallelism
 
 **2.2.1 1D Tensor Parallelism**
 
-Megatron-LM [1]是最早提出1D Tensor并行的工作。该工作主要是为了优化transformer训练效率，把线性层按照行或者列维度对权重进行划分。如下图所示，原本线性层为![Y=W_1W_2X](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/cc519cb2.jpg) ，这里将![W_1](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/71afb8d5.jpg)按列进行划分，将![W_2](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/027a1fcf.jpg)按行进行划分。这样，每个GPU只需要存一半的权重即可，最后通过All-reduce操作来同步Y的结果。当GPU数量为![N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/39082460.jpg)时，每个GPU只需要存![\frac{1}{N}](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/6ea1df8f.jpg)的权重即可，只不过每层输出需要用All-reduce来补全结果之后才能继续下一层的计算。
+Megatron-LM [1]是最早提出1D Tensor并行的工作。该工作主要是为了优化transformer训练效率，把线性层按照行或者列维度对权重进行划分。如下图所示，原本线性层为$Y=W_1W_2X$ ，这里将$W_1$按列进行划分，将$W_2$按行进行划分。这样，每个GPU只需要存一半的权重即可，最后通过All-reduce操作来同步Y的结果。当GPU数量为$N$时，每个GPU只需要存$\frac{1}{N}$的权重即可，只不过每层输出需要用All-reduce来补全结果之后才能继续下一层的计算。
 
 ![](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/4af39fbc.jpg)
 
@@ -82,21 +83,21 @@ Megatron-LM [1]是最早提出1D Tensor并行的工作。该工作主要是为�
 
 ![](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/80aca5ec.jpg)
 
-1D Tensor并行对通信速度要求较高，不过1D在每层的输入和输出都有冗余的内存开销。以Fig.4为例，我们可以看到虽然模型权重被划分了，但是每个GPU都有重复的输入![X](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/6ce37be6.jpg),另外All-reduce之后每个GPU也会有重复的输出![Y](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/ce020eb9.jpg)，所以后续一些工作尝试从这里做进一步改进,包括2D, 2.5D,和3D tensor并行。
+1D Tensor并行对通信速度要求较高，不过1D在每层的输入和输出都有冗余的内存开销。以Fig.4为例，我们可以看到虽然模型权重被划分了，但是每个GPU都有重复的输入$X$,另外All-reduce之后每个GPU也会有重复的输出$Y$，所以后续一些工作尝试从这里做进一步改进,包括2D, 2.5D,和3D tensor并行。
 
 **2.2.2 2D Tensor Parallelism**
 
-2D Tensor Parallel [2] 基于SUMMA和Cannon矩阵相乘算法沿着两个不同的维度对 *输入数据*，*模型权重*，*每层的输出* 进行划分。给定![N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/39082460.jpg)个GPU，tensor会被划分成![N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/39082460.jpg)个chunk（使用`torch.chunk`），每个GPU保存一个chunk。这![N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/39082460.jpg)个GPU呈方形网络拓扑结构，即每行每列均为![\sqrt{N}](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/ccb72633.jpg)个GPU。假设tensor的维度大小是![[P,Q]](https://www.zhihu.com/equation?tex=%5BP%2CQ%5D)，那么划分后每个GPU上存的chunk大小即为![[P/\sqrt{N},Q/\sqrt{N}]](https://www.zhihu.com/equation?tex=%5BP%2F%5Csqrt%7BN%7D%2CQ%2F%5Csqrt%7BN%7D%5D)。至此，每个GPU都只会保存部分的输入输出以及部分的权重。虽然相比于1D Tensor并行，2D额外增加了模型权重的通信，但是需要注意的是当GPU数量很多的时候，每个GPU上分配的模型权重就会小很多，而且因为使用的All-reduce通信方式，所以2D也还是要比1D更高效的。
+2D Tensor Parallel [2] 基于SUMMA和Cannon矩阵相乘算法沿着两个不同的维度对 *输入数据*，*模型权重*，*每层的输出* 进行划分。给定$N$个GPU，tensor会被划分成$N$个chunk（使用`torch.chunk`），每个GPU保存一个chunk。这$N$个GPU呈方形网络拓扑结构，即每行每列均为$\sqrt{N}$个GPU。假设tensor的维度大小是$[P,Q]$，那么划分后每个GPU上存的chunk大小即为$[P/\sqrt{N},Q/\sqrt{N}]$。至此，每个GPU都只会保存部分的输入输出以及部分的权重。虽然相比于1D Tensor并行，2D额外增加了模型权重的通信，但是需要注意的是当GPU数量很多的时候，每个GPU上分配的模型权重就会小很多，而且因为使用的All-reduce通信方式，所以2D也还是要比1D更高效的。
 
 **2.2.3 2.5D Tensor Parallelism**
 
 2.5D Tensor Parallel [3] 是受2.5D矩阵乘法算法 [4] 启发进一步对2D Tensor并行的优化。具体来说2.5D增加了 *depth* 维度。当 *depth=1* 时等价于2D；
 
-同样假设有![N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/39082460.jpg)个GPU，其中![N=S^2*D](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/20f7c2d8.jpg)，![S](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/e6217fb4.jpg)类似于原来2D正方形拓扑结构的边长，而![D](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/1e9eba69.jpg) 则是新增加的维度 *depth* 。![D](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/1e9eba69.jpg)可以由用户指定，![S](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/e6217fb4.jpg) 则会自动计算出来了。所以一般来说至少需要8个GPU才能运行2.5D算法，即![S=2,D=2](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/37b35f22.jpg)。
+同样假设有$N$个GPU，其中$N=S^2*D$，$S$类似于原来2D正方形拓扑结构的边长，而$D$ 则是新增加的维度 *depth* 。$D$可以由用户指定，$S$ 则会自动计算出来了。所以一般来说至少需要8个GPU才能运行2.5D算法，即$S=2,D=2$。
 
 **2.2.4 3D Tensor Parallelism**
 
-3D Tensor Parallel [5]是基于3D矩阵乘法算法 [6]实现的。假设有 ![N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/39082460.jpg)个 GPU，tensor维度大小为![[P, Q, K]](https://www.zhihu.com/equation?tex=%5BP%2C+Q%2C+K%5D)，那么每个chunk的大小即为 ![[P/\sqrt[3]{N},Q/\sqrt[3]{N},K/\sqrt[3]{N}]](https://www.zhihu.com/equation?tex=%5BP%2F%5Csqrt%5B3%5D%7BN%7D%2CQ%2F%5Csqrt%5B3%5D%7BN%7D%2CK%2F%5Csqrt%5B3%5D%7BN%7D%5D)。当tensor维度小于3时，以全连接层为例，假设权重维度大小为 ![[P, Q]](https://www.zhihu.com/equation?tex=%5BP%2C+Q%5D) ,那么可以对第一个维度划分两次，即每个chunk的维度大小为 ![[P/(\sqrt[3]{N})^2,Q/\sqrt[3]{N}]](https://www.zhihu.com/equation?tex=%5BP%2F%28%5Csqrt%5B3%5D%7BN%7D%29%5E2%2CQ%2F%5Csqrt%5B3%5D%7BN%7D%5D) 。3D Tensor并行的通信开销复杂度是 ![O(N^{1/3})](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/55a20232.jpg) ，计算和内存开销都均摊在所有GPU上。
+3D Tensor Parallel [5]是基于3D矩阵乘法算法 [6]实现的。假设有 $N$个 GPU，tensor维度大小为$[P, Q, K]$，那么每个chunk的大小即为 $[P/\sqrt[3]{N},Q/\sqrt[3]{N},K/\sqrt[3]{N}]$。当tensor维度小于3时，以全连接层为例，假设权重维度大小为 $[P, Q]$ ,那么可以对第一个维度划分两次，即每个chunk的维度大小为 $[P/(\sqrt[3]{N})^2,Q/\sqrt[3]{N}]$ 。3D Tensor并行的通信开销复杂度是 $O(N^{1/3})$ ，计算和内存开销都均摊在所有GPU上。
 
 **2.2.5 小结**
 
@@ -112,7 +113,7 @@ Tensor parallelism主要是为了解决由 model data （模型权重，梯度�
 
 以DARTS算法为例，它的模型参数量其实并不多，但是它有很多分支，所以activations会消耗大量GPU内存，这也是为什么很多NAS算法只能在CIFAR-10上搜索到合适的模型结构后，再做人工扩展，最后应用到ImageNet上做性能验证。
 
-同样地，在使用Transformer训练语言模型时，由于Transformer层中的Self-attention机制的复杂度是![O(n^2)](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/a5e2df1c.jpg)，其中 ![n](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/ce59f558.jpg) 是序列长度。换言之，长序列数据将增加中间activation内存使用量，从而限制设备的训练能力。
+同样地，在使用Transformer训练语言模型时，由于Transformer层中的Self-attention机制的复杂度是$O(n^2)$，其中 $n$ 是序列长度。换言之，长序列数据将增加中间activation内存使用量，从而限制设备的训练能力。
 
 Sequential Parallelism （SP）就为了解决non-model data导致的性能瓶颈而提出的。下图给出了SP在Transform并行训练上的应用，具体的原理可以查看原论文[7]。
 
@@ -133,15 +134,15 @@ Sequential Parallelism （SP）就为了解决non-model data导致的性能瓶�
 
 ZeRO针对模型状态的三部分都做了对应的内存改进方法：
 
-* ZeRO1：只划分优化器状态(optimizer states, os)，即![P_{os}](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/52c36a99.jpg)
-* ZeRO2：划分优化器状态和梯度(gradient, g)，即![P_{os+g}](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/a08dc187.jpg)
-* ZeRO3：划分优化器状态和梯度和模型参数(parameters, p)，即![P_{os+g+p}](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/e823249c.jpg)
+* ZeRO1：只划分优化器状态(optimizer states, os)，即$P_{os}$
+* ZeRO2：划分优化器状态和梯度(gradient, g)，即$P_{os+g}$
+* ZeRO3：划分优化器状态和梯度和模型参数(parameters, p)，即$P_{os+g+p}$
 
 下图给出了三种方法带来的内存开销收益
 
 ![](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/ac2193cd.jpg)
 
-不管采用三种方法的哪一种，ZeRO简单理解就是给定![N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/39082460.jpg)个设备，然后把一堆data等分到这些设备上，每个设备只存![1/N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/dd4fab2b.jpg)的数据量，并且每次也只负责更新这![1/N](/assets/img/marsggbo/2022-11-09-深度学习并行训练算法一锅炖-DDP-TP-PP-ZeRO/dd4fab2b.jpg)的数据。
+不管采用三种方法的哪一种，ZeRO简单理解就是给定$N$个设备，然后把一堆data等分到这些设备上，每个设备只存$1/N$的数据量，并且每次也只负责更新这$1/N$的数据。
 
 因为对数据做了划分，ZeRO在每一层都需要有通信操作。我们考虑ZeRO在某一层的具体操作：
 

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "EuroSys'26 | LLMFolder 用常量折叠把 FFN 参数砍 80%，精度反超剪枝方法 65%"
-date: 2026-05-14
+title: EuroSys'26 | LLMFolder 用常量折叠把 FFN 参数砍 80%，精度反超剪枝方法 65%
+date: '2026-05-14'
 tags: [LLM, 推理优化, 模型压缩, 论文解读, EuroSys]
 ---
 
@@ -71,7 +71,7 @@ $$\text{FFN}(x) = W_2 \cdot \sigma(W_1 x + b_1) + b_2$$
 
 如果激活函数 $\sigma$ 是**线性的**（比如直接是恒等映射），那么：
 
-$$\text{FFN}(x) = W_2(W_1 x + b_1) + b_2 = \underbrace{(W_2 W_1)}_{\text{折叠后的} W_\text{fold}} x + \underbrace{(W_2 b_1 + b_2)}_{b_\text{fold}}$$
+$$\text{FFN}(x) = W_2(W_1 x + b_1) + b_2 = \underbrace{(W_2 W_1)}_{\text{折叠后的} W_\text{fold} x + \underbrace{(W_2 b_1 + b_2)}_{b_\text{fold}$$
 
 原来需要存 $W_1$（$4d \times d$）和 $W_2$（$d \times 4d$），参数量 $8d^2$；折叠后只需要存 $W_\text{fold}$（$d \times d$），参数量 $d^2$，直接砍掉 **87.5%**！
 

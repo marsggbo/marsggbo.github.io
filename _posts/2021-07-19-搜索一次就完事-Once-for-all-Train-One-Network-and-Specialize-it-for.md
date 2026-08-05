@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "搜索一次就完事 Once for all: Train One Network and Specialize it for Efficient Deployment"
-date: 2021-07-19
+title: '搜索一次就完事 Once for all: Train One Network and Specialize it for Efficient Deployment'
+date: '2021-07-19'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/391042698
@@ -29,7 +30,7 @@ OFA采用的也是权重共享的搜索策略，Supernet结构基于MobileNet的
 * Kernel size (K)：这个很好理解，就是卷积核大小。论文中搜索范围是 [7,5,3]
 * OFA还额外搜索了不同分辨率的**ImageNet**数据输入，这可不会对模型结构有什么影响，只不过能提高模型对不同大小的数据的泛化能力
 
-OFA中的Supernet由5个block组成，而每个block的搜索空间大小是 ![S_i=(3\times3)^2+(3\times3)^3+(3\times3)^4](/assets/img/marsggbo/2021-07-19-搜索一次就完事-Once-for-all-Train-One-Network-and-Specialize-it-for/d52073b9.jpg)，所以整个搜索空间大小为![S=\prod_1^5S_i\approx2\times10^{19}](/assets/img/marsggbo/2021-07-19-搜索一次就完事-Once-for-all-Train-One-Network-and-Specialize-it-for/cc3b7207.jpg)
+OFA中的Supernet由5个block组成，而每个block的搜索空间大小是 $S_i=(3\times3)^2+(3\times3)^3+(3\times3)^4$，所以整个搜索空间大小为$S=\prod_1^5S_i\approx2\times10^{19}$
 
 ![](/assets/img/marsggbo/2021-07-19-搜索一次就完事-Once-for-all-Train-One-Network-and-Specialize-it-for/64176241.jpg)
 
@@ -39,7 +40,7 @@ OFA中的Supernet由5个block组成，而每个block的搜索空间大小是 ![S
 
 形式化的数学表达如下：
 
-![\min _{W_{o}} \sum_{a r c h_{i}} \mathcal{L}_{\text {val }}\left(C\left(W_{o}, \operatorname{arch}_{i}\right)\right) \\](/assets/img/marsggbo/2021-07-19-搜索一次就完事-Once-for-all-Train-One-Network-and-Specialize-it-for/66def539.jpg)
+$$\min _{W_{o} \sum_{a r c h_{i} \mathcal{L}_{\text {val }\left(C\left(W_{o}, \operatorname{arch}_{i}\right)\right)$$
 
 说人话就是 让所有候选架构在验证集上的结果都尽可能的好，即最小化所有架构的期望损失函数之和。
 

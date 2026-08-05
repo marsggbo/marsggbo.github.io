@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "LLM 学习笔记-Deepspeed-MoE 论文"
-date: 2023-12-07
+title: LLM 学习笔记-Deepspeed-MoE 论文
+date: '2023-12-07'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/670968683
@@ -121,13 +122,13 @@ Deepspeed-MoE 的优化思路是下面 3 条：
 2. 然后，每个 GPU 将其转换后的数据与同一节点上的其他 GPU 进行交换。这可以理解成是**局部 AlltoAll**。
 3. 最后，每个节点将其转换后的数据与其他节点进行交换。这可以理解成**全局 AlltoAll**。
 
-假设总共有 ![p](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/1dcb592d.jpg) 个 GPU，每个节点包含 ![G](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/53777947.jpg) 个GPU，所以总共有 ![p/G](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/ab5ed9b1.jpg) 个节点。复杂度对比：
+假设总共有 $p$ 个 GPU，每个节点包含 $G$ 个GPU，所以总共有 $p/G$ 个节点。复杂度对比：
 
-* 原本直接所有 GPU 之间做 all-to-all 的复杂度是 ![O(p)](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/6f561df9.jpg)
-* 现在分层 all-to-all 的复杂度为 ![O(G+p/G)](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/2e3facd2.jpg)包括两部分：
+* 原本直接所有 GPU 之间做 all-to-all 的复杂度是 $O(p)$
+* 现在分层 all-to-all 的复杂度为 $O(G+p/G)$包括两部分：
 
-+ 局部通信复杂度：因为不同节点之间可以同时做通信，所以复杂度是![O(G)](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/fd0f5eff.jpg)
-+ 全局通信复杂度：其实就是节点之间做通信，所以复杂度是 ![O(p/G)](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/4f054015.jpg)
++ 局部通信复杂度：因为不同节点之间可以同时做通信，所以复杂度是$O(G)$
++ 全局通信复杂度：其实就是节点之间做通信，所以复杂度是 $O(p/G)$
 
 ![](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/96475dc6.jpg)
 
@@ -140,7 +141,7 @@ Deepspeed-MoE 的优化思路是下面 3 条：
 * 我们先考虑在 MLP1 上执行 tensor 并行：我们知道 tensor 并行的特点是参与计算的 GPU 的输入数据是相同的，输出数据也是相同的（column parallel 需要用到 all-gather, row parallel 需要用到 all-reduce）。
 * 接着在 MoE 上做专家并行：正如前面提到的，MLP1 最后在不同设备上的输出结果会保持一致，那么也就是说对于后面的 MoE layer 而言，同一个 tensor parallel group 的进程之间因为他们的输入数据是一样的了，所以就不需要再做all-to-all 通信了，也就是说 GPU0 和 GPU1 没必要在浪费时间做 all-to-all 了，同理 GPU2 和 GPU3 也不需要了。那换言之，为了节省通信开销，我们可以先在 GPU0 和 GPU2 之间做 all-to-all 通信，结束之后， 同一个tensor parallel group内部的 GPU 再做 all-gather即可，即 GPU0 把数据同步给 GPU1。
 
-小结：这样一来，原本 all-to-all 的通信开销就从 ![O(p)](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/6f561df9.jpg)降到了 ![O(L)+O(p/L)](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/f560dc88.jpg)，其中 p 表示总共的 GPU 数量， L 表示tensor parallelism degree。对应到下面图中 p=4，L=2。当总的 GPU 数量增大的时候，这种方式的通行效率才能体现出来
+小结：这样一来，原本 all-to-all 的通信开销就从 $O(p)$降到了 $O(L)+O(p/L)$，其中 p 表示总共的 GPU 数量， L 表示tensor parallelism degree。对应到下面图中 p=4，L=2。当总的 GPU 数量增大的时候，这种方式的通行效率才能体现出来
 
 ![](/assets/img/marsggbo/2023-12-07-LLM-学习笔记-Deepspeed-MoE-论文/1c622eaf.jpg)
 

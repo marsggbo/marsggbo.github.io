@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "理解Pytorch中LSTM的输入输出参数含义"
-date: 2019-12-31
+title: 理解Pytorch中LSTM的输入输出参数含义
+date: '2019-12-31'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/100360301
@@ -35,7 +36,7 @@ general MLP是这样的拓扑：
 
 ![](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/9d22f17d.jpg)
 
-mlp然后CNN也好理解，跟MLP无差若干，只是权重运算由![*](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/a2635ec1.jpg)变为![\otimes](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/a52041d1.jpg)。CNN是这样的拓扑：
+mlp然后CNN也好理解，跟MLP无差若干，只是权重运算由$*$变为$\otimes$。CNN是这样的拓扑：
 
 ![](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/d744a7f6.jpg)
 
@@ -47,9 +48,9 @@ mlp然后CNN也好理解，跟MLP无差若干，只是权重运算由![*](/asset
 
 如上图所示，
 
-* 每个时序![t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/3b1922fd.jpg) 的输入![T_i^t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/2019cfe6.jpg)，也就是说一次time\_step输入一个input tensor。
-* 隐状态![h_i^t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/9b7d4d24.jpg)也就代表了一张MLP的hidden layer的一个cell,可以看到中间黄色圈圈就表示隐藏层.
-* 输出![O_i^t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/f0752d48.jpg)理解无异,可以看到每个时序的输出节点数是等于隐藏节点数的。注意，红色的箭头指向仅仅表示数据流动方向，并不是表示隐藏层之间相连。
+* 每个时序$t$ 的输入$T_i^t$，也就是说一次time\_step输入一个input tensor。
+* 隐状态$h_i^t$也就代表了一张MLP的hidden layer的一个cell,可以看到中间黄色圈圈就表示隐藏层.
+* 输出$O_i^t$理解无异,可以看到每个时序的输出节点数是等于隐藏节点数的。注意，红色的箭头指向仅仅表示数据流动方向，并不是表示隐藏层之间相连。
 
 再结合一个操作实例说明。如果我们有一条长文本，我们给句子事先分割好句子，并且进行tokenize, dictionarize,接着再由look up table 查找到embedding，将token由embedding表示，再对应到上图的输入。流程如下：
 
@@ -75,13 +76,13 @@ mlp然后CNN也好理解，跟MLP无差若干，只是权重运算由![*](/asset
 
 * **step5, mapping token to an embeddings**:
 
-+ sentence1:![\left[\begin{array}{cccc}{0.341} & {0.133} & {0.011} & {\cdots} \\ {0.435} & {0.081} & {0.501} & {\cdots} \\ {0.013} & {0.958} & {0.121} & {\ldots} \\ {\cdots} & {\cdots} & {\cdots} & {\cdots}\end{array}\right]](https://www.zhihu.com/equation?tex=%5Cleft%5B%5Cbegin%7Barray%7D%7Bcccc%7D%7B0.341%7D+%26+%7B0.133%7D+%26+%7B0.011%7D+%26+%7B%5Ccdots%7D+%5C%5C+%7B0.435%7D+%26+%7B0.081%7D+%26+%7B0.501%7D+%26+%7B%5Ccdots%7D+%5C%5C+%7B0.013%7D+%26+%7B0.958%7D+%26+%7B0.121%7D+%26+%7B%5Cldots%7D+%5C%5C+%7B%5Ccdots%7D+%26+%7B%5Ccdots%7D+%26+%7B%5Ccdots%7D+%26+%7B%5Ccdots%7D%5Cend%7Barray%7D%5Cright%5D),每一列代表一个词向量，词向量维度自行确定(假设一个单词由长度为100的向量表示)；矩阵列数固定为time\_step length。
++ sentence1:$\left[\begin{array}{cccc}{0.341} & {0.133} & {0.011} & {\cdots} \\ {0.435} & {0.081} & {0.501} & {\cdots} \\ {0.013} & {0.958} & {0.121} & {\ldots} \\ {\cdots} & {\cdots} & {\cdots} & {\cdots}\end{array}\right]$,每一列代表一个词向量，词向量维度自行确定(假设一个单词由长度为100的向量表示)；矩阵列数固定为time\_step length。
 + sentence2: ...
 + ……
 
-* **step6, feed into RNNs as input**: 假设 一个RNN的time\_step 确定为![l](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/f32f9aac.jpg),则padded sentence length(step5中矩阵列数)固定为 ![l](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/f32f9aac.jpg)。一次RNNs的run只处理一条sentence。每个sentence的每个token的embedding对应了每个时序 的输入 。一次RNNs的run，连续地将整个sentence处理完。简单理解就是每次传入RNN的句子长度为![l](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/f32f9aac.jpg)，换句话就是RNN横向长度为![l](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/f32f9aac.jpg)
-* **step7, get output**: 看图，每个time\_step都是可以输出当前时序![t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/3b1922fd.jpg)的隐状态![h_i^t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/9b7d4d24.jpg)；但整体RNN的输出![O_i^t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/f0752d48.jpg)是在最后一个time\_step![t=l](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/53e7b989.jpg)时获取，才是完整的最终结果。
-* **step8, further processing with the output**: 我们可以将output根据分类任务或回归拟合任务的不同，分别进一步处理。比如，传给cross\_entropy&softmax进行分类……或者获取每个time\_step对应的隐状态![h_i^t](/assets/img/marsggbo/2019-12-31-理解Pytorch中LSTM的输入输出参数含义/9b7d4d24.jpg)，做seq2seq 网络……或者搞创新……
+* **step6, feed into RNNs as input**: 假设 一个RNN的time\_step 确定为$l$,则padded sentence length(step5中矩阵列数)固定为 $l$。一次RNNs的run只处理一条sentence。每个sentence的每个token的embedding对应了每个时序 的输入 。一次RNNs的run，连续地将整个sentence处理完。简单理解就是每次传入RNN的句子长度为$l$，换句话就是RNN横向长度为$l$
+* **step7, get output**: 看图，每个time\_step都是可以输出当前时序$t$的隐状态$h_i^t$；但整体RNN的输出$O_i^t$是在最后一个time\_step$t=l$时获取，才是完整的最终结果。
+* **step8, further processing with the output**: 我们可以将output根据分类任务或回归拟合任务的不同，分别进一步处理。比如，传给cross\_entropy&softmax进行分类……或者获取每个time\_step对应的隐状态$h_i^t$，做seq2seq 网络……或者搞创新……
 
 ## **2、Pytorch源代码参数理解**
 
@@ -133,7 +134,7 @@ class RNNBase(Module):
 
 * **output**： 维度和输入数据类似，只不过最后的feature部分会有点不同，即 **(seq\_len, batch, num\_directions \* hidden\_size)**
 
-+ 这个输出tensor包含了LSTM模型最后一层每个time step的输出特征，比如说LSTM有两层，那么最后输出的是![[h^1_0,h^1_1,...,h^1_l]](https://www.zhihu.com/equation?tex=%5Bh%5E1_0%2Ch%5E1_1%2C...%2Ch%5E1_l%5D),表示第二层LSTM每个time step对应的输出。
++ 这个输出tensor包含了LSTM模型最后一层每个time step的输出特征，比如说LSTM有两层，那么最后输出的是$[h^1_0,h^1_1,...,h^1_l]$,表示第二层LSTM每个time step对应的输出。
 + 另外如果前面你对输入数据使用了`torch.nn.utils.rnn.PackedSequence`,那么输出也会做同样的操作编程packed sequence。
 + 对于unpacked情况，我们可以对输出做如下处理来对方向作分离`output.view(seq_len, batch, num_directions, hidden_size)`, 其中前向和后向分别用0和1表示Similarly, the directions can be separated in the packed case.
 

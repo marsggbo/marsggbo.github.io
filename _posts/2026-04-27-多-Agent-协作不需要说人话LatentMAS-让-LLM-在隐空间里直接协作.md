@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "多 Agent 协作不需要说「人话」？LatentMAS 让 LLM 在隐空间里直接协作"
-date: 2026-04-27
+title: 多 Agent 协作不需要说「人话」？LatentMAS 让 LLM 在隐空间里直接协作
+date: '2026-04-27'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2032219144121209209
@@ -39,7 +40,7 @@ toc:
 
 不管哪种架构，agent 之间的通信介质都是文本。这带来三个问题：
 
-**第一，信息瓶颈**。LLM 内部 hidden state 的维度通常是 2048-5120，一个向量就能编码丰富的语义信息。但编码成 token 之后，每个 token 只是一个离散符号，从 ![|V| \approx 150000](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/61f24c7c.jpg) 的词表里选一个——信息密度断崖式下降。论文里有个很直观的定理：**要用 token 无损表达 ![m](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/f79ab5c4.jpg) 步 latent thoughts，需要的文本长度至少是 ![\Omega(d_h \cdot m / \log|V|)](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/2cdd3c26.jpg)**，其中 ![d_h](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/c5f90a97.jpg) 是 hidden dimension。对于 Qwen3-8B（![d_h = 3584](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/80ee3461.jpg)），这意味着 latent thoughts 可以比文本高效 **377 倍**。
+**第一，信息瓶颈**。LLM 内部 hidden state 的维度通常是 2048-5120，一个向量就能编码丰富的语义信息。但编码成 token 之后，每个 token 只是一个离散符号，从 $|V| \approx 150000$ 的词表里选一个——信息密度断崖式下降。论文里有个很直观的定理：**要用 token 无损表达 $m$ 步 latent thoughts，需要的文本长度至少是 $\Omega(d_h \cdot m / \log|V|)$**，其中 $d_h$ 是 hidden dimension。对于 Qwen3-8B（$d_h = 3584$），这意味着 latent thoughts 可以比文本高效 **377 倍**。
 
 **第二，延迟爆炸**。每个 agent 都要做一轮完整的 auto-regressive 解码（一个 token 一个 token 地吐），然后下一个 agent 再把这堆 token 全部 prefill 进去。4 个 agent 的 sequential MAS，光文本生成和重新 prefill 就要跑 8 轮前向传播。
 
@@ -57,29 +58,29 @@ LatentMAS 的完整流程如下图：
 
 ### 3.1 Latent Thoughts：让 Agent 在隐空间里"思考"
 
-标准 LLM 推理的流程是：hidden state ![h_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/168a9ff8.jpg) → LM head 解码成 token ![x_{t+1}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/807e932b.jpg) → token embedding ![e_{t+1}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/d436b3fa.jpg) → 进入下一轮前向传播。
+标准 LLM 推理的流程是：hidden state $h_t$ → LM head 解码成 token $x_{t+1}$ → token embedding $e_{t+1}$ → 进入下一轮前向传播。
 
-LatentMAS 把中间的"解码-重编码"去掉了：**直接把最后一层的 hidden state ![h_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/168a9ff8.jpg) 当作下一步的输入 embedding，跳过 token 这个中介**。
+LatentMAS 把中间的"解码-重编码"去掉了：**直接把最后一层的 hidden state $h_t$ 当作下一步的输入 embedding，跳过 token 这个中介**。
 
-但这里有个工程上的坑：![h_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/168a9ff8.jpg) 是最后一层输出，分布和输入 embedding ![e](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/6705e1fb.jpg) 差异很大。直接把 ![h_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/168a9ff8.jpg) 塞回浅层会出现 out-of-distribution 的问题。怎么解？
+但这里有个工程上的坑：$h_t$ 是最后一层输出，分布和输入 embedding $e$ 差异很大。直接把 $h_t$ 塞回浅层会出现 out-of-distribution 的问题。怎么解？
 
-论文提出了一个很巧妙的 **Input-Output Alignment**：构造一个对齐矩阵 ![W_a](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/a338488b.jpg)，把 ![h_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/168a9ff8.jpg) 映射回输入 embedding 空间：
+论文提出了一个很巧妙的 **Input-Output Alignment**：构造一个对齐矩阵 $W_a$，把 $h_t$ 映射回输入 embedding 空间：
 
-![\\e = h \cdot W_a, \quad \text{其中} \quad W_a \approx W_{out}^{-1} \cdot W_{in}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/ffd13e25.jpg)
+$$\e = h \cdot W_a, \quad \text{其中} \quad W_a \approx W_{out}^{-1} \cdot W_{in}$$
 
-这里 ![W_{out}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/18a58720.jpg) 是 LM head，![W_{in}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/1fef2d3c.jpg) 是 token embedding 层。![W_a](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/a338488b.jpg) 只需要算一次，后面所有 latent step 复用。实际实现用的是 ridge regression 的闭式解来保证数值稳定性。
+这里 $W_{out}$ 是 LM head，$W_{in}$ 是 token embedding 层。$W_a$ 只需要算一次，后面所有 latent step 复用。实际实现用的是 ridge regression 的闭式解来保证数值稳定性。
 
-**这个设计完全不需要训练**——只用了模型自带的 ![W_{in}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/1fef2d3c.jpg) 和 ![W_{out}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/18a58720.jpg)，是一个纯推理时的操作。
+**这个设计完全不需要训练**——只用了模型自带的 $W_{in}$ 和 $W_{out}$，是一个纯推理时的操作。
 
 ### 3.2 Latent Working Memory：用 KV Cache 做跨 Agent 通信
 
 这是全文最有意思的部分。
 
-agent ![A_1](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/34093daa.jpg) 完成 ![m](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/f79ab5c4.jpg) 步 latent thoughts 生成后，它的所有 transformer 层都积累了一整套 KV cache。这些 KV cache 不仅包含了原始输入的信息，还包含了 ![m](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/f79ab5c4.jpg) 步 latent reasoning 产生的新信息。论文把这整套 KV cache 定义为 agent ![A_1](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/34093daa.jpg) 的 **latent working memory**：
+agent $A_1$ 完成 $m$ 步 latent thoughts 生成后，它的所有 transformer 层都积累了一整套 KV cache。这些 KV cache 不仅包含了原始输入的信息，还包含了 $m$ 步 latent reasoning 产生的新信息。论文把这整套 KV cache 定义为 agent $A_1$ 的 **latent working memory**：
 
-![\\\mathcal{M}_{A_1} = \{(K^{(l)}_{A_1,cache}, V^{(l)}_{A_1,cache}) \mid l = 1, 2, \ldots, L\}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/8c6b6efd.jpg)
+$$\mathcal{M}_{A_1} = \{(K^{(l)}_{A_1,cache}, V^{(l)}_{A_1,cache}) \mid l = 1, 2, \ldots, L\}$$
 
-下一个 agent ![A_2](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/5d444677.jpg) 接手时，做一步简单操作：**把 ![A_1](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/34093daa.jpg) 的 KV cache 拼接到自己对应层的 KV cache 前面**。就这样，![A_2](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/5d444677.jpg) 就"看到"了 ![A_1](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/34093daa.jpg) 所有的思考过程——包括它对原始 prompt 的处理和 ![m](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/f79ab5c4.jpg) 步 latent reasoning 的结果。
+下一个 agent $A_2$ 接手时，做一步简单操作：**把 $A_1$ 的 KV cache 拼接到自己对应层的 KV cache 前面**。就这样，$A_2$ 就"看到"了 $A_1$ 所有的思考过程——包括它对原始 prompt 的处理和 $m$ 步 latent reasoning 的结果。
 
 论文还证明了一个关键定理：**通过 KV cache 传递 working memory 和直接把前序 agent 的完整输出重新 prefill 一遍，产生的结果是完全等价的（信息无损）**。
 
@@ -128,11 +129,11 @@ agent ![A_1](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话L
 
 ### 4.3 对齐矩阵 W_a 的作用
 
-如下图，不做对齐的 hidden state ![h_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/168a9ff8.jpg)（橙色）和原始 input embedding ![e_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/cc5b83fa.jpg)（蓝色）分布差异很大。做完 ![W_a](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/a338488b.jpg) 对齐后的 ![e_{t+1}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/d436b3fa.jpg)（绿色）重新和 ![e_t](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/cc5b83fa.jpg) 对齐了：
+如下图，不做对齐的 hidden state $h_t$（橙色）和原始 input embedding $e_t$（蓝色）分布差异很大。做完 $W_a$ 对齐后的 $e_{t+1}$（绿色）重新和 $e_t$ 对齐了：
 
 ![](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/f6f5d404.jpg)
 
-去掉 ![W_a](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/a338488b.jpg) 后，下游任务准确率下降 2.3%-5.3%。
+去掉 $W_a$ 后，下游任务准确率下降 2.3%-5.3%。
 
 ### 4.4 最佳 Latent Step 深度
 
@@ -146,7 +147,7 @@ Latent step 并不是越多越好。论文在三个任务上做了 ablation，�
 
 几个值得关注的点：
 
-**1. 完全 training-free 这件事很 impressive**。![W_a](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/a338488b.jpg) 的构造只用了现有的 ![W_{in}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/1fef2d3c.jpg) 和 ![W_{out}](/assets/img/marsggbo/2026-04-27-多-Agent-协作不需要说人话LatentMAS-让-LLM-在隐空间里直接协作/18a58720.jpg)，KV cache 传递用的是 HuggingFace 原生接口。没有额外参数、没有训练数据，直接即插即用。这大大降低了实际落地的门槛。
+**1. 完全 training-free 这件事很 impressive**。$W_a$ 的构造只用了现有的 $W_{in}$ 和 $W_{out}$，KV cache 传递用的是 HuggingFace 原生接口。没有额外参数、没有训练数据，直接即插即用。这大大降低了实际落地的门槛。
 
 **2. 但同构 agent 的假设是个限制**。LatentMAS 要求所有 agent 使用相同架构的模型（same transformer layer shape），因为 KV cache 的 dimension 要对齐才能拼接。现实中，强大的 MAS 往往需要不同规模甚至不同架构的模型分工协作。论文也提到了可以用 adapter 做异构对齐，但这就引入了训练，breaking 了 training-free 的优势。
 

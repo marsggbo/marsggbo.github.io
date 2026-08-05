@@ -1,8 +1,9 @@
 ---
-title: "EuroSys'26 | TokenFlow：让 LLM 流式输出真正「流」起来"
-date: 2026-05-17 09:00:00 +0800
-categories: [LLM Inference, System]
+layout: post
+title: EuroSys'26 | TokenFlow：让 LLM 流式输出真正「流」起来
+date: '2026-05-17'
 tags: [LLM Serving, Preemptive Scheduling, KV Cache, Streaming, EuroSys]
+categories: [LLM Inference, System]
 ---
 
 > 插播：之前写的[《动手学 AutoML》](https://item.jd.com/14945889.html)终于出版了，从 NAS 到超参优化都有覆盖，适合想系统入门 AutoML 的同学。好了广告结束，现在进入正题。

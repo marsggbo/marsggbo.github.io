@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "KV Cache 的两层存储到底卡在哪？FAST'26 这篇论文给出了答案"
-date: 2026-05-14
+title: KV Cache 的两层存储到底卡在哪？FAST'26 这篇论文给出了答案
+date: '2026-05-14'
 tags: [LLM, KV Cache, 论文解读, 系统优化, FAST]
 ---
 
@@ -113,7 +113,7 @@ Preparing queue 里的请求在 SSD 上发 I/O 也有先后顺序。直觉上应
 
 Bidaw 借鉴了 HRRN 调度算法（Highest Response Ratio Next），设计了一个 disk-HRRN：
 
-$$\text{Response Ratio} = 1 + \frac{\text{Request waiting time}}{\text{KV size}}$$
+$$\text{Response Ratio} = 1 + \frac{\text{Request waiting time}{\text{KV size}$$
 
 等待时间越长，优先级越高；KV 越小，优先级越高。这样既能快速处理小请求，又不会让大请求一直饿着。
 
@@ -144,7 +144,7 @@ $$\text{Response Ratio} = 1 + \frac{\text{Request waiting time}}{\text{KV size}}
 
 最终，每个用户 KV 的 hit potential 是这样算的：
 
-$$\text{Overall\_potential} = p_{\text{small}} \times 1.0 + p_{\text{extreme}} \times 0.0 + \sum_{i=1}^{m} p_{\text{promising}(i)} \times \text{hit\_promising}(i)$$
+$$\text{Overall\_potential} = p_{\text{small} \times 1.0 + p_{\text{extreme} \times 0.0 + \sum_{i=1}^{m} p_{\text{promising}(i)} \times \text{hit\_promising}(i)$$
 
 **hit potential 最低的 KV 优先 evict**，而不是按时间顺序或访问频率来。
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "解决 Overleaf 中插入 PDF 图片失败的问题：排查与修复"
-date: 2025-04-19
+title: 解决 Overleaf 中插入 PDF 图片失败的问题：排查与修复
+date: '2025-04-19'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/1896933834148254566
@@ -26,6 +27,7 @@ This project contains a file called output.pdf. If that file exists, please rena
 
 文档中使用如下方式插入图像：
 
+{% raw %}
 ```
 \usepackage{graphicx}
 \graphicspath{{figures/.../}}
@@ -39,6 +41,7 @@ This project contains a file called output.pdf. If that file exists, please rena
     \label{fig:pruning}
 \end{figure}
 ```
+{% endraw %}
 
 其中 prune\_structure.pdf 是一张矢量格式的图像，在本地查看没有问题,并没有损坏。
 

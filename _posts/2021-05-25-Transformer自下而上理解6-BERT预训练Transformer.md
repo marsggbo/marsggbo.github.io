@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Transformer自下而上理解(6) BERT：预训练Transformer"
-date: 2021-05-25
+title: Transformer自下而上理解(6) BERT：预训练Transformer
+date: '2021-05-25'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/375151601
@@ -28,11 +29,11 @@ BERT定义了如下两个任务来提高Encoder的编码能力：
 
 ## **2. Predict Masked Words**
 
-假如原句子是"the cat sat on the mat",Encoder通过一系列计算会得到每个单词的映射结果，即![u_i](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解6-BERT预训练Transformer/ca222c44.jpg)。
+假如原句子是"the cat sat on the mat",Encoder通过一系列计算会得到每个单词的映射结果，即$u_i$。
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解6-BERT预训练Transformer/c966ab47.jpg)
 
-BERT会随机mask掉某个单词，比如**cat**就被mask了，然后被替换成了特别的符号 **[MASK]**，这个符号有对应的embedding向量，同样地，它也有一个对应输出向量![u_M](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解6-BERT预训练Transformer/0280c380.jpg)，之后这个向量会喂给一个分类器，之后分类器会输出一个分布向量![p](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解6-BERT预训练Transformer/1dcb592d.jpg),真实的分布应该是**cat**的one-hot向量。我们可以用交叉熵来更新分类器和Encoder。
+BERT会随机mask掉某个单词，比如**cat**就被mask了，然后被替换成了特别的符号 **[MASK]**，这个符号有对应的embedding向量，同样地，它也有一个对应输出向量$u_M$，之后这个向量会喂给一个分类器，之后分类器会输出一个分布向量$p$,真实的分布应该是**cat**的one-hot向量。我们可以用交叉熵来更新分类器和Encoder。
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解6-BERT预训练Transformer/a0b33884.jpg)
 

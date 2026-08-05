@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "FlashAttention算法简介"
-date: 2023-07-21
+title: FlashAttention算法简介
+date: '2023-07-21'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/645028049
@@ -18,7 +19,7 @@ https://arxiv.org/pdf/2205.14135.pdf
 
 ## **1. Motivation**
 
-不同硬件模块之间的带宽和存储空间有明显差异，例如下图中左边的三角图，最顶端的是GPU种的SRAM，它的容量非常小但是带宽非常大，以A100 GPU为例，它有108个流式多核处理器，每个处理器上的片上SRAM大小只有192KB，因此A100总共的SRAM大小是192KB![\times](/assets/img/marsggbo/2023-07-21-FlashAttention算法简介/2e98c553.jpg)108![\approx](/assets/img/marsggbo/2023-07-21-FlashAttention算法简介/696735d9.jpg)20MB，但是其吞吐量能高达19TB/s。而A100 GPU HBM（High Bandwidth Memory也就是我们常说的GPU显存大小）大小在40GB~80GB左右，但是带宽只与1.5TB/s。
+不同硬件模块之间的带宽和存储空间有明显差异，例如下图中左边的三角图，最顶端的是GPU种的SRAM，它的容量非常小但是带宽非常大，以A100 GPU为例，它有108个流式多核处理器，每个处理器上的片上SRAM大小只有192KB，因此A100总共的SRAM大小是192KB$\times$108$\approx$20MB，但是其吞吐量能高达19TB/s。而A100 GPU HBM（High Bandwidth Memory也就是我们常说的GPU显存大小）大小在40GB~80GB左右，但是带宽只与1.5TB/s。
 
 ![](/assets/img/marsggbo/2023-07-21-FlashAttention算法简介/dfe84c3d.jpg)
 
@@ -38,13 +39,13 @@ FlashAttention的主要动机就是希望把SRAM利用起来，但是难点就�
 
 2. 分块计算Softmax
 
-因为Softmax都是按行计算的，所以我们考虑一行切分成两部分的情况，即原本的一行数据![x\in\mathbb{R}^{2B}=[x^{(1)},x^{(2)}]](https://www.zhihu.com/equation?tex=x%5Cin%5Cmathbb%7BR%7D%5E%7B2B%7D%3D%5Bx%5E%7B%281%29%7D%2Cx%5E%7B%282%29%7D%5D)。
+因为Softmax都是按行计算的，所以我们考虑一行切分成两部分的情况，即原本的一行数据$x\in\mathbb{R}^{2B}=[x^{(1)},x^{(2)}]$。
 
 ![](/assets/img/marsggbo/2023-07-21-FlashAttention算法简介/97419e5d.jpg)
 
-可以看到计算不同块的f(x)值时，乘上的系数是不同的，但是最后化简后的结果都是指数函数减去了整行的最大值。以![x^{(1)}](/assets/img/marsggbo/2023-07-21-FlashAttention算法简介/f329cd7d.jpg)为例，
+可以看到计算不同块的f(x)值时，乘上的系数是不同的，但是最后化简后的结果都是指数函数减去了整行的最大值。以$x^{(1)}$为例，
 
-![\begin{align} e^{m(x^{(1)})-m(x)}f(x^{(1)})&=e^{m(x^{(1)})-m(x)}[e^{x^{(1)}_1-m(x^{(1)})},...,e^{x^{(1)}_B-m(x^{(1)})}] \notag \\ &=[e^{x^{(1)}_1-m(x)},...,e^{x^{(1)}_B-m(x)}]  \end{align}\\](https://www.zhihu.com/equation?tex=%5Cbegin%7Balign%7D+e%5E%7Bm%28x%5E%7B%281%29%7D%29-m%28x%29%7Df%28x%5E%7B%281%29%7D%29%26%3De%5E%7Bm%28x%5E%7B%281%29%7D%29-m%28x%29%7D%5Be%5E%7Bx%5E%7B%281%29%7D_1-m%28x%5E%7B%281%29%7D%29%7D%2C...%2Ce%5E%7Bx%5E%7B%281%29%7D_B-m%28x%5E%7B%281%29%7D%29%7D%5D+%5Cnotag+%5C%5C+%26%3D%5Be%5E%7Bx%5E%7B%281%29%7D_1-m%28x%29%7D%2C...%2Ce%5E%7Bx%5E%7B%281%29%7D_B-m%28x%29%7D%5D++%5Cend%7Balign%7D%5C%5C)
+$$\begin{align} e^{m(x^{(1)})-m(x)}f(x^{(1)})&=e^{m(x^{(1)})-m(x)}[e^{x^{(1)}_1-m(x^{(1)})},...,e^{x^{(1)}_B-m(x^{(1)})}] \notag \\ &=[e^{x^{(1)}_1-m(x)},...,e^{x^{(1)}_B-m(x)}]  \end{align}$$
 
 ## **3. FlashAttention算法流程**
 

@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "vllm v1 源码精读（五）：从 generate() 到 Speculative Decoding 的完整计算流"
-date: 2026-07-09
+title: vllm v1 源码精读（五）：从 generate() 到 Speculative Decoding 的完整计算流
+date: '2026-07-09'
 tags: [LLM, vLLM, Speculative Decoding, 推理优化, 源码解析]
 ---
 

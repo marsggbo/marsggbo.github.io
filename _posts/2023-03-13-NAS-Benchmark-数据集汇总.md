@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "NAS Benchmark 数据集汇总"
-date: 2023-03-13
+title: NAS Benchmark 数据集汇总
+date: '2023-03-13'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/613711139

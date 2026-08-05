@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "写完 Markdown 还要手动排版？我写了个 VS Code 插件一键搞定微信公众号、知乎、小红书"
-date: 2026-04-27
+title: 写完 Markdown 还要手动排版？我写了个 VS Code 插件一键搞定微信公众号、知乎、小红书
+date: '2026-04-27'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2032224464654578464
@@ -72,9 +73,7 @@ npm install
 行内公式 `$E = mc^2$` 和独立公式块都支持：
 
 ```
-$$
-\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
-$$
+$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
 ```
 
 对于我们这种写技术文章动不动就要插公式的人来说，这个功能是刚需。

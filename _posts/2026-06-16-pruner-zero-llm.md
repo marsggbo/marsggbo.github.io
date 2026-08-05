@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "进阶篇 | 不靠人工设计，让遗传算法自己进化出 SOTA 的 LLM 剪枝指标"
-date: 2026-06-16
+title: 进阶篇 | 不靠人工设计，让遗传算法自己进化出 SOTA 的 LLM 剪枝指标
+date: '2026-06-16'
 tags: [AutoML, LLM, 剪枝, 遗传算法, Pruner-Zero]
 ---
 

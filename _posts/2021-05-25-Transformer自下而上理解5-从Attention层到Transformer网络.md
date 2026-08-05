@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Transformer自下而上理解(5) 从Attention层到Transformer网络"
-date: 2021-05-25
+title: Transformer自下而上理解(5) 从Attention层到Transformer网络
+date: '2021-05-25'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/375073534
@@ -21,11 +22,11 @@ toc:
 
 而Transformer中的Multi-Head的意思就是我们把多个Single-Head的结果拼接在一起，具体看下面的示意图：
 
-可以看到，每个Single-Head的输出是一个维度为![d\times m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/3127a48b.jpg)的矩阵![C^{i}](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/a3e98f8a.jpg),其中![m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/f79ab5c4.jpg)表示输入的词向量个数，![d](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/da5354ac.jpg)每个词向量的长度。这里的![C](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/b75975e6.jpg)等价于上图中的![\{c_{:1},c_{:2},...,c_{:m}\}](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/0c34d236.jpg)。下图中是三个Head拼接在一起的例子，其实你也可以拼接更多。
+可以看到，每个Single-Head的输出是一个维度为$d\times m$的矩阵$C^{i}$,其中$m$表示输入的词向量个数，$d$每个词向量的长度。这里的$C$等价于上图中的$\{c_{:1},c_{:2},...,c_{:m}\}$。下图中是三个Head拼接在一起的例子，其实你也可以拼接更多。
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/41f5a98d.jpg)
 
-每个Head之间的权重是不共享的。另外，所谓拼接其实是对每个Head的输出![C^{i}](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/a3e98f8a.jpg)拼接，而其是在特征（即![d](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/da5354ac.jpg)）这个维度做拼接。所以假如有![n](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/ce59f558.jpg)个Head，那么最后这个Multi-Head的输出矩阵![C](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/b75975e6.jpg)的维度就是![(nd)\times m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/e1e8ed52.jpg)。所以简化后的Multi-Head Self-Attention Layer示意图如下：
+每个Head之间的权重是不共享的。另外，所谓拼接其实是对每个Head的输出$C^{i}$拼接，而其是在特征（即$d$）这个维度做拼接。所以假如有$n$个Head，那么最后这个Multi-Head的输出矩阵$C$的维度就是$(nd)\times m$。所以简化后的Multi-Head Self-Attention Layer示意图如下：
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/49275fd9.jpg)
 
@@ -39,7 +40,7 @@ toc:
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/aa0a71b5.jpg)
 
-上图给出的是单个Multi-Head Self-Attention Layer，其实类似地我们可以把这![m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/f79ab5c4.jpg)个![\{c_{:j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bc_%7B%3Aj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)看成是下一个Multi-Head的输入。不过这一般还会额外加一个全连接层对每一个![c](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/b67fcc1b.jpg)做一个映射，如下图示：
+上图给出的是单个Multi-Head Self-Attention Layer，其实类似地我们可以把这$m$个$\{c_{:j},j\in[1,m]\}$看成是下一个Multi-Head的输入。不过这一般还会额外加一个全连接层对每一个$c$做一个映射，如下图示：
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/8cabd4a1.jpg)
 
@@ -53,7 +54,7 @@ toc:
 
 下图的左边就是Transformer的Encoder结构示意图，可以看到它有两个特点：
 
-* **输入和输出的维度是一样的**，都是![512\times m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/aea315fb.jpg)，其中512表示单个词向量的长度，![m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/f79ab5c4.jpg)表示词数量
+* **输入和输出的维度是一样的**，都是$512\times m$，其中512表示单个词向量的长度，$m$表示词数量
 * Encoder由6个Block堆叠而成，每个Block的结构如下图右边所示，可以看到每个Block的输入和输出的维度大小也是保持一致的，每一个Block其实就是一个(Multi-Head) Self-attention Layer 加一个Dense Layer
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/ee1019a7.jpg)
@@ -68,20 +69,20 @@ toc:
 
 而要建立Encoder和Decoder之间的联系，就需要加上一个Attention Layer，如下图所示。可以看到Multi-Head Attention-Layer的输入有两个：
 
-* Encoder最后一层的输出![\{u_{:j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bu_%7B%3Aj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)，总的维度是![\mathbb{R}^{512\times m}](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/90c54b15.jpg)
-* Decoder第一个Multi-Head Self-Attention的输出![\{c_{:j},j\in[1,t]\}](https://www.zhihu.com/equation?tex=%5C%7Bc_%7B%3Aj%7D%2Cj%5Cin%5B1%2Ct%5D%5C%7D)，总的维度是![\mathbb{R}^{512\times t}](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/559d0684.jpg)
+* Encoder最后一层的输出$\{u_{:j},j\in[1,m]\}$，总的维度是$\mathbb{R}^{512\times m}$
+* Decoder第一个Multi-Head Self-Attention的输出$\{c_{:j},j\in[1,t]\}$，总的维度是$\mathbb{R}^{512\times t}$
 
-它的输出是![t](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/3b1922fd.jpg)个![z](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/524eb39a.jpg)向量，总的维度和Decoder的输入一样，都是![\mathbb{R}^{512\times t}](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/559d0684.jpg)
+它的输出是$t$个$z$向量，总的维度和Decoder的输入一样，都是$\mathbb{R}^{512\times t}$
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/a8692351.jpg)
 
-要实现堆叠，同样需要加上![t](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/3b1922fd.jpg)个Dense Layer对所有的![z](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/524eb39a.jpg)做一个映射。下图就是Encoder和Decoder某一层建立联系的示意图
+要实现堆叠，同样需要加上$t$个Dense Layer对所有的$z$做一个映射。下图就是Encoder和Decoder某一层建立联系的示意图
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/2092301b.jpg)
 
 我们对上图中Decoder做一个简化可以得到下图。
 
-我们先看下图左边，可以看到输入有两个，![512\times m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/aea315fb.jpg) matrix表示Encoder的输出，它会作为Decoder的每一个Block的输入，![512\times t](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/cd53057c.jpg)就是Decoder上一个Block的输出，或者是最初的输入数据，它们的维度永远保持不变。
+我们先看下图左边，可以看到输入有两个，$512\times m$ matrix表示Encoder的输出，它会作为Decoder的每一个Block的输入，$512\times t$就是Decoder上一个Block的输出，或者是最初的输入数据，它们的维度永远保持不变。
 
 下图右边就是Decoder 的Block最简化示意图了，两个输入，一个输出。另外输出的维度和Decoder的输入保持一致。
 
@@ -114,13 +115,13 @@ toc:
 
 介绍完了Transformer的结构，如果你还觉得模糊（应该不会了吧），可以看看下面的例子进一步加深理解。
 
-假如这个实例是将英文翻译成德文，首先我们看看Encoder的结构如下图示，左边是简化图，右边展示了![m](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/f79ab5c4.jpg)个输入和输出的对应关系
+假如这个实例是将英文翻译成德文，首先我们看看Encoder的结构如下图示，左边是简化图，右边展示了$m$个输入和输出的对应关系
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/04436bb5.jpg)
 
 下一步，我们需要做的是将Encoder的输出传给Decoder并做预测
 
-可以看到Decoder的第一个输入是一个固定的起始符号，它的embedding是固定的，它对应的输出是![y_1](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/ca23ae6c.jpg)，你可以把它理解成是一个概率分布，和分类模型类似，每个单词都有不同的权重，我们可以根据概率随机采样或者只选择概率最大的单词作为Decoder下一个输入单词。
+可以看到Decoder的第一个输入是一个固定的起始符号，它的embedding是固定的，它对应的输出是$y_1$，你可以把它理解成是一个概率分布，和分类模型类似，每个单词都有不同的权重，我们可以根据概率随机采样或者只选择概率最大的单词作为Decoder下一个输入单词。
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/61e7ce6c.jpg)
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "本地机器如何访问服务器上的docker容器内的tensorboard？"
-date: 2020-09-16
+title: 本地机器如何访问服务器上的docker容器内的tensorboard？
+date: '2020-09-16'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/248113520

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Pytorch autograd,backward详解"
-date: 2019-09-19
+title: Pytorch autograd,backward详解
+date: '2019-09-19'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/83172023
@@ -86,11 +87,11 @@ RuntimeError: grad can be implicitly created only for scalar outputs
 
 上面的报错信息意思是只有对标量输出它才会计算梯度，而求一个矩阵对另一矩阵的导数束手无策。
 
-![X = \left[\begin{array}{cc} x_0 & x_1 \ \end{array}\right] \,\,\,\,\,\,\,\,\,\ Z=X+2=\left[\begin{array}{cc} x_0+2 & x_1+2 \ \end{array}\right] \Rightarrow \frac{\partial{Z}}{\partial{X}}=?](https://www.zhihu.com/equation?tex=X+%3D+%5Cleft%5B%5Cbegin%7Barray%7D%7Bcc%7D+x_0+%26+x_1+%5C+%5Cend%7Barray%7D%5Cright%5D+%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C+Z%3DX%2B2%3D%5Cleft%5B%5Cbegin%7Barray%7D%7Bcc%7D+x_0%2B2+%26+x_1%2B2+%5C+%5Cend%7Barray%7D%5Cright%5D+%5CRightarrow+%5Cfrac%7B%5Cpartial%7BZ%7D%7D%7B%5Cpartial%7BX%7D%7D%3D%3F)
+$$X = \left[\begin{array}{cc} x_0 & x_1 \ \end{array}\right] \,\,\,\,\,\,\,\,\,\ Z=X+2=\left[\begin{array}{cc} x_0+2 & x_1+2 \ \end{array}\right] \Rightarrow \frac{\partial{Z}{\partial{X}=?$$
 
 那么我们只要想办法把矩阵转变成一个标量不就好了？比如我们可以对z求和，然后用求和得到的标量在对x求导，这样不会对结果有影响，例如：
 
-![\begin{align} &Z_{sum}=\sum{z_i}=x_0+x_1+4 \notag \ &\text{then} \,\,\,\,\,  \frac{\partial{Z{sum}}}{\partial{x_0}}=\frac{\partial{Z{sum}}}{\partial{x_1}}=1 \notag \end{align}](/assets/img/marsggbo/2019-09-19-Pytorch-autogradbackward详解/09b31bfe.jpg)
+$$\begin{align} &Z_{sum}=\sum{z_i}=x_0+x_1+4 \notag \ &\text{then} \,\,\,\,\,  \frac{\partial{Z{sum}{\partial{x_0}=\frac{\partial{Z{sum}{\partial{x_1}=1 \notag \end{align}$$
 
 我们可以看到对z求和后再计算梯度没有报错，结果也与预期一样：
 
@@ -103,7 +104,7 @@ print(x.grad)
 >>> tensor([1., 1.])
 ```
 
-我们再仔细想想，对z求和不就是等价于z 点乘一个相同维度的全为1的矩阵吗？即 ![sum(Z)=dot(Z,I)](/assets/img/marsggbo/2019-09-19-Pytorch-autogradbackward详解/99f9c502.jpg) ,而这个I也就是我们需要传入的`grad_tensors`参数。(点乘只是相对于一维向量而言的，对于矩阵或更高为的张量，可以看做是对每一个维度做点乘)
+我们再仔细想想，对z求和不就是等价于z 点乘一个相同维度的全为1的矩阵吗？即 $sum(Z)=dot(Z,I)$ ,而这个I也就是我们需要传入的`grad_tensors`参数。(点乘只是相对于一维向量而言的，对于矩阵或更高为的张量，可以看做是对每一个维度做点乘)
 
 代码如下：
 

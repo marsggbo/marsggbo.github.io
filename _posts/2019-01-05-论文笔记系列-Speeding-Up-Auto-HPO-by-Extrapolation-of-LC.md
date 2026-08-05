@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "论文笔记系列-Speeding Up Auto HPO by Extrapolation of LC"
-date: 2019-01-05
+title: 论文笔记系列-Speeding Up Auto HPO by Extrapolation of LC
+date: '2019-01-05'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/54137416

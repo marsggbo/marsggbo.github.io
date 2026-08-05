@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "LLM 推理启动慢？华为用一个「可编程 Page Cache」把模型加载砍了 79%"
-date: 2026-05-14
+title: LLM 推理启动慢？华为用一个「可编程 Page Cache」把模型加载砍了 79%
+date: '2026-05-14'
 tags: [LLM, 推理优化, 系统, 论文解读, FAST]
 ---
 

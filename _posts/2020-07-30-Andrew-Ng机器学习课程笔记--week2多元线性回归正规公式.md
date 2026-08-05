@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week2（多元线性回归&正规公式）"
-date: 2020-07-30
+title: Andrew Ng机器学习课程笔记--week2（多元线性回归&正规公式）
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165322806
@@ -51,13 +52,13 @@ toc:
 
 * **feature scaling**
 
-![\begin{equation} x_i := \frac{x_i}{x_\max - x_\min} \end{equation} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week2多元线性回归正规公式/63a049ab.jpg)
+$$\begin{equation} x_i := \frac{x_i}{x_\max - x_\min} \end{equation}$$
 
 每个输入值除以(max - min)
 
 * **mean normalization**
 
-![\begin{equation} x_i := \frac{x_i - μ_i}{s_i} \end{equation} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week2多元线性回归正规公式/5939d541.jpg)
+$$\begin{equation} x_i := \frac{x_i - μ_i}{s_i} \end{equation}$$
 
 μi: 均值 si: max - min
 
@@ -65,7 +66,7 @@ toc:
 
 **Normal Equation**
 
-![\begin{equation} θ = （X^T·X）^{﹣1}·X·Y \end{equation} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week2多元线性回归正规公式/a419e108.jpg)
+$$\begin{equation} θ = （X^T·X）^{﹣1}·X·Y \end{equation}$$
 
 > 具体推理过程详见**[掰开揉碎推导Normal Equation](https://zhuanlan.zhihu.com/p/22757336)**
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "论文笔记系列--iCaRL： Incremental Classifier and Learning"
-date: 2019-01-25
+title: 论文笔记系列--iCaRL： Incremental Classifier and Learning
+date: '2019-01-25'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/55739596
@@ -44,13 +45,13 @@ c) 计算能力与内存应该随着类别数的增加固定或者缓慢增长
 
 什么意思呢？
 
-假设我们现在已经训练了s−1个类别的数据了，记为 ![X^1,...,X^{s−1}](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/ac0f1702.jpg) ，因为通常内存资源有限，所以假设从每个旧数据类中选出一定数量的数据组成examplar sets，记为 ![P^1,...,P^{s−1}](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/2b5d9d7c.jpg) 。
+假设我们现在已经训练了s−1个类别的数据了，记为 $X^1,...,X^{s−1}$ ，因为通常内存资源有限，所以假设从每个旧数据类中选出一定数量的数据组成examplar sets，记为 $P^1,...,P^{s−1}$ 。
 
-然后现在又得到了t−s个新数据，记为 ![X_s,...,X_t](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/83dda17c.jpg) 。同理我们也需要提取出一部分数据，记为 ![P^s,...,P^t](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/9a90ad0b.jpg)
+然后现在又得到了t−s个新数据，记为 $X_s,...,X_t$ 。同理我们也需要提取出一部分数据，记为 $P^s,...,P^t$
 
 > 如何选取数据可参见文末[算法示意图](https://link.zhihu.com/?target=https%3A//www.cnblogs.com/marsggbo/p/10321834.html%23%25E9%2580%2589%25E5%258F%2596%25E6%2595%25B0%25E6%258D%25AE%25E7%25AE%2597%25E6%25B3%2595%25E7%25A4%25BA%25E6%2584%258F%25E5%259B%25BE)。
 
-有了新旧数据后，我们可以先将它们合并，记为 ![P=\{P^1,...,P^t\}](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/d55cc9f9.jpg) ，然后就可以使用特征提取器φ(⋅)φ(·)计算每个类别的平均特征向量了。
+有了新旧数据后，我们可以先将它们合并，记为 $P=\{P^1,...,P^t\}$ ，然后就可以使用特征提取器φ(⋅)φ(·)计算每个类别的平均特征向量了。
 
 ![](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/2a4ca61c.jpg)
 
@@ -58,13 +59,13 @@ c) 计算能力与内存应该随着类别数的增加固定或者缓慢增长
 
 ![](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/f707bb0d.jpg)
 
-算法第七行在文首给出的讲座中，使用的是 ![∥φ(x)−μy∥^2](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/901153a7.jpg) 。 emm... anyway，这不是重点，pass。
+算法第七行在文首给出的讲座中，使用的是 $∥φ(x)−μy∥^2$ 。 emm... anyway，这不是重点，pass。
 
 ## **3.优化loss函数**
 
 机器学习归根到底其实就是优化，那么loss函数如何设定才能解决灾难性遗忘的问题呢？
 
-本文的损失函数定义如下，由新数据分类loss和旧数据蒸馏loss组成。下面公式中的 ![g_y(x_i)](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/60d057fe.jpg) 表示分类器，即\_ ![g_y(x)=\frac{1}{1+e^{−w^T_yφ(x)}}](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/9cd7ad1a.jpg) 。
+本文的损失函数定义如下，由新数据分类loss和旧数据蒸馏loss组成。下面公式中的 $g_y(x_i)$ 表示分类器，即\_ $g_y(x)=\frac{1}{1+e^{−w^T_yφ(x)}$ 。
 
 ![](/assets/img/marsggbo/2019-01-25-论文笔记系列--iCaRL-Incremental-Classifier-and-Learning/c69985e2.jpg)
 

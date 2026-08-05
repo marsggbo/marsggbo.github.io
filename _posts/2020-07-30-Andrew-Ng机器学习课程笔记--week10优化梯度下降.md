@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week10(优化梯度下降)"
-date: 2020-07-30
+title: Andrew Ng机器学习课程笔记--week10(优化梯度下降)
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165344655
@@ -34,11 +35,11 @@ toc:
 
 首先回顾一下**普通梯度下降算法：**，也叫**批量梯度下降算法**。
 
-![h_θ(x)=\sum_{j=1}^{n}θ_jx_j \tag {1.1} ](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/a1766e84.jpg)![J(θ) = \frac{1}{2m}\sum_{i=1}^{m}(h_θ(x^{(i)}) - y^{(i)})^2 \tag {1.2} ](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/5bf1f12e.jpg)
+$h_θ(x)=\sum_{j=1}^{n}θ_jx_j \tag {1.1}$$J(θ) = \frac{1}{2m}\sum_{i=1}^{m}(h_θ(x^{(i)}) - y^{(i)})^2 \tag {1.2}$
 
 Repeat until convergence {
 
-![\begin{aligned} \theta_{j} &=\theta_{j}-\alpha \frac{\partial J(\theta)}{\partial \theta_{j}} \\ &=\theta_{j}-\alpha \frac{1}{m} \sum_{i=1}^{m}\left(h_{\theta}\left(x^{(i)}\right)-y^{(i)}\right) x_{j}^{(i)} \quad j=1,2 \ldots, n \end{aligned}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/4795451c.jpg)
+$$\begin{aligned} \theta_{j} &=\theta_{j}-\alpha \frac{\partial J(\theta)}{\partial \theta_{j} \\ &=\theta_{j}-\alpha \frac{1}{m} \sum_{i=1}^{m}\left(h_{\theta}\left(x^{(i)}\right)-y^{(i)}\right) x_{j}^{(i)} \quad j=1,2 \ldots, n \end{aligned}$$
 
 }
 
@@ -48,14 +49,14 @@ Repeat until convergence {
 
 将计算大数据时，即m很大的情况下，上面 **(1.32)** 式右边有一个 **Σ（累加）** 符号，每一次迭代显然会耗费大量的时间。所以提出了随机梯度下降算法进行改进。
 
-![cost(θ,(x^{(i)}, y^{(i)})) = \frac{1}{2}( h_θ(x^{(i)}) - y^{(i)} )^2 \tag {2.1} ](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/da7d214c.jpg)![J(θ) = \frac{1}{m}\sum_{i=1}^{m}cost(θ,(x^{(i)}, y^{(i)})) \tag{2.2} ](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/170504b0.jpg)
+$cost(θ,(x^{(i)}, y^{(i)})) = \frac{1}{2}( h_θ(x^{(i)}) - y^{(i)} )^2 \tag {2.1}$$J(θ) = \frac{1}{m}\sum_{i=1}^{m}cost(θ,(x^{(i)}, y^{(i)})) \tag{2.2}$
 
 步骤如下：
 
 * 1.打乱数据，重新随机排列
 * 2.Repeat until convergence{
 
-![\begin{align} θ_j &=θ_j-α\frac{∂cost(θ,(x^{(i)}, y^{(i)}))}{∂θ_j} \tag{2.31}\\ &= θ_j - α( h_θ(x^{(i)})-y^{(i)})x_j^{(i)} \quad j=1,2...,n \tag{2.32} \end{align}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/c02b6599.jpg)
+$$\begin{align} θ_j &=θ_j-α\frac{∂cost(θ,(x^{(i)}, y^{(i)}))}{∂θ_j} \tag{2.31}\\ &= θ_j - α( h_θ(x^{(i)})-y^{(i)})x_j^{(i)} \quad j=1,2...,n \tag{2.32} \end{align}$$
 
 }
 
@@ -71,10 +72,10 @@ Repeat until convergence {
 
 假设总共有m个数据，每次迭代使用b个数据进行更新
 
-* ![i](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/b1677f94.jpg)初始化为1
+* $i$初始化为1
 * Repeat until convergence {
 
-while(i≤m)     {         ![\qquad θ_j =  θ_j - α\frac{1}{m}\sum_{k=i}^{i+(b-1)}( h_θ(x^{(k)})-y^{(k)})x_j^{(k)} \quad j=1,2...,n](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/2ef390e3.jpg)
+while(i≤m)     {         $\qquad θ_j =  θ_j - α\frac{1}{m}\sum_{k=i}^{i+(b-1)}( h_θ(x^{(k)})-y^{(k)})x_j^{(k)} \quad j=1,2...,n$
 
  }
 
@@ -110,7 +111,7 @@ i += b;
 
 * **右下**
 
-+ 模型呈现上升趋势，可能是学习速率α过大导致，可以尝试减小α。我们也可以让学习速率随着迭代次数增加而减小，如![α=\frac{常数C_1}{迭代次数+常数C_2}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/7b307231.jpg)。但是也这样有个缺陷就是你还需要不断的尝试两个参数，即两个常数，所以虽然效果可能会不错，但是调试起来会比较麻烦。
++ 模型呈现上升趋势，可能是学习速率α过大导致，可以尝试减小α。我们也可以让学习速率随着迭代次数增加而减小，如$α=\frac{常数C_1}{迭代次数+常数C_2}$。但是也这样有个缺陷就是你还需要不断的尝试两个参数，即两个常数，所以虽然效果可能会不错，但是调试起来会比较麻烦。
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/70d29f8b.jpg)
 
@@ -122,7 +123,7 @@ i += b;
 
 算法如下：
 
-**Repeat forever（直到网站倒闭233）{** **获取当前用户的数据(x,y)** ![θ_j := θ_j - α(h_θ(x)-y)x_j \quad](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week10优化梯度下降/3573483c.jpg)**(for j in range(n))** **}**
+**Repeat forever（直到网站倒闭233）{** **获取当前用户的数据(x,y)** $θ_j := θ_j - α(h_θ(x)-y)x_j \quad$**(for j in range(n))** **}**
 
 一旦对一个数据的学习完成了，我们便可以丢弃该数据，不需要再存储它了。这种方式的好处在于，我们的算法可以很好的适应用户的倾向性，算法可以针对用户的当前行为不断地更新模型以适应该用户。
 

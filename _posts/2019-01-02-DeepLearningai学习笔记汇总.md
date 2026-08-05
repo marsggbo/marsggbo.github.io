@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "DeepLearning.ai学习笔记汇总"
-date: 2019-01-02
+title: DeepLearning.ai学习笔记汇总
+date: '2019-01-02'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/53826429

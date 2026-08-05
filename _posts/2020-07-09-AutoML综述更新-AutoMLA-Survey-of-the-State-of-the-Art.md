@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "AutoML综述更新 【AutoML：A Survey of the State-of-the-Art】"
-date: 2020-07-09
+title: AutoML综述更新 【AutoML：A Survey of the State-of-the-Art】
+date: '2020-07-09'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/158162306
@@ -158,13 +159,13 @@ ENAS 和DARTS都采用了类似的方式，即所有可能的模型都是一个s
 
 但是上面的都是基于accuracy和搜索时间上做的对比。有不少方法开始寻找其他的NAS算法评价指标，。我们知道大多数NAS其实分成两个步骤，一是搜索最有潜力的模型（搜索阶段）；二是验证该模型的表现（评估阶段）。但是很多时候搜索阶段表现最好的，在评估阶段并不是最好的，甚至可能表现很差。 因此一种用的比较多的就是**Kendall Tau metric**，它会评估两个阶段模型性能的相关性，相关性越高则表示算法越有效，它的计算公式如下：
 
-![\tau=\frac{N_{C}-N_{D}}{N_{C}+N_{D}} \\](/assets/img/marsggbo/2020-07-09-AutoML综述更新-AutoMLA-Survey-of-the-State-of-the-Art/5c030602.jpg)
+$$\tau=\frac{N_{C}-N_{D}{N_{C}+N_{D}$$
 
-其中![N_C,N_D](/assets/img/marsggbo/2020-07-09-AutoML综述更新-AutoMLA-Survey-of-the-State-of-the-Art/58098ed4.jpg)分别表示 concordant and discordant pairs。![\tau](/assets/img/marsggbo/2020-07-09-AutoML综述更新-AutoMLA-Survey-of-the-State-of-the-Art/8787bfea.jpg)的大小在-1到1之间：
+其中$N_C,N_D$分别表示 concordant and discordant pairs。$\tau$的大小在-1到1之间：
 
-* ![\tau=1](/assets/img/marsggbo/2020-07-09-AutoML综述更新-AutoMLA-Survey-of-the-State-of-the-Art/dd8e9df2.jpg)：算法**能**很好地找到表现好的模型，即搜索阶段表现最好的模型在评估阶段也是最好的。
-* ![\tau=1](/assets/img/marsggbo/2020-07-09-AutoML综述更新-AutoMLA-Survey-of-the-State-of-the-Art/dd8e9df2.jpg): 算法**不**能很好地找到表现好的模型，即搜索阶段表现最好的模型在评估阶段反而是最差的。
-* ![\tau=0](/assets/img/marsggbo/2020-07-09-AutoML综述更新-AutoMLA-Survey-of-the-State-of-the-Art/c0327f2d.jpg)：搜索阶段和评估阶段之间完全没有关系，基本上是随机搜索。
+* $\tau=1$：算法**能**很好地找到表现好的模型，即搜索阶段表现最好的模型在评估阶段也是最好的。
+* $\tau=1$: 算法**不**能很好地找到表现好的模型，即搜索阶段表现最好的模型在评估阶段反而是最差的。
+* $\tau=0$：搜索阶段和评估阶段之间完全没有关系，基本上是随机搜索。
 
 ### **2） NAS-Bench**
 

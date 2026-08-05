@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "中文版深度强化学习课程4：Actor-Critic"
-date: 2021-03-21
+title: 中文版深度强化学习课程4：Actor-Critic
+date: '2021-03-21'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/358716156

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "ICLR2022 Interesting Papers"
-date: 2022-04-15
+title: ICLR2022 Interesting Papers
+date: '2022-04-15'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/499010769

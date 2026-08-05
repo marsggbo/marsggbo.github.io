@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "贝叶斯优化从零推导：从「我对这个函数有个猜测」到自动调参"
-date: 2026-06-30
+title: 贝叶斯优化从零推导：从「我对这个函数有个猜测」到自动调参
+date: '2026-06-30'
 tags: [贝叶斯优化, AutoML, 数学推导]
 ---
 
@@ -104,7 +104,7 @@ $$f \sim \mathcal{GP}(m(\cdot), k(\cdot, \cdot))$$
 
 最常用的是 **RBF（Radial Basis Function）核**：
 
-$$k_{\text{RBF}}(x, x') = \exp\left(-\frac{\|x - x'\|^2}{2l^2}\right)$$
+$$k_{\text{RBF}(x, x') = \exp\left(-\frac{\|x - x'\|^2}{2l^2}\right)$$
 
 当 $x = x'$ 时，$k = 1$（自相关最大）；距离越远，$k$ 趋向 0（相关性消失）。
 
@@ -112,7 +112,7 @@ $l$ 是**长度尺度（length scale）**，控制"多近才算近"——$l$ 大
 
 **Matern 核**是 RBF 的推广，多了一个参数 $\nu$ 控制光滑度：
 
-$$k_{\text{Matern}}(x, x') \propto \left(\frac{\sqrt{2\nu} \|x-x'\|}{l}\right)^\nu K_\nu\left(\frac{\sqrt{2\nu} \|x-x'\|}{l}\right)$$
+$$k_{\text{Matern}(x, x') \propto \left(\frac{\sqrt{2\nu} \|x-x'\|}{l}\right)^\nu K_\nu\left(\frac{\sqrt{2\nu} \|x-x'\|}{l}\right)$$
 
 $\nu = 5/2$ 时函数二阶可微，在实践中很好用——比 RBF 假设的无穷阶光滑更符合实际。
 
@@ -156,7 +156,7 @@ $$\sigma_*^2 = k_{**} - \mathbf{k}_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{k}_*$$
 
 **均值 $\mu_*$**：
 
-$$\mu_* = \mathbf{k}_*^\top \underbrace{(K + \sigma_n^2 I)^{-1} \mathbf{y}}_{\boldsymbol{\alpha}}$$
+$$\mu_* = \mathbf{k}_*^\top \underbrace{(K + \sigma_n^2 I)^{-1} \mathbf{y}_{\boldsymbol{\alpha}$$
 
 把 $\boldsymbol{\alpha} = (K + \sigma_n^2 I)^{-1} \mathbf{y}$ 看作"每个观测点的权重"，$\mu_*$ 就是以**新点和观测点的相关性为权重**，对观测值做加权平均。
 
@@ -164,7 +164,7 @@ $$\mu_* = \mathbf{k}_*^\top \underbrace{(K + \sigma_n^2 I)^{-1} \mathbf{y}}_{\bo
 
 **方差 $\sigma_*^2$**：
 
-$$\sigma_*^2 = \underbrace{k_{**}}_{\text{先验方差}} - \underbrace{\mathbf{k}_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{k}_*}_{\text{观测带来的信息量}}$$
+$$\sigma_*^2 = \underbrace{k_{**}_{\text{先验方差} - \underbrace{\mathbf{k}_*^\top (K + \sigma_n^2 I)^{-1} \mathbf{k}_*}_{\text{观测带来的信息量}$$
 
 先验方差减去"从观测中学到的信息量"。观测点离 $x_*$ 越近，方差减少越多，预测越确定。
 
@@ -233,7 +233,7 @@ $$\text{EI}(x_*) = (\mu(x_*) - f^+) \cdot \Phi(Z) + \sigma(x_*) \cdot \phi(Z)$$
 
 **逐项理解**：
 
-$$\underbrace{(\mu(x_*) - f^+) \cdot \Phi(Z)}_{\text{利用项}} + \underbrace{\sigma(x_*) \cdot \phi(Z)}_{\text{探索项}}$$
+$$\underbrace{(\mu(x_*) - f^+) \cdot \Phi(Z)}_{\text{利用项} + \underbrace{\sigma(x_*) \cdot \phi(Z)}_{\text{探索项}$$
 
 - **利用项**：当预测均值 $\mu$ 远超当前最优时，这一项大（利用已知好区域）
 - **探索项**：当不确定性 $\sigma$ 大时，这一项大（探索未知区域）
@@ -628,7 +628,7 @@ GP 根据 8 个观测点，推断"跳 [12,14,16,18,20,22]"的 score 大概是 0.
 
 回头看整个流程，"贝叶斯"到底体现在哪里？
 
-$$\underbrace{p(f | \mathcal{D})}_{\text{后验}} \propto \underbrace{p(\mathcal{D} | f)}_{\text{似然}} \cdot \underbrace{p(f)}_{\text{先验}}$$
+$$\underbrace{p(f | \mathcal{D})}_{\text{后验} \propto \underbrace{p(\mathcal{D} | f)}_{\text{似然} \cdot \underbrace{p(f)}_{\text{先验}$$
 
 - **先验 $p(f)$**：GP 本身就是先验——你通过选择核函数，在所有可能的函数里，指定了哪些函数"更有可能"（平滑的？周期的？）
 - **似然 $p(\mathcal{D} | f)$**：观测数据，每个观测点 $y_i = f(x_i) + \epsilon$

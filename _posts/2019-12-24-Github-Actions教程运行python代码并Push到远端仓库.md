@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Github Actions教程：运行python代码并Push到远端仓库"
-date: 2019-12-24
+title: Github Actions教程：运行python代码并Push到远端仓库
+date: '2019-12-24'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/99080287
@@ -26,6 +27,7 @@ toc:
 
 action代码设置如下：
 
+{% raw %}
 ```
 name: Python application
 
@@ -62,6 +64,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
+{% endraw %}
 
 代码解释：
 

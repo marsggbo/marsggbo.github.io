@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "AAAI21-Rebuttal起死回生示例"
-date: 2021-01-14
+title: AAAI21-Rebuttal起死回生示例
+date: '2021-01-14'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/344196352

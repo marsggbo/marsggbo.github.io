@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "KV Cache 也能「语义共享」？SemShareKV 用 LSH 做到了"
-date: 2026-04-27
+title: KV Cache 也能「语义共享」？SemShareKV 用 LSH 做到了
+date: '2026-04-27'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2032216700423287711

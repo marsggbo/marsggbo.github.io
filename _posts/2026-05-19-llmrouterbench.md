@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "LLMRouterBench：当所有 routing 方法被拉到同一起跑线，结果有些尴尬"
-date: 2026-05-19
+title: LLMRouterBench：当所有 routing 方法被拉到同一起跑线，结果有些尴尬
+date: '2026-05-19'
 tags: [LLM, Routing, Benchmark, 论文解读]
 ---
 

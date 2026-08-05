@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "说人话：一文搞懂现在火热的 LLM agent 自进化原理"
-date: 2026-06-15
+title: 说人话：一文搞懂现在火热的 LLM agent 自进化原理
+date: '2026-06-15'
 tags: [AutoML, NAS, LLM, Agent, 进化算法]
 ---
 

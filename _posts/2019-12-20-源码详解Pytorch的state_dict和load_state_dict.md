@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "源码详解Pytorch的state_dict和load_state_dict"
-date: 2019-12-20
+title: 源码详解Pytorch的state_dict和load_state_dict
+date: '2019-12-20'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/98563721

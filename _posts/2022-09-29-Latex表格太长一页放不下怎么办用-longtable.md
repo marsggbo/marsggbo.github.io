@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Latex表格太长，一页放不下怎么办？用 longtable"
-date: 2022-09-29
+title: Latex表格太长，一页放不下怎么办？用 longtable
+date: '2022-09-29'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/569424468
@@ -9,7 +10,7 @@ related_posts: false
 toc:
   sidebar: left
 ---
-
+{% raw %}
 ```
 \usepackage{longtable}
 
@@ -61,6 +62,7 @@ d1 & d2 & d3 \\
 d1 & d2 & d3 
 \end{longtable}
 ```
+{% endraw %}
 
 效果如下图，可以看到表格被换分到了两页，当然如果你的表格特别特别长，也会默认划分到多个连续的页面
 

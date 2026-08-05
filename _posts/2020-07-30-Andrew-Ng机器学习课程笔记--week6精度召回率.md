@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week6(精度&召回率)"
-date: 2020-07-30
+title: Andrew Ng机器学习课程笔记--week6(精度&召回率)
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165332666
@@ -79,9 +80,9 @@ testError的计算方法依计算类型不同而不同：
 
 下面开始进行模型选择，我们事先假设右下图10个多项式（**d**表示多项式的最高项次幂数）。
 
-* 以Training Set为数据计算出10个不同的![h_θ(x)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/acfc83a7.jpg)的**θ**参数
-* 将上一步中求出的**θ**参数分别代入验证数据集，并找出误差最小的一项，假设是![θ^{(4)}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/75621ea6.jpg)
-* 最后将![θ^{(4)}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/75621ea6.jpg)带入测试集，评估最后的整体误差
+* 以Training Set为数据计算出10个不同的$h_θ(x)$的**θ**参数
+* 将上一步中求出的**θ**参数分别代入验证数据集，并找出误差最小的一项，假设是$θ^{(4)}$
+* 最后将$θ^{(4)}$带入测试集，评估最后的整体误差
 
 ## **2. Bias vs. Variance**
 
@@ -92,7 +93,7 @@ testError的计算方法依计算类型不同而不同：
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/cb7400fc.jpg)![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/fbacc0f4.jpg)
 > 上图很好的诠释了二者的区别，更具体的可参见**[机器学习中的Bias(偏差)，Error(误差)，和Variance(方差)有什么区别和联系？](https://www.zhihu.com/question/27068705)**
 
-高偏差（high bias）：![J_{train}(θ)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/b3a65330.jpg)和![J_{CV}(θ)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/04242b6e.jpg)都很大，并且二者的值接近 高方差（high variance）：![J_{train}(θ)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/b3a65330.jpg)小， ![J_{CV}(θ)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/04242b6e.jpg)远大于![J_{train}(θ)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/b3a65330.jpg) 示意图如下：
+高偏差（high bias）：$J_{train}(θ)$和$J_{CV}(θ)$都很大，并且二者的值接近 高方差（high variance）：$J_{train}(θ)$小， $J_{CV}(θ)$远大于$J_{train}(θ)$ 示意图如下：
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/4f868c2b.jpg)
 
@@ -100,7 +101,7 @@ testError的计算方法依计算类型不同而不同：
 
 对于过拟合问题，正则化是个非常有效的解决方案，下面是一个之前提到过的正则化线性回归的例子：
 
-![h_θ(x) = θ_0 + θ_1x + θ_2x^2 +…… +θ_nx^n \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/630ca30e.jpg)![J(θ) = \frac{1}{2m}\sum_{i=1}^{m}(h_θ(x^{(i)})-y^{(i)})^2+\frac{λ}{2m}\sum_{j=1}^{m}θ_j^2\\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/b8f634c1.jpg)
+$h_θ(x) = θ_0 + θ_1x + θ_2x^2 +…… +θ_nx^n$$J(θ) = \frac{1}{2m}\sum_{i=1}^{m}(h_θ(x^{(i)})-y^{(i)})^2+\frac{λ}{2m}\sum_{j=1}^{m}θ_j^2$
 
 但是如何选择λ的值呢？this is a question！方法和上面的模式选择类似（见下图）
 
@@ -113,11 +114,11 @@ testError的计算方法依计算类型不同而不同：
 总结一下步骤就是：
 
 * 1.创建一组λ的值，如λ∈{0,0.01,0.02,0.04,0.08,0.16,0.32,0.64,1.28,2.56,5.12,10.24});
-* 2.创建一组不同degrees的![h_θ(x)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/acfc83a7.jpg)，即x的最高次幂不同
+* 2.创建一组不同degrees的$h_θ(x)$，即x的最高次幂不同
 * 3.for λs in λ:      for hs in h:          学习得到一组θ
-* 4.计算![J_{CV}(θ)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/04242b6e.jpg)
+* 4.计算$J_{CV}(θ)$
 * 5.选取验证集误差最小的一组参数
-* 6.将上面求得的最佳θ和λ代入测试集求出![J_{test}(θ)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/f4b2ab36.jpg)
+* 6.将上面求得的最佳θ和λ代入测试集求出$J_{test}(θ)$
 
 ### **3) Learning Curves**
 
@@ -163,7 +164,7 @@ testError的计算方法依计算类型不同而不同：
 
 什么是不对称性分类（Skewed Classes）？
 
-以癌症预测或者分类为例，我们训练了一个逻辑回归模型![h_θ(x)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/acfc83a7.jpg). 如果是癌症，y = 1, 其他则 y = 0。 我们将训练得到的模型运用到测试集上发现这个模型的错误率仅为1%（99%都分正确了），看起来貌似是一个非常好的结果？ 但假如仅有0.5%的病人得了癌症。这个时候如果我们不用任何学习算法，对于测试集中的所有人都预测y = 0，即没有癌症，那么这个预测方法的错误率仅为0.5%，比我们废好大力训练的逻辑回归模型的还要好。这就是一个不对称分类的例子，对于这样的例子，仅仅考虑错误率是有风险的。
+以癌症预测或者分类为例，我们训练了一个逻辑回归模型$h_θ(x)$. 如果是癌症，y = 1, 其他则 y = 0。 我们将训练得到的模型运用到测试集上发现这个模型的错误率仅为1%（99%都分正确了），看起来貌似是一个非常好的结果？ 但假如仅有0.5%的病人得了癌症。这个时候如果我们不用任何学习算法，对于测试集中的所有人都预测y = 0，即没有癌症，那么这个预测方法的错误率仅为0.5%，比我们废好大力训练的逻辑回归模型的还要好。这就是一个不对称分类的例子，对于这样的例子，仅仅考虑错误率是有风险的。
 
 现在我们就来考虑一种标准的衡量方法：**Precision/Recall(精确度和召回率)**
 
@@ -183,9 +184,9 @@ False Negative（假负例 , FN）被模型预测为负的正样本；可以称�
 
 计算公式如下：
 
-![Precision =\frac{\text { True positives }}{\# \text { predicted as positive }}=\frac{\text { True positives }}{\text { True positives }+\text { False positives }}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/bc661c65.jpg)
+$$Precision =\frac{\text { True positives }{\# \text { predicted as positive }=\frac{\text { True positives }{\text { True positives }+\text { False positives }$$
 
-![\operatorname{Recall}=\frac{\text { True positives }}{\# \text { actual positives }}=\frac{\text { True positives }}{\text { True positives }+\text { False negatives }}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/0c8ef5c5.jpg)
+$$\operatorname{Recall}=\frac{\text { True positives }{\# \text { actual positives }=\frac{\text { True positives }{\text { True positives }+\text { False negatives }$$
 
 例题：
 
@@ -193,9 +194,9 @@ False Negative（假负例 , FN）被模型预测为负的正样本；可以称�
 
 计算可得
 
-![Precision =\frac{80}{80+20}=0.8](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/ca5fb15a.jpg)
+$$Precision =\frac{80}{80+20}=0.8$$
 
-![\text {Recall}=\frac{80}{80+80}=0.5](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/7fddc4d7.jpg)
+$$\text {Recall}=\frac{80}{80+80}=0.5$$
 
 Precision:预测中实际得癌症的病人数量(真正例)除以我们预测的得癌症的病人数量 Recall-预测中实际得癌症的病人数量(真正例)除以实际得癌症的病人数量
 
@@ -224,10 +225,10 @@ F值 = 70% \* 100% \* 2 / (70% + 100%) = 82.35%
 * Precision1 = 0.85， Recall1 = 0.4
 * Precision2 = 0.36， Recall2 = 0.90 这个时候再怎么评判呢？
 
-首先我们假设已经训练得到了逻辑回归模型![h_θ(x)](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/acfc83a7.jpg),，一种通常的判断正负类的方法是设定一个阈值，一般为0.5，即
+首先我们假设已经训练得到了逻辑回归模型$h_θ(x)$,，一种通常的判断正负类的方法是设定一个阈值，一般为0.5，即
 
-* ![h_θ(x)≥0.5 ，则y=1](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/0a6662c3.jpg)
-* ![h_θ(x)<0.5 ，则y=0](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/dbdaed77.jpg) 很显然我们知道阈值的大小的设定可以调节Precision和Recall，例如
+* $h_θ(x)≥0.5 ，则y=1$
+* $h_θ(x)<0.5 ，则y=0$ 很显然我们知道阈值的大小的设定可以调节Precision和Recall，例如
 * 当我们将阈值设为0.9，那么会导致高精度，低召回率（Higher precision, lower recall）
 * 当我们将阈值设为0.3，那么会导致高召回率，低精确度(Higher recall, lower precision)
 
@@ -243,7 +244,7 @@ F值 = 70% \* 100% \* 2 / (70% + 100%) = 82.35%
 
 现在我们引入标准的F值或者F1-score:
 
-![F1_{score} = 2\frac{P·R}{P+R} ](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/a47349ac.jpg)
+$$F1_{score} = 2\frac{P·R}{P+R}$$
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/c851ed0f.jpg)
 

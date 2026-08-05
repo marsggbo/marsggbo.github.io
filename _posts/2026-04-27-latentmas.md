@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "多 Agent 协作不需要说「人话」？LatentMAS 让 LLM 在隐空间里直接协作"
-date: 2026-04-27
+title: 多 Agent 协作不需要说「人话」？LatentMAS 让 LLM 在隐空间里直接协作
+date: '2026-04-27'
 tags: [LLM, Multi-Agent, 推理优化, KV Cache, 论文解读]
 ---
 

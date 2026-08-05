@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "【GAMES101-现代计算机图形学课程笔记】Lecture 01 Overview"
-date: 2020-04-25
+date: '2020-04-25'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/136291925

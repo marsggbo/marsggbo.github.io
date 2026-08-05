@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "KBS'21 | 我写的 AutoML 综述被引 2700+ 次，今天来聊聊这篇文章的来龙去脉"
-date: 2026-05-17
+title: KBS'21 | 我写的 AutoML 综述被引 2700+ 次，今天来聊聊这篇文章的来龙去脉
+date: '2026-05-17'
 tags: [AutoML, NAS, 超参数优化, 综述, 论文解读]
 ---
 

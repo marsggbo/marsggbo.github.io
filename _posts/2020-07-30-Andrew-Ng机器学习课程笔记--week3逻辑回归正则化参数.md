@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week3（逻辑回归&正则化参数）"
-date: 2020-07-30
+title: Andrew Ng机器学习课程笔记--week3（逻辑回归&正则化参数）
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165324105
@@ -42,7 +43,7 @@ Logistic Regression
 
 这里需要使用到**sigmoid函数--g(z)**：
 
-![\begin{equation} h_θ(x) = g(θ^Tx)  \end{equation} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/9c5b7ba5.jpg)![\begin{equation} z = θ^Tx  \end{equation} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/d18d2223.jpg)![\begin{equation} g(z) = \frac{1}{1+e^{-z}} \end{equation} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/5e143717.jpg)
+$\begin{equation} h_θ(x) = g(θ^Tx)  \end{equation}$$\begin{equation} z = θ^Tx  \end{equation}$$\begin{equation} g(z) = \frac{1}{1+e^{-z} \end{equation}$
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/f88c53a4.jpg)
 
@@ -50,15 +51,15 @@ Logistic Regression
 
 决策边界：
 
-![h_θ(x) ≥ 0.5  → y=1  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/ec3e1082.jpg)![h_θ(x) < 0.5 →  y=0  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/b77c1e04.jpg)
+$h_θ(x) ≥ 0.5  → y=1$$h_θ(x) < 0.5 →  y=0$
 
 等价于
 
-![g(z) ≥ 0.5  →  y=1  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/1365877b.jpg)![g(z) < 0.5 →  y=0  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/388c57cd.jpg)
+$g(z) ≥ 0.5  →  y=1$$g(z) < 0.5 →  y=0$
 
 等价于
 
-![z ≥0 →  y=1  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/b614a6bb.jpg)![z < 0 →  y=0  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/39885643.jpg)
+$z ≥0 →  y=1$$z < 0 →  y=0$
 
 ## **2. Logistic Regression Model**
 
@@ -68,7 +69,7 @@ Logistic Regression
 
 逻辑回归的cost function如下：
 
-![J_θ = \frac{1}{m} \sum {Cost}( h_θ(x^{(i)}, y^{(i)} ) ) \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/be9e9e67.jpg)![{Cost}(h_θ(x), y) ) = - log(h_θ(x))   \quad  \quad if \quad y=1 \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/796a806f.jpg)![{Cost}(h_θ(x), y) ) = - log(1 - h_θ(x))   \quad  if \quad y=0 \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/cb37113e.jpg)
+$J_θ = \frac{1}{m} \sum {Cost}( h_θ(x^{(i)}, y^{(i)} ) )$${Cost}(h_θ(x), y) ) = - log(h_θ(x))   \quad  \quad if \quad y=1$${Cost}(h_θ(x), y) ) = - log(1 - h_θ(x))   \quad  if \quad y=0$
 
 结合图来理解：
 
@@ -88,11 +89,11 @@ Logistic Regression
 
 * 损失函数 cost function
 
-![Cost(h_θ(x), y) = -ylog(h_θ(x)) - (1-y)log(1-h_θ(x)) \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/55e20623.jpg)
+$$Cost(h_θ(x), y) = -ylog(h_θ(x)) - (1-y)log(1-h_θ(x))$$
 
 Jθ
 
-![J_θ=-\frac{1}{m} \sum Cost(h_θ(x), y)  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/655759c9.jpg)![\quad  =-\frac{1}{m} \sum  [-y^{i}log(h_θ(x^{(i)})) - (1-y^i)log(1-h_θ(x^{(i)}))]  \\](https://www.zhihu.com/equation?tex=%5Cquad++%3D-%5Cfrac%7B1%7D%7Bm%7D+%5Csum++%5B-y%5E%7Bi%7Dlog%28h_%CE%B8%28x%5E%7B%28i%29%7D%29%29+-+%281-y%5Ei%29log%281-h_%CE%B8%28x%5E%7B%28i%29%7D%29%29%5D++%5C%5C)
+$J_θ=-\frac{1}{m} \sum Cost(h_θ(x), y)$$\quad  =-\frac{1}{m} \sum  [-y^{i}log(h_θ(x^{(i)})) - (1-y^i)log(1-h_θ(x^{(i)}))]$
 
 * 梯度函数
 
@@ -132,17 +133,17 @@ Jθ
 
 **正则化损失函数表达式：**
 
-![J(θ)=\frac{1}{2m} [\sum_{i=1}^m( h_θ(x^{(i)}) - y^{(i)})^2 + λ\sum_{j=1}^n θ_j^2] \\](https://www.zhihu.com/equation?tex=J%28%CE%B8%29%3D%5Cfrac%7B1%7D%7B2m%7D+%5B%5Csum_%7Bi%3D1%7D%5Em%28+h_%CE%B8%28x%5E%7B%28i%29%7D%29+-+y%5E%7B%28i%29%7D%29%5E2+%2B+%CE%BB%5Csum_%7Bj%3D1%7D%5En+%CE%B8_j%5E2%5D+%5C%5C)![min_θ [\frac{1}{2m} (\sum_{i=1}^m( h_θ(x^{(i)}) - y^{(i)})^2 + λ\sum_{j=1}^n θ_j^2)] \\](https://www.zhihu.com/equation?tex=min_%CE%B8+%5B%5Cfrac%7B1%7D%7B2m%7D+%28%5Csum_%7Bi%3D1%7D%5Em%28+h_%CE%B8%28x%5E%7B%28i%29%7D%29+-+y%5E%7B%28i%29%7D%29%5E2+%2B+%CE%BB%5Csum_%7Bj%3D1%7D%5En+%CE%B8_j%5E2%29%5D+%5C%5C)
+$J(θ)=\frac{1}{2m} [\sum_{i=1}^m( h_θ(x^{(i)}) - y^{(i)})^2 + λ\sum_{j=1}^n θ_j^2]$$min_θ [\frac{1}{2m} (\sum_{i=1}^m( h_θ(x^{(i)}) - y^{(i)})^2 + λ\sum_{j=1}^n θ_j^2)]$
 
 ### **3) 正则化线性回归**
 
 * **正则化梯度下降：**
 
-![J(θ)=\frac{1}{2m} [\sum_{i=1}^m( h_θ(x^{(i)}) - y^{(i)})^2 + λ\sum_{j=1}^n θ_j^2] \\](https://www.zhihu.com/equation?tex=J%28%CE%B8%29%3D%5Cfrac%7B1%7D%7B2m%7D+%5B%5Csum_%7Bi%3D1%7D%5Em%28+h_%CE%B8%28x%5E%7B%28i%29%7D%29+-+y%5E%7B%28i%29%7D%29%5E2+%2B+%CE%BB%5Csum_%7Bj%3D1%7D%5En+%CE%B8_j%5E2%5D+%5C%5C)![\frac{∂J_θ}{∂θ_j} = \frac{1}{m} \sum_{i=1}^m( h_θ(x^{(i)} )  - y^{(i)} )x_j^{(i)} + \frac{λ}{m}θ_j   \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/289ff3f3.jpg)
+$J(θ)=\frac{1}{2m} [\sum_{i=1}^m( h_θ(x^{(i)}) - y^{(i)})^2 + λ\sum_{j=1}^n θ_j^2]$$\frac{∂J_θ}{∂θ_j} = \frac{1}{m} \sum_{i=1}^m( h_θ(x^{(i)} )  - y^{(i)} )x_j^{(i)} + \frac{λ}{m}θ_j$
 
 Repeat{
 
-![θ_0 := θ_0  - α\frac{1}{m}\sum_{i=1}{m}( h_θ(x^{(i)} )  - y^{(i)} )x_0^{(i)} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week3逻辑回归正则化参数/edd4d66a.jpg)![θ_j := θ_j  - α[(\frac{1}{m}\sum_{i=1}{m}( h_θ(x^{(i)} )  - y^{(i)} )x_0^{(i)} ) + \frac{λ}{m}θ_j   ] \quad j∈\{1,2,3……n\} \\](https://www.zhihu.com/equation?tex=%CE%B8_j+%3A%3D+%CE%B8_j++-+%CE%B1%5B%28%5Cfrac%7B1%7D%7Bm%7D%5Csum_%7Bi%3D1%7D%7Bm%7D%28+h_%CE%B8%28x%5E%7B%28i%29%7D+%29++-+y%5E%7B%28i%29%7D+%29x_0%5E%7B%28i%29%7D+%29+%2B+%5Cfrac%7B%CE%BB%7D%7Bm%7D%CE%B8_j+++%5D+%5Cquad+j%E2%88%88%5C%7B1%2C2%2C3%E2%80%A6%E2%80%A6n%5C%7D+%5C%5C)
+$θ_0 := θ_0  - α\frac{1}{m}\sum_{i=1}{m}( h_θ(x^{(i)} )  - y^{(i)} )x_0^{(i)}$$θ_j := θ_j  - α[(\frac{1}{m}\sum_{i=1}{m}( h_θ(x^{(i)} )  - y^{(i)} )x_0^{(i)} ) + \frac{λ}{m}θ_j   ] \quad j∈\{1,2,3……n\}$
 
 }
 
@@ -154,7 +155,7 @@ Repeat{
 
 ## **4) 正则化逻辑回归**
 
-![J(θ)=-\frac{1}{m} \{\sum_{i=1}^m[  y^{(i)} log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))]\} + \frac{λ}{2m}\sum_{j=1}^n θ_j^2 \\](https://www.zhihu.com/equation?tex=J%28%CE%B8%29%3D-%5Cfrac%7B1%7D%7Bm%7D+%5C%7B%5Csum_%7Bi%3D1%7D%5Em%5B++y%5E%7B%28i%29%7D+log%28h_%CE%B8%28x%5E%7B%28i%29%7D%29%29%2B%281-y%5E%7B%28i%29%7D%29log%281-h_%CE%B8%28x%5E%7B%28i%29%7D%29%29%5D%5C%7D+%2B+%5Cfrac%7B%CE%BB%7D%7B2m%7D%5Csum_%7Bj%3D1%7D%5En+%CE%B8_j%5E2+%5C%5C)
+$$J(θ)=-\frac{1}{m} \{\sum_{i=1}^m[  y^{(i)} log(h_θ(x^{(i)}))+(1-y^{(i)})log(1-h_θ(x^{(i)}))]\} + \frac{λ}{2m}\sum_{j=1}^n θ_j^2$$
 
 梯度下降过程
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "NSDI26 | DroidSpeak让不同 LLM 之间共享 KV Cache"
-date: 2026-04-26
+title: NSDI26 | DroidSpeak让不同 LLM 之间共享 KV Cache
+date: '2026-04-26'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2031750167255367893

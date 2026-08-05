@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week9(上)(异常检测&推荐系统)"
-date: 2020-07-30
+title: Andrew Ng机器学习课程笔记--week9(上)(异常检测&推荐系统)
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165342318
@@ -70,7 +71,7 @@ toc:
 
 上面我们构建的模型（即蓝色同心圆）能根据测试数据告诉我们其属于一组数据的可能性p(x).上图中，在蓝色圈内的数据属于该组数据的可能性较高，而越是偏远的数据，其属于该组数据的可能性就越低。 这种方法称为密度估计，表达如下：
 
-![if \quad p(x)≤ε，则为anomaly（异常） \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9上异常检测推荐系统/648730ec.jpg)![if \quad p(x)>ε，则为normal（正常） \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9上异常检测推荐系统/d5b206c3.jpg)
+$if \quad p(x)≤ε，则为anomaly（异常）$$if \quad p(x)>ε，则为normal（正常）$
 
 ### **2） Gaussian Distribution**
 
@@ -124,11 +125,11 @@ toc:
 
 * **一般的高斯分布模型** 我们计算 p(x)的方法是： 通过分别计算每个特征对应的几 率然后将其累乘起来，在多元高斯分布模型中，我们将构建特征的协方差矩阵，用所有的特 征一起来计算 p(x)。
 
-![p(x)=∏_{j=1}^{n}p(x_j;μ_j,σ^2_j)=∏_{j=1}^{n}\frac{1}{\sqrt{2π}σ_j}exp(-\frac{(x_j-μ_j)^2}{2σ_j^2}) \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9上异常检测推荐系统/4f084eb8.jpg)![μ=\frac{1}{m}\sum_{i=1}^{m}x^{(i)}  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9上异常检测推荐系统/2a5209b5.jpg)
+$p(x)=∏_{j=1}^{n}p(x_j;μ_j,σ^2_j)=∏_{j=1}^{n}\frac{1}{\sqrt{2π}σ_j}exp(-\frac{(x_j-μ_j)^2}{2σ_j^2})$$μ=\frac{1}{m}\sum_{i=1}^{m}x^{(i)}$
 
 * **多元高斯分布**
 
-![p(x)=\frac{1}{(2π)^{\frac{n}{2}} |Σ|^{\frac{1}{2}}}exp(-\frac{1}{2}(x-μ)^TΣ^{-1}(x-μ)) \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9上异常检测推荐系统/8a00bab9.jpg)![Σ=\frac{1}{m}(X-μ)^T(X-μ) \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9上异常检测推荐系统/709b48af.jpg)
+$p(x)=\frac{1}{(2π)^{\frac{n}{2} |Σ|^{\frac{1}{2}exp(-\frac{1}{2}(x-μ)^TΣ^{-1}(x-μ))$$Σ=\frac{1}{m}(X-μ)^T(X-μ)$
 
 μ和Σ对模型的影响
 

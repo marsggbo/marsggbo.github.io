@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "AutoML: A survey of the state-of-the-art综述期刊论文免费下载"
-date: 2020-12-11
+title: 'AutoML: A survey of the state-of-the-art综述期刊论文免费下载'
+date: '2020-12-11'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/336049721

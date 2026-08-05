@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "如何多级连跳远程SSH到Windows内部的Ubuntu虚拟机？"
-date: 2023-02-19
+title: 如何多级连跳远程SSH到Windows内部的Ubuntu虚拟机？
+date: '2023-02-19'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/607538687

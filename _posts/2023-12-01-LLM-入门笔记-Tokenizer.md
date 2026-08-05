@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "LLM 入门笔记-Tokenizer"
-date: 2023-12-01
+title: LLM 入门笔记-Tokenizer
+date: '2023-12-01'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/669901093

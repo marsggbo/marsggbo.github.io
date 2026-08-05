@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "GAMES201：高级物理引擎实战指南-Lecture 1 Taichi编程语言介绍"
-date: 2020-06-02
+title: GAMES201：高级物理引擎实战指南-Lecture 1 Taichi编程语言介绍
+date: '2020-06-02'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/145392844
@@ -97,11 +98,11 @@ b[1,1]=(0.0, 2.0, 4.0)
 loss[None] = 3.0
 ```
 
-上面的变量`a`你不要把它理解成是一个标量，其实它是一个tensor，只不过它的每一个元素是标量而已。具体来说`a`的维度是![4\times3](/assets/img/marsggbo/2020-06-02-GAMES201高级物理引擎实战指南-Lecture-1-Taichi编程语言介绍/ada0e1fc.jpg)，然后我们可以用`a[2,2]`来对指定位置赋值;
+上面的变量`a`你不要把它理解成是一个标量，其实它是一个tensor，只不过它的每一个元素是标量而已。具体来说`a`的维度是$4\times3$，然后我们可以用`a[2,2]`来对指定位置赋值;
 
-同理`b`也是一个大小为![2\times2](/assets/img/marsggbo/2020-06-02-GAMES201高级物理引擎实战指南-Lecture-1-Taichi编程语言介绍/3d65fa55.jpg)的tensor，只不过它的每一个元素是一个长度为3的vector。上面代码中通过`b[1,1]=[0,2,4]`来对[1,1]位置上的向量元素赋值，那么最后如何访问这个向量呢？如上面的代码所示，首先使用`a[i,j]`来定位到向量元素，然后再像`a[0]`来访问向量里某个具体的元素。
+同理`b`也是一个大小为$2\times2$的tensor，只不过它的每一个元素是一个长度为3的vector。上面代码中通过`b[1,1]=[0,2,4]`来对[1,1]位置上的向量元素赋值，那么最后如何访问这个向量呢？如上面的代码所示，首先使用`a[i,j]`来定位到向量元素，然后再像`a[0]`来访问向量里某个具体的元素。
 
-变量`c`是一个大小为![4\times3](/assets/img/marsggbo/2020-06-02-GAMES201高级物理引擎实战指南-Lecture-1-Taichi编程语言介绍/ada0e1fc.jpg)的tensor，其中的每一个元素是一个大小为![2\times2](/assets/img/marsggbo/2020-06-02-GAMES201高级物理引擎实战指南-Lecture-1-Taichi编程语言介绍/3d65fa55.jpg)的矩阵。
+变量`c`是一个大小为$4\times3$的tensor，其中的每一个元素是一个大小为$2\times2$的矩阵。
 
 变量`loss`是一个只有一个元素的tensor,即0d的tensor，所以`shape=()`,另外需要注意的是在访问loss的值(读/写)时需要`loss[None]=0`,因为我们都知道python语法里如果直接直接`loss=0`，那么这个`loss`就不再是原来的`loss`了。
 

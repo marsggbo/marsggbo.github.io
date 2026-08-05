@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "【GAMES101-现代计算机图形学课程笔记】Lecture 08 Shading 2 （着色管线）"
-date: 2020-05-26
+date: '2020-05-26'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/143658280
@@ -29,55 +30,55 @@ toc:
 
 上一节主要介绍了漫反射，由下图我们知道着色点（shading point）的明暗程度与相机（观测）角度无关。具体的光线强度计算公式：
 
-![L_{d}=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot 1) \\](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/84aa21c7.jpg)
+$$L_{d}=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot 1)$$
 
-上面公式中的![k_d](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/7a5e0133.jpg)表示漫反射系数，中间![I/r^2](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/b5e284c3.jpg)表示理论上每个着色点对应的光强度，最后一项![\max (0, \mathbf{n} \cdot 1)](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/042c257f.jpg)表示吸收的能量比例，可以看到只与法向和光的方向夹角有关。
+上面公式中的$k_d$表示漫反射系数，中间$I/r^2$表示理论上每个着色点对应的光强度，最后一项$\max (0, \mathbf{n} \cdot 1)$表示吸收的能量比例，可以看到只与法向和光的方向夹角有关。
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/050d20dc.jpg)
 
 ## **1.2 高光项(Specular Term)**
 
-下面介绍一下高光（又称 镜面反射）项。根据日常生活经验我们可以发现这样一种规律，就是当我们去看一面镜子的时候，当我们的观察角度越接近光线的镜面反射方向，就越容易看到高光（就是那种闪瞎狗眼的情况）。以下图为例，就是当我们的观察方向![V](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/0f3111bb.jpg)越接近镜面放射方向![R](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/cb0492f4.jpg) (**r**eflection),高光就越明显。
+下面介绍一下高光（又称 镜面反射）项。根据日常生活经验我们可以发现这样一种规律，就是当我们去看一面镜子的时候，当我们的观察角度越接近光线的镜面反射方向，就越容易看到高光（就是那种闪瞎狗眼的情况）。以下图为例，就是当我们的观察方向$V$越接近镜面放射方向$R$ (**r**eflection),高光就越明显。
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/82ca68c2.jpg)
 
-上面例子中提到了判断高光的方法就是看![V](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/0f3111bb.jpg)和![R](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/cb0492f4.jpg)两个矢量是否接近，越接近则高光越明显。
+上面例子中提到了判断高光的方法就是看$V$和$R$两个矢量是否接近，越接近则高光越明显。
 
 但是反射方向在实际计算时并不太好计算，所以**Blinn-Phong模型**对此作了改进，简化了计算，具体方法见下图：
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/48591487.jpg)
 
-可以看到首先需要定义一个新的矢量，叫做**半程矢量(bisector)**,其实表示的就是光入射方向![l](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/f32f9aac.jpg)和观测方向![v](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/2bd40b4a.jpg)的中间矢量。
+可以看到首先需要定义一个新的矢量，叫做**半程矢量(bisector)**,其实表示的就是光入射方向$l$和观测方向$v$的中间矢量。
 
-![\begin{aligned} \mathbf{h} &=\operatorname{bisector}(\mathbf{v}, \mathbf{l}) \\ &=\frac{\mathbf{v}+\mathbf{l}}{\|\mathbf{v}+\mathbf{l}\|} \end{aligned}\\](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/537f6023.jpg)
+$$\begin{aligned} \mathbf{h} &=\operatorname{bisector}(\mathbf{v}, \mathbf{l}) \\ &=\frac{\mathbf{v}+\mathbf{l}{\|\mathbf{v}+\mathbf{l}\|} \end{aligned}$$
 
-很显然，当![v](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/2bd40b4a.jpg)越接近![R](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/cb0492f4.jpg),那么![h](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/aaaa0c45.jpg)也就会越接近![n](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/ce59f558.jpg)，所以前面判断![v](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/2bd40b4a.jpg)和![R](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/cb0492f4.jpg)的相似问题就转化成了![n](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/ce59f558.jpg)和![h](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/aaaa0c45.jpg)的相似问题，很显然![h](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/aaaa0c45.jpg)的计算要简单很多，只需要把两个矢量相加即可求得。
+很显然，当$v$越接近$R$,那么$h$也就会越接近$n$，所以前面判断$v$和$R$的相似问题就转化成了$n$和$h$的相似问题，很显然$h$的计算要简单很多，只需要把两个矢量相加即可求得。
 
 另外，类似于前面介绍的漫反射计算公式，镜面反射公式如下：
 
-![\begin{aligned} L_{s} &=k_{s}\left(I / r^{2}\right) \max (0, \cos \alpha)^{p} \\ &=k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}\\](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/b6aeeb15.jpg)
+$$\begin{aligned} L_{s} &=k_{s}\left(I / r^{2}\right) \max (0, \cos \alpha)^{p} \\ &=k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}$$
 
-* ![k_s](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/cc5cbf26.jpg)表示镜面反射系数，一般默认高光就是白色的，也就是说该系数通常设置为1。
-* ![I/r^2](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/b5e284c3.jpg): 同最上
-* 角度变为![n](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/ce59f558.jpg)和![h](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/aaaa0c45.jpg)之间的夹角
+* $k_s$表示镜面反射系数，一般默认高光就是白色的，也就是说该系数通常设置为1。
+* $I/r^2$: 同最上
+* 角度变为$n$和$h$之间的夹角
 
-上面公式中有一个需要特别注意的地方是最后一项有一个系数![p](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/1dcb592d.jpg),这个在漫反射里是没有的，那这个系数是干嘛用的呢？要解释这个我们首先需要看看cosine函数的特点，如下图：
+上面公式中有一个需要特别注意的地方是最后一项有一个系数$p$,这个在漫反射里是没有的，那这个系数是干嘛用的呢？要解释这个我们首先需要看看cosine函数的特点，如下图：
 
-可以看到最左边对应![p=1](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/9b27d01e.jpg)，由于衰减比较缓慢，比如当角度等于45°时，最终求得的镜面反射光的亮度还是很大，然后一般现实中，高光分布的范围比较小（想想有时候我们去看高光要很小心去调整角度，否则高光还没那么容易看到），所以我们需要对cosine函数做调整，进而减少高光范围，这就是系数![p](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/1dcb592d.jpg)的作用。一般而言![p](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/1dcb592d.jpg)常设置的比较大，例如200。
+可以看到最左边对应$p=1$，由于衰减比较缓慢，比如当角度等于45°时，最终求得的镜面反射光的亮度还是很大，然后一般现实中，高光分布的范围比较小（想想有时候我们去看高光要很小心去调整角度，否则高光还没那么容易看到），所以我们需要对cosine函数做调整，进而减少高光范围，这就是系数$p$的作用。一般而言$p$常设置的比较大，例如200。
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/47a3420a.jpg)
 
-下图给出了高光项的示意图(其实也包含了漫反射，否则就只剩下一小坨亮光了)，每一行表示镜面反射系数![k_s](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/cc5cbf26.jpg)保持不变，但是系数![p](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/1dcb592d.jpg)不断增加;同理，每一列表示只增加镜面反射系数。可以看到![k_s](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/cc5cbf26.jpg)越大，越白；![p](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/1dcb592d.jpg)越大，则高光范围越小。
+下图给出了高光项的示意图(其实也包含了漫反射，否则就只剩下一小坨亮光了)，每一行表示镜面反射系数$k_s$保持不变，但是系数$p$不断增加;同理，每一列表示只增加镜面反射系数。可以看到$k_s$越大，越白；$p$越大，则高光范围越小。
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/41695c8d.jpg)
 
 ## **1.3 环境项(Ambient Term)**
 
-环境光是由其他类型的光的多次反射或者漫反射而产生的，为了方便研究，一般假设环境光强度永远都是相同的，用![I_a](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/6741815b.jpg)表示，
+环境光是由其他类型的光的多次反射或者漫反射而产生的，为了方便研究，一般假设环境光强度永远都是相同的，用$I_a$表示，
 
 那么某个点的环境光计算公式为：
 
-![L_{a}=k_{a} I_{a} \\](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/40e638b2.jpg)
+$$L_{a}=k_{a} I_{a}$$
 
 可以看到环境光其实就是一个常数，其与法向、观测方向和光的入射方向都没有关系。（当然，以上都是很强假设和简化）
 
@@ -87,7 +88,7 @@ toc:
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/50e91c4d.jpg)
 
-![\begin{aligned} L &=L_{a}+L_{d}+L_{s} \\ &=k_{a} I_{a}+k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l})+k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}\\](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/01b3f038.jpg)
+$$\begin{aligned} L &=L_{a}+L_{d}+L_{s} \\ &=k_{a} I_{a}+k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l})+k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}$$
 
 ## **2. Shading frequencies**
 
@@ -97,7 +98,7 @@ toc:
 
 ## **2.1 Flat shading（平面着色）**
 
-一般默认是对一个三角形着色，根据上面的着色计算公式可知我们首先需要计算出三角形法线方向（三角形的两条线做叉乘即可），之后结合![h,l](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/1f325878.jpg)直接套用公式即可求得某三角形平面的着色值。 这个方法对应上图最左边的球。
+一般默认是对一个三角形着色，根据上面的着色计算公式可知我们首先需要计算出三角形法线方向（三角形的两条线做叉乘即可），之后结合$h,l$直接套用公式即可求得某三角形平面的着色值。 这个方法对应上图最左边的球。
 
 ## **2.2 Gouraud shading**
 
@@ -127,7 +128,7 @@ Phone shading的大致思路是首先计算出每个三角形顶点的法向方�
 
 下图中的中间那个顶点被四个三角形共用，那么该顶点的法向计算公式很简单其实就是四个三角形平面法向相加求平均，这种计算方法在实践中也被证明是有效的。
 
-![N_{v}=\frac{\sum_{i} N_{i}}{\left\|\sum_{i} N_{i}\right\|} \\](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/d72a3881.jpg)
+$$N_{v}=\frac{\sum_{i} N_{i}{\left\|\sum_{i} N_{i}\right\|}$$
 
 当然这样计算会有一定误差，所以一种改进的计算方式是加权平均，权重即为每个三角形的面积。
 
@@ -180,9 +181,9 @@ Phone shading的大致思路是首先计算出每个三角形顶点的法向方�
 
 由前面提到的漫反射计算公式
 
-![L_d=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l}) \\](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/fd2e3914.jpg)
+$$L_d=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l})$$
 
-可以知道物体表面纹理是由漫反射系数![k_d](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/7a5e0133.jpg)控制的,换言之每个像素的漫反射系数应该都可以设置成不同的值从而显示出不同的效果，那么这个怎么做呢？
+可以知道物体表面纹理是由漫反射系数$k_d$控制的,换言之每个像素的漫反射系数应该都可以设置成不同的值从而显示出不同的效果，那么这个怎么做呢？
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/207f3bb3.jpg)
 

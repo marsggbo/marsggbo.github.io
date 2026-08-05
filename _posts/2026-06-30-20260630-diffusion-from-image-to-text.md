@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "从图像到文本：Diffusion 模型原理全解——数学、结构、训练、推理一次讲清"
-date: 2026-06-30
+title: 从图像到文本：Diffusion 模型原理全解——数学、结构、训练、推理一次讲清
+date: '2026-06-30'
 tags: [Diffusion, LLM, 生成模型, 数学推导]
 ---
 
@@ -97,7 +97,7 @@ $$p_\theta(x_{t-1} \mid x_t) = \mathcal{N}(x_{t-1};\; \mu_\theta(x_t, t),\; \Sig
 
 **训练策略**：不直接预测均值 $\mu_\theta$，而是训练神经网络 $\epsilon_\theta$ 来预测被加入的噪声 $\epsilon$。已知 $x_t$ 和预测的噪声 $\hat\epsilon$，可以反推出 $x_0$，进而推出均值：
 
-$$\mu_\theta(x_t, t) = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\, \epsilon_\theta(x_t, t)\right)$$
+$$\mu_\theta(x_t, t) = \frac{1}{\sqrt{\alpha_t}\!\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}\, \epsilon_\theta(x_t, t)\right)$$
 
 **这个公式的来源**：把 $x_t = \sqrt{\bar\alpha_t} x_0 + \sqrt{1-\bar\alpha_t}\epsilon$ 代入贝叶斯后验 $q(x_{t-1} \mid x_t, x_0)$ 的均值表达式，再用 $\hat\epsilon$ 替换 $\epsilon$，就得到上式。
 
@@ -209,7 +209,7 @@ def train_step(x0, unet):
 
 从 $x_T \sim \mathcal{N}(0,I)$ 出发，每一步：
 
-$$\mu_t = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\hat\epsilon\right), \quad \hat\epsilon = \epsilon_\theta(x_t, t)$$
+$$\mu_t = \frac{1}{\sqrt{\alpha_t}\!\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}\hat\epsilon\right), \quad \hat\epsilon = \epsilon_\theta(x_t, t)$$
 
 $$x_{t-1} = \mu_t + \sqrt{\beta_t}\, z, \quad z \sim \mathcal{N}(0,I) \quad (t > 0)$$
 
@@ -403,7 +403,7 @@ def train_step_text_continuous(token_ids, model, alpha_bar):
 
 **去噪过程**（和图像版数学完全相同，只是维度不同）：
 
-$$\mu_t = \frac{1}{\sqrt{\alpha_t}}\!\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}}\hat\epsilon\right), \quad x_{t-1} = \mu_t + \sqrt{\beta_t}\, z$$
+$$\mu_t = \frac{1}{\sqrt{\alpha_t}\!\left(x_t - \frac{1-\alpha_t}{\sqrt{1-\bar\alpha_t}\hat\epsilon\right), \quad x_{t-1} = \mu_t + \sqrt{\beta_t}\, z$$
 
 ```python
 @torch.no_grad()
@@ -432,7 +432,7 @@ def text_diffusion_sample(model, B, L, d):
 
 方法是：把这个向量和词表中**所有 token 的 embedding 比较相似度**，找最相近的那个 token。
 
-$$\hat{w}_i = \arg\max_{v \in \text{Vocab}} \cos(x_i, e_v) = \arg\max_{v} \frac{x_i \cdot e_v}{\|x_i\| \|e_v\|}$$
+$$\hat{w}_i = \arg\max_{v \in \text{Vocab} \cos(x_i, e_v) = \arg\max_{v} \frac{x_i \cdot e_v}{\|x_i\| \|e_v\|}$$
 
 归一化后，余弦相似度等价于点积，而"对所有 token 做点积取 argmax"正好就是一个**线性层 + argmax**：
 
@@ -542,7 +542,7 @@ class MaskedDiffusionModel(nn.Module):
 
 **数学**：损失只在被 mask 的位置计算，让网络预测被遮住的原始 token：
 
-$$\mathcal{L} = -\sum_{i: x_t^{(i)} = \texttt{[MASK]}} \log p_\theta(x_0^{(i)} \mid x_t, t)$$
+$$\mathcal{L} = -\sum_{i: x_t^{(i)} = \texttt{[MASK]} \log p_\theta(x_0^{(i)} \mid x_t, t)$$
 
 这和 BERT 的 Masked Language Modeling（MLM）损失几乎一模一样！区别只是：BERT 固定 mask 15% 的位置，而 masked diffusion 的 mask 比例由时间步 $t$（即 $1-\bar\alpha_t$）控制。
 
@@ -666,7 +666,7 @@ GPT 这类自回归模型：**从左到右逐 token 生成，每个 token 只能
 
 **数学**：在去噪网络中，每一层先做 self-attention（序列内部交互），再做 cross-attention（与条件交互）：
 
-$$\text{Attn}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}}\right) V$$
+$$\text{Attn}(Q, K, V) = \text{softmax}\!\left(\frac{QK^T}{\sqrt{d_k}\right) V$$
 
 - Self-attention：$Q, K, V$ 均来自噪声序列 $x_t$（序列自身的全局上下文）
 - Cross-attention：$Q$ 来自 $x_t$，$K, V$ 来自条件 $c$（将条件信息融入每个位置）

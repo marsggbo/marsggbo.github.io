@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Pytorch之Dataparallel源码解析"
-date: 2019-06-02
+title: Pytorch之Dataparallel源码解析
+date: '2019-06-02'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/67801020

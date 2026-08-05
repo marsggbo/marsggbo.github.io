@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "一文弄懂Pytorch的DataLoader, DataSet, Sampler之间的关系"
-date: 2019-08-06
+title: 一文弄懂Pytorch的DataLoader, DataSet, Sampler之间的关系
+date: '2019-08-06'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/76893455

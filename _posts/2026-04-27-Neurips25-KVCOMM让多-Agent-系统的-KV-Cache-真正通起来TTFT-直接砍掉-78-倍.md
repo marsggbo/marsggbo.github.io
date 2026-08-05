@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Neurips25 | KVCOMM：让多 Agent 系统的 KV Cache 真正“通起来”，TTFT 直接砍掉 7.8 倍"
-date: 2026-04-27
+title: Neurips25 | KVCOMM：让多 Agent 系统的 KV Cache 真正“通起来”，TTFT 直接砍掉 7.8 倍
+date: '2026-04-27'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2032027171540165158
@@ -18,7 +19,7 @@ toc:
 
 最近一年，但凡和 LLM 沾点边的方向，几乎都被 **multi-agent system** 卷了一遍：CoT 不够就上 Debate，Debate 不够就上 Society of Mind，再不够就拉一堆 agent 排成 DAG 互相喂消息。学术上看起来很热闹，**但工程上跑过的人都知道，这玩意儿是真的慢。**
 
-慢在哪？慢在每个 agent 收到上游的消息之后，**整段 prompt 要从头 prefill 一遍**。一个 8B 的 Llama 在 H100 上 prefill 一个 3K 的 prompt 大概要 ~430ms，而五个 agent 全连接互相发消息，重复 prefill 的开销直接是 ![O(M^2)](/assets/img/marsggbo/2026-04-27-Neurips25-KVCOMM让多-Agent-系统的-KV-Cache-真正通起来TTFT-直接砍掉-78-倍/d3d3f109.jpg)。结果就是：你写了一个看起来很优雅的 multi-agent pipeline，跑起来 TTFT 高得离谱，根本没法做实时协作。
+慢在哪？慢在每个 agent 收到上游的消息之后，**整段 prompt 要从头 prefill 一遍**。一个 8B 的 Llama 在 H100 上 prefill 一个 3K 的 prompt 大概要 ~430ms，而五个 agent 全连接互相发消息，重复 prefill 的开销直接是 $O(M^2)$。结果就是：你写了一个看起来很优雅的 multi-agent pipeline，跑起来 TTFT 高得离谱，根本没法做实时协作。
 
 KV cache 不是早就解决重复计算了吗？——**单 agent 场景下是。** 在 multi-agent 里，每个 agent 把上游消息塞进自己的 system prompt 之后，**前缀变了**，KV cache 的位置编码、attention 上下文都跟着变，没法直接复用。这篇 KVCOMM 想做的事情很直接：**让多 agent 之间的 KV cache 真的能“通起来”。**
 
@@ -28,7 +29,7 @@ KV cache 不是早就解决重复计算了吗？——**单 agent 场景下是�
 
 ### 2. 问题到底卡在哪
 
-先把场景说清楚：把 multi-agent 系统建模成一张有向图 ![G=(M, E)](/assets/img/marsggbo/2026-04-27-Neurips25-KVCOMM让多-Agent-系统的-KV-Cache-真正通起来TTFT-直接砍掉-78-倍/a84bc8f3.jpg)，每个节点是一个 agent，边表示一个 agent 把消息发给另一个。每个 agent 的 prompt 大致长这样：
+先把场景说清楚：把 multi-agent 系统建模成一张有向图 $G=(M, E)$，每个节点是一个 agent，边表示一个 agent 把消息发给另一个。每个 agent 的 prompt 大致长这样：
 
 ```
 [role-specific system prompt]
@@ -43,7 +44,7 @@ KV cache 不是早就解决重复计算了吗？——**单 agent 场景下是�
 
 作者把这个现象拆成两个层面来看：
 
-如下图，对同一个 token，把它放到 10 个不同的 prefix 后面，统计 KV cache 相对“基础上下文”（即 token 单独算时）的偏移量（![\ell_2](/assets/img/marsggbo/2026-04-27-Neurips25-KVCOMM让多-Agent-系统的-KV-Cache-真正通起来TTFT-直接砍掉-78-倍/cdf99eeb.jpg) norm），结果非常稳定——偏移量随层数变化的曲线**几乎是同一条线**，shaded region（标准差）也很窄。
+如下图，对同一个 token，把它放到 10 个不同的 prefix 后面，统计 KV cache 相对“基础上下文”（即 token 单独算时）的偏移量（$\ell_2$ norm），结果非常稳定——偏移量随层数变化的曲线**几乎是同一条线**，shaded region（标准差）也很窄。
 
 ![](/assets/img/marsggbo/2026-04-27-Neurips25-KVCOMM让多-Agent-系统的-KV-Cache-真正通起来TTFT-直接砍掉-78-倍/68e62544.jpg)
 
@@ -89,7 +90,7 @@ KV cache 不是早就解决重复计算了吗？——**单 agent 场景下是�
 
 近似公式很直观：
 
-![ (\hat k / \hat v)_{\phi_{(m,i)}} = (k/v)_{\phi_{(m,i)}} + \sum_{\psi \in A_{\phi_{(m,i)}}} w_{\phi_{(m,i)} \to \psi} \cdot \Delta(k/v)^\phi_{(m,\psi)} ](/assets/img/marsggbo/2026-04-27-Neurips25-KVCOMM让多-Agent-系统的-KV-Cache-真正通起来TTFT-直接砍掉-78-倍/4d383bea.jpg)
+$$(\hat k / \hat v)_{\phi_{(m,i)} = (k/v)_{\phi_{(m,i)} + \sum_{\psi \in A_{\phi_{(m,i)} w_{\phi_{(m,i)} \to \psi} \cdot \Delta(k/v)^\phi_{(m,\psi)}$$
 
 也就是 **base 值 + 用 embedding 距离做 softmax 加权的偏移项**。Prefix 段的 KV 也走类似流程。
 
@@ -99,7 +100,7 @@ KV cache 不是早就解决重复计算了吗？——**单 agent 场景下是�
 
 ![](/assets/img/marsggbo/2026-04-27-Neurips25-KVCOMM让多-Agent-系统的-KV-Cache-真正通起来TTFT-直接砍掉-78-倍/a4470ead.jpg)
 
-* **(a)(b)** 同一前缀下，embedding 越近的 token，KV cache 的 ![\ell_2](/assets/img/marsggbo/2026-04-27-Neurips25-KVCOMM让多-Agent-系统的-KV-Cache-真正通起来TTFT-直接砍掉-78-倍/cdf99eeb.jpg) 距离也越近，Spearman 相关系数在 0.5~0.9 之间；
+* **(a)(b)** 同一前缀下，embedding 越近的 token，KV cache 的 $\ell_2$ 距离也越近，Spearman 相关系数在 0.5~0.9 之间；
 * **©(d)** 不同前缀下，**KV 偏移本身**也保持这个性质——near 组的偏移更接近，相关性同样高。
 
 这就是 anchor 机制能 work 的根本：**embedding space 上的邻近性，能传递到 KV-cache 偏移空间**。所以你只要在 anchor 池里找几个 embedding 最近的历史样本，它们的 KV 偏移就是一个不错的“参考答案”。

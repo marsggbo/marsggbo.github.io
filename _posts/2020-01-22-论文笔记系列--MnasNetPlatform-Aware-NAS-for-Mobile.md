@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "论文笔记系列--MnasNet：Platform-Aware NAS for Mobile"
-date: 2020-01-22
+title: 论文笔记系列--MnasNet：Platform-Aware NAS for Mobile
+date: '2020-01-22'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/103802311
@@ -46,23 +47,23 @@ MnasNet的目的很简单就是设计出表现又好，效率又高的网络。�
 
 之前的NAS算法（如DARTS，ENAS)考虑更多的是模型最终结果是否是SOTA，MnasNet则是希望搜索出又小又有效的网络结构，因此将多个元素作为优化指标，包括准确率，在真实移动设备上的延迟等，最终定义的优化函数如下：
 
-![\begin{array}{l}{\quad \underset{m}{\operatorname{maximize}} \quad A C C(m) \times\left[\frac{L A T(m)}{T}\right]^{w}} \tag{1} \\  {\text { where } w \text { is the weight factor defined as: }} \\  {\qquad w=\left\{\begin{array}{ll}{\alpha,} & {\text { if } L A T(m) \leq T} \\ {\beta,} & {\text { otherwise }}\end{array}\right.}  \end{array} ](https://www.zhihu.com/equation?tex=%5Cbegin%7Barray%7D%7Bl%7D%7B%5Cquad+%5Cunderset%7Bm%7D%7B%5Coperatorname%7Bmaximize%7D%7D+%5Cquad+A+C+C%28m%29+%5Ctimes%5Cleft%5B%5Cfrac%7BL+A+T%28m%29%7D%7BT%7D%5Cright%5D%5E%7Bw%7D%7D+%5Ctag%7B1%7D+%5C%5C++%7B%5Ctext+%7B+where+%7D+w+%5Ctext+%7B+is+the+weight+factor+defined+as%3A+%7D%7D+%5C%5C++%7B%5Cqquad+w%3D%5Cleft%5C%7B%5Cbegin%7Barray%7D%7Bll%7D%7B%5Calpha%2C%7D+%26+%7B%5Ctext+%7B+if+%7D+L+A+T%28m%29+%5Cleq+T%7D+%5C%5C+%7B%5Cbeta%2C%7D+%26+%7B%5Ctext+%7B+otherwise+%7D%7D%5Cend%7Barray%7D%5Cright.%7D++%5Cend%7Barray%7D+)
+$$\begin{array}{l}{\quad \underset{m}{\operatorname{maximize} \quad A C C(m) \times\left[\frac{L A T(m)}{T}\right]^{w} \tag{1} \\  {\text { where } w \text { is the weight factor defined as: } \\  {\qquad w=\left\{\begin{array}{ll}{\alpha,} & {\text { if } L A T(m) \leq T} \\ {\beta,} & {\text { otherwise }\end{array}\right.}  \end{array}$$
 
 上式中个符号含义如下：
 
-* ![m](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/f79ab5c4.jpg)表示模型(model)
-* ![ACC(m)](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/23509806.jpg)表示在特定任务上的结果（如准确率）
-* ![LAT(m)](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/d245bf02.jpg)表示在设备上测得的实际计算延迟时间
-* ![T](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/51d9020f.jpg)表示目标延迟时间（target latency）
-* ![w](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/1c7a330b.jpg)表示不同场景下对latency的控制因子。当实测延迟时间![LAT(m)](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/d245bf02.jpg)小于目标延迟时间![T](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/51d9020f.jpg)时，![w=α](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/5a93d519.jpg)；反之![w=β](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/6e8702ec.jpg)
+* $m$表示模型(model)
+* $ACC(m)$表示在特定任务上的结果（如准确率）
+* $LAT(m)$表示在设备上测得的实际计算延迟时间
+* $T$表示目标延迟时间（target latency）
+* $w$表示不同场景下对latency的控制因子。当实测延迟时间$LAT(m)$小于目标延迟时间$T$时，$w=α$；反之$w=β$
 
 上面式子其实表示为帕累托最优，因为一般而言延迟越长，代表模型越大，即参数越大，相应地模型结果也会越好；反之延迟越小，模型表现也会有略微下降。
 
 文中提到latency单位提升会带来5%的acc提升。也就是说假如模型A最终延迟为t,准确率为a;模型B延迟为2t，那么它的准确率应该是a(1+5%)。但是这两个模型的reward应该是相等地，套用上面的公式有
 
-![ Reward(A)=a\times(t/T)^\beta \\ \,\, Reward(B)=a(1+5\%)(2t/T)^\beta  \\](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/a59680e5.jpg)
+$$Reward(A)=a\times(t/T)^\beta \\ \,\, Reward(B)=a(1+5\%)(2t/T)^\beta$$
 
-求解得到![\alpha=\beta=-0.7](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/f54e07b7.jpg)
+求解得到$\alpha=\beta=-0.7$
 
 ## **搜索空间**
 
@@ -86,7 +87,7 @@ Net
 * Squeeze-and-excitation ratio (SE-Ratio): 0, 0.25
 * Skip-connection
 * 输出通道数
-* 不同block中的layer数量 ![N\_i](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/1c066ed9.jpg)
+* 不同block中的layer数量 $N\_i$
 
 ## **搜索算法**
 
@@ -118,10 +119,10 @@ ImageNet实验结果
 
 ## **Soft vs. Hard Latency Constraint**
 
-前面介绍过用于控制延迟时间的因子 ![\alpha](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/b5edc039.jpg)和![\beta](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/137d4b8b.jpg),实验对比了两组参数设置：
+前面介绍过用于控制延迟时间的因子 $\alpha$和$\beta$,实验对比了两组参数设置：
 
-* ![\alpha=0，\beta=-1](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/45c943d5.jpg)
-* ![\alpha=-0.07，\beta=-0.07](/assets/img/marsggbo/2020-01-22-论文笔记系列--MnasNetPlatform-Aware-NAS-for-Mobile/6da4546e.jpg)。实验结果如下：
+* $\alpha=0，\beta=-1$
+* $\alpha=-0.07，\beta=-0.07$。实验结果如下：
 
 设置的目标延迟时间为75ms，可以看到第二个参数配置能够覆盖更加广的模型结构
 

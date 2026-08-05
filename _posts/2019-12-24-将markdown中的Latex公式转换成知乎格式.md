@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "将markdown中的Latex公式转换成知乎格式"
-date: 2019-12-24
+title: 将markdown中的Latex公式转换成知乎格式
+date: '2019-12-24'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/99057715
@@ -16,8 +17,7 @@ toc:
 
 假设你的latex代码如下：
 
-```
-$$\frac{a}{b}$$
+```$$\frac{a}{b}$$
 ```
 
 知乎的显示数学代码的方式是转换成html中的`img`标签：

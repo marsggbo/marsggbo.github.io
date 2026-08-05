@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Python的super函数直观理解"
-date: 2021-03-12
+title: Python的super函数直观理解
+date: '2021-03-12'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/356720970

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "ICLR2021 | The Intrinsic Dimension of Images and Its Impact on Learning"
-date: 2021-12-09
+title: ICLR2021 | The Intrinsic Dimension of Images and Its Impact on Learning
+date: '2021-12-09'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/443219643
@@ -33,15 +34,15 @@ toc:
 
 ## **3.1 本论文使用的ID估计方法： MLE**
 
-假设我们有一组数据点 ![\mathcal{P}\subset \mathbb{R}^N](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/3eefcef6.jpg)，这些点位于或靠近低维流形 ![\mathcal{M}\subseteq \mathbb{R}^N](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/c4c953d2.jpg),其中 ![dim(\mathcal{M})=d< <N](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/c2285b5c.jpg)
+假设我们有一组数据点 $\mathcal{P}\subset \mathbb{R}^N$，这些点位于或靠近低维流形 $\mathcal{M}\subseteq \mathbb{R}^N$,其中 $dim(\mathcal{M})=d< <N$
 
 一个常见的ID估计方法是找出每个样本点的 top-k 最近邻居，然后对邻居之间的距离进行建模。文献[3]中基于泊松过程使用了最大似然估计 (MLE) ，公式如下：
 
-![\hat{m}_{k}(x)=\left[\frac{1}{k-1} \sum_{j=1}^{k-1} \log \frac{T_{k}(x)}{T_{j}(x)}\right]^{-1} \tag{1} ](https://www.zhihu.com/equation?tex=%5Chat%7Bm%7D_%7Bk%7D%28x%29%3D%5Cleft%5B%5Cfrac%7B1%7D%7Bk-1%7D+%5Csum_%7Bj%3D1%7D%5E%7Bk-1%7D+%5Clog+%5Cfrac%7BT_%7Bk%7D%28x%29%7D%7BT_%7Bj%7D%28x%29%7D%5Cright%5D%5E%7B-1%7D+%5Ctag%7B1%7D+)
+$$\hat{m}_{k}(x)=\left[\frac{1}{k-1} \sum_{j=1}^{k-1} \log \frac{T_{k}(x)}{T_{j}(x)}\right]^{-1} \tag{1}$$
 
-其中![T_j(x)](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/f2fddadc.jpg)表示 采样点 ![x](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/79271a73.jpg) 到 它第j个最近邻居的欧氏距离 (norm2)。不过公式(1)是某一个样本点的结果，所有后面有算法[4]做出了修正，即取多个 (n) 样本点ID估计值的均值
+其中$T_j(x)$表示 采样点 $x$ 到 它第j个最近邻居的欧氏距离 (norm2)。不过公式(1)是某一个样本点的结果，所有后面有算法[4]做出了修正，即取多个 (n) 样本点ID估计值的均值
 
-![\bar{m}_{k}=\left[\frac{1}{n} \sum_{i=1}^{n} \hat{m}_{k}\left(x_{i}\right)^{-1}\right]^{-1}=\left[\frac{1}{n(k-1)} \sum_{i=1}^{n} \sum_{j=1}^{k-1} \log \frac{T_{k}\left(x_{i}\right)}{T_{j}\left(x_{i}\right)}\right]^{-1} \tag{2} ](https://www.zhihu.com/equation?tex=%5Cbar%7Bm%7D_%7Bk%7D%3D%5Cleft%5B%5Cfrac%7B1%7D%7Bn%7D+%5Csum_%7Bi%3D1%7D%5E%7Bn%7D+%5Chat%7Bm%7D_%7Bk%7D%5Cleft%28x_%7Bi%7D%5Cright%29%5E%7B-1%7D%5Cright%5D%5E%7B-1%7D%3D%5Cleft%5B%5Cfrac%7B1%7D%7Bn%28k-1%29%7D+%5Csum_%7Bi%3D1%7D%5E%7Bn%7D+%5Csum_%7Bj%3D1%7D%5E%7Bk-1%7D+%5Clog+%5Cfrac%7BT_%7Bk%7D%5Cleft%28x_%7Bi%7D%5Cright%29%7D%7BT_%7Bj%7D%5Cleft%28x_%7Bi%7D%5Cright%29%7D%5Cright%5D%5E%7B-1%7D+%5Ctag%7B2%7D+)
+$$\bar{m}_{k}=\left[\frac{1}{n} \sum_{i=1}^{n} \hat{m}_{k}\left(x_{i}\right)^{-1}\right]^{-1}=\left[\frac{1}{n(k-1)} \sum_{i=1}^{n} \sum_{j=1}^{k-1} \log \frac{T_{k}\left(x_{i}\right)}{T_{j}\left(x_{i}\right)}\right]^{-1} \tag{2}$$
 
 基于MLE估计得到ID值有两个需要注意的问题：
 
@@ -50,7 +51,7 @@ toc:
 
 ## **3.2 一些其他ID估计的方法**
 
-* [5] **GeoMLE** 利用基于不同大小邻居数量 (即 k) 的近邻距离 对 标准MLE进行多项式回归 来说明密度的非均匀性和流形的非线性。问题在于它的ID值是 多个样本 ![\hat{m}_{k}(x)](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/85bec4c2.jpg) 的平均，而公式(2) 中是对 ![\hat{m}_{k}(x)^{-1}](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/63af61b7.jpg) 求平均后，再取倒数得到最终的估计值。文章也明确说[5] 的估计值非常不准。下图是GeoMLE在 d-dimensional Hypercube data上的表现结果。
+* [5] **GeoMLE** 利用基于不同大小邻居数量 (即 k) 的近邻距离 对 标准MLE进行多项式回归 来说明密度的非均匀性和流形的非线性。问题在于它的ID值是 多个样本 $\hat{m}_{k}(x)$ 的平均，而公式(2) 中是对 $\hat{m}_{k}(x)^{-1}$ 求平均后，再取倒数得到最终的估计值。文章也明确说[5] 的估计值非常不准。下图是GeoMLE在 d-dimensional Hypercube data上的表现结果。
 
 ![](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/53a7feb8.jpg)
 
@@ -70,11 +71,11 @@ toc:
 
 ## **4.1 直观感受ID对图像分类的影响**
 
-作者用BigGAN做了个实验。BigGAN有 128个latent entries，输出大小为128x128x3的图像。作者将128个latent entries大多数设置为0，只留下 ![\bar{d}](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/0007e694.jpg) 个free entries，即视为intrinsic dimension。然后给出了不同 ![\bar{d}](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/0007e694.jpg) 设置下一个类别（即 basenji）生成的图像的对比，如下图示。可以看到 ID值越小，生成的图片背景越简单，当 ![\bar{d}=128](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/36bb523d.jpg) 时，背景复杂了很多。其实换个角度想，当数据的ID越小的时候则表示该数据越容易被区分。文献[2]的实验对比了resent18/50/152等就发现网络最后一层的ID值越低，模型最终的acc也相对高一些。
+作者用BigGAN做了个实验。BigGAN有 128个latent entries，输出大小为128x128x3的图像。作者将128个latent entries大多数设置为0，只留下 $\bar{d}$ 个free entries，即视为intrinsic dimension。然后给出了不同 $\bar{d}$ 设置下一个类别（即 basenji）生成的图像的对比，如下图示。可以看到 ID值越小，生成的图片背景越简单，当 $\bar{d}=128$ 时，背景复杂了很多。其实换个角度想，当数据的ID越小的时候则表示该数据越容易被区分。文献[2]的实验对比了resent18/50/152等就发现网络最后一层的ID值越低，模型最终的acc也相对高一些。
 
 ![](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/4fcc80be.jpg)
 
-作者还在 ![\bar{d}=10](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/271af23c.jpg) 的情况下比较了不同 k 的取值对最终ID估计的影响，结果如下。我们可以看到如下几个现象：
+作者还在 $\bar{d}=10$ 的情况下比较了不同 k 的取值对最终ID估计的影响，结果如下。我们可以看到如下几个现象：
 
 ![](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/5e1dcda2.jpg)
 
@@ -122,7 +123,7 @@ toc:
 
 ![](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/aeeeee5f.jpg)
 
-作者还做了一个比较有意思的实验，就是给数据集加上噪声。其实像ImageNet本身真实的ID我们是不知道的，但是噪声数据的ID我们是可以控制的，所以假如我们构造一个ID为 ![\underline{d}](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/d50821f7.jpg) 的噪声并把它加到原图像上去，那么得到的新的图像的ID肯定是大于或等于![\underline{d}](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/d50821f7.jpg)的。Table 3 给出了加上不同ID噪声后，CIFAR-10数据集的ID估计值的变化情况。可以看到加上噪声后数据集的ID似乎并没有达到噪声的ID值，这很可能是因为数据点太少导致的。不过可以看到的是加入噪声的ID值越大，得到的新的数据集自身的ID值也是随之增加的。
+作者还做了一个比较有意思的实验，就是给数据集加上噪声。其实像ImageNet本身真实的ID我们是不知道的，但是噪声数据的ID我们是可以控制的，所以假如我们构造一个ID为 $\underline{d}$ 的噪声并把它加到原图像上去，那么得到的新的图像的ID肯定是大于或等于$\underline{d}$的。Table 3 给出了加上不同ID噪声后，CIFAR-10数据集的ID估计值的变化情况。可以看到加上噪声后数据集的ID似乎并没有达到噪声的ID值，这很可能是因为数据点太少导致的。不过可以看到的是加入噪声的ID值越大，得到的新的数据集自身的ID值也是随之增加的。
 
 ![](/assets/img/marsggbo/2021-12-09-ICLR2021-The-Intrinsic-Dimension-of-Images-and-Its-Impact-on/2200f550.jpg)
 

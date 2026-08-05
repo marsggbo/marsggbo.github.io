@@ -1,9 +1,10 @@
 ---
 layout: post
-title: "AutoHete: 面向大语言模型的自动化高效异构训练系统 | An Automatic and Efficient Heterogeneous Training System for LLMs"
-date: 2026-03-12 15:40:00
+title: 'AutoHete: 面向大语言模型的自动化高效异构训练系统 | An Automatic and Efficient Heterogeneous Training
+  System for LLMs'
+date: '2026-03-12'
+tags: [LLM, Distributed-Training, Heterogeneous-Computing, Systems]
 category: research
-tags: LLM Distributed-Training Heterogeneous-Computing Systems
 related_posts: false
 toc:
   sidebar: left

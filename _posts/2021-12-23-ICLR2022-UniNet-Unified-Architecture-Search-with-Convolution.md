@@ -1,7 +1,9 @@
 ---
 layout: post
-title: "ICLR2022 | UniNet: Unified Architecture Search with Convolution, Transformer, and MLP"
-date: 2021-12-23
+title: 'ICLR2022 | UniNet: Unified Architecture Search with Convolution, Transformer,
+  and MLP'
+date: '2021-12-23'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/449177989
@@ -50,9 +52,9 @@ toc:
 
 * GOP （General Operations）：包含 Convolution, transformer,和 MLP。三种操作都之采用了类似inverted residual的设计方式，即先把原来的通道数c 通过映射扩大ec，然后在通过映射还原为 c，各操作公式如下：
 
-+ conv: ![y=x+op(x),](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/81073b65.jpg) 其中 ![op(x) = Proj_{ec\rightarrow{c}}(Conv(Proj_{c\rightarrow{ec}}(x)))](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/93eaa34e.jpg)
-+ transformer: ![y=y'+FFN(y')](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/7a35f87e.jpg)，其中 ![y'=x+SelfAttention(x)](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/7cc1d7f2.jpg), ![FFN(y')=Proj_{ec\rightarrow{c}}(Conv(Proj_{c\rightarrow{ec}}(y')))](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/502ea3a8.jpg)
-+ MLP: ![y=y'+FFN(y')](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/7a35f87e.jpg)，其中 ![y'=x+MLP(x)](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/01266e47.jpg), ![FFN(y')=Proj_{ec\rightarrow{c}}(Conv(Proj_{c\rightarrow{ec}}(y')))](/assets/img/marsggbo/2021-12-23-ICLR2022-UniNet-Unified-Architecture-Search-with-Convolution/502ea3a8.jpg)
++ conv: $y=x+op(x),$ 其中 $op(x) = Proj_{ec\rightarrow{c}(Conv(Proj_{c\rightarrow{ec}(x)))$
++ transformer: $y=y'+FFN(y')$，其中 $y'=x+SelfAttention(x)$, $FFN(y')=Proj_{ec\rightarrow{c}(Conv(Proj_{c\rightarrow{ec}(y')))$
++ MLP: $y=y'+FFN(y')$，其中 $y'=x+MLP(x)$, $FFN(y')=Proj_{ec\rightarrow{c}(Conv(Proj_{c\rightarrow{ec}(y')))$
 
 * DSM （Down-sampling Modules）
 

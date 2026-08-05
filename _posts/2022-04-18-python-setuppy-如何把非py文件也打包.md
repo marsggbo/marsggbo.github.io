@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "python setup.py 如何把非py文件也打包？"
-date: 2022-04-18
+title: python setup.py 如何把非py文件也打包？
+date: '2022-04-18'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/500773671

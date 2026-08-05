@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "DAC'26 | ExpertFlow：让 MoE 大模型在单卡上跑起来，内存省 93%、速度快 10 倍"
-date: 2026-05-17
+title: DAC'26 | ExpertFlow：让 MoE 大模型在单卡上跑起来，内存省 93%、速度快 10 倍
+date: '2026-05-17'
 tags: [LLM, MoE, 推理优化, 论文解读]
 ---
 

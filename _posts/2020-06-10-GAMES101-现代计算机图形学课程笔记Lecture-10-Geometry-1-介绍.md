@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "【GAMES101-现代计算机图形学课程笔记】Lecture 10 Geometry 1 （介绍）"
-date: 2020-06-10
+date: '2020-06-10'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/147354628
@@ -75,9 +76,9 @@ toc:
 
 首先看一下在一维情况（flatland case）下如何计算，假设下图中的点为P点。
 
-* P点原始的法线方向是朝上的，即![n(p)=(0,1)](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/abde73dc.jpg)。
-* 下图中的蓝色曲线表示法线贴图，那么P点横向移动一个单位后，向上则会移动![\mathrm{dp}](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/bc23f6ab.jpg),(假设P点会朝着切线方向运动)。切线方向即为该点的梯度，由梯度计算公式可知![\mathrm{dp}=\mathrm{c}^{\star}[\mathrm{h}(\mathrm{p}+1)-\mathrm{h}(\mathrm{p})]](https://www.zhihu.com/equation?tex=%5Cmathrm%7Bdp%7D%3D%5Cmathrm%7Bc%7D%5E%7B%5Cstar%7D%5B%5Cmathrm%7Bh%7D%28%5Cmathrm%7Bp%7D%2B1%29-%5Cmathrm%7Bh%7D%28%5Cmathrm%7Bp%7D%29%5D),其中![c](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/b67fcc1b.jpg)为一个常量，所以切线可表示为![(1,\mathrm{dp})](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/e648e305.jpg)。
-* 既然知道了切线方向，那么法线方向就很容易计算出来了，即切线方向逆时针旋转90°即可,所以扰动后的法线方向为![n(p)=(-dp,1).\text{normalized()}](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/15229362.jpg)
+* P点原始的法线方向是朝上的，即$n(p)=(0,1)$。
+* 下图中的蓝色曲线表示法线贴图，那么P点横向移动一个单位后，向上则会移动$\mathrm{dp}$,(假设P点会朝着切线方向运动)。切线方向即为该点的梯度，由梯度计算公式可知$\mathrm{dp}=\mathrm{c}^{\star}[\mathrm{h}(\mathrm{p}+1)-\mathrm{h}(\mathrm{p})]$,其中$c$为一个常量，所以切线可表示为$(1,\mathrm{dp})$。
+* 既然知道了切线方向，那么法线方向就很容易计算出来了，即切线方向逆时针旋转90°即可,所以扰动后的法线方向为$n(p)=(-dp,1).\text{normalized()}$
 
 ![](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/84bb37ff.jpg)
 
@@ -128,9 +129,9 @@ toc:
 
 我们首先看一下什么是隐式表示。隐式表示的意思是我不会告诉你具体某个部位长什么样子，相反我只会告诉你这个部位的点之间服从某种的关系，因此我们可以可以通过这种关系来构建几何。
 
-举例来说，我们知道3D中一个球的表面上任意点坐标都满足![x^{2}+y^{2}+z^{2}=1](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/01c1dc49.jpg)。
+举例来说，我们知道3D中一个球的表面上任意点坐标都满足$x^{2}+y^{2}+z^{2}=1$。
 
-更通用地表达式是![f(x,y,z)=0](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/dbad11b4.jpg)，只要满足这个公式则表示该点在这个隐式定义的物体表面上，这也是隐式表示的一个优点。
+更通用地表达式是$f(x,y,z)=0$，只要满足这个公式则表示该点在这个隐式定义的物体表面上，这也是隐式表示的一个优点。
 
 ![](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/d5c0fbbe.jpg)
 
@@ -156,7 +157,7 @@ toc:
 
 ![](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/169936da.jpg)
 
-知道是什么“距离”后我们就可以利用距离函数来构造各种几何形状了。如下图示（从左往右看），最开始是由两个球，我们知道每个球都对应了一个距离函数，假设为![d_1,d_2](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/4d09edd6.jpg)。你可能对这个距离函数还是不太理解，我们再进一步解释，以![d_1](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/8e4f0d21.jpg)为例，假设最左边上面那个球的中心坐标是![(x_1,y_1,z_1)](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/b41c3f30.jpg),半径为![r](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/96cd0c66.jpg)，那么![d_1=(x-x_1)^2+(x-x_1)^2+(x-x_1)^2-r^2=0](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/b621ccc7.jpg)。
+知道是什么“距离”后我们就可以利用距离函数来构造各种几何形状了。如下图示（从左往右看），最开始是由两个球，我们知道每个球都对应了一个距离函数，假设为$d_1,d_2$。你可能对这个距离函数还是不太理解，我们再进一步解释，以$d_1$为例，假设最左边上面那个球的中心坐标是$(x_1,y_1,z_1)$,半径为$r$，那么$d_1=(x-x_1)^2+(x-x_1)^2+(x-x_1)^2-r^2=0$。
 
 那么我们只要将两个距离函数做一个融合（blending），随着融合程度的调整，我们可以得到右边一系列的几何图形，给人一种两个水滴合在一起的感觉。
 
@@ -188,9 +189,9 @@ toc:
 
 还是用上面的例子来解释显式表示，可以看到这里的映射函数是
 
-![f(u, v)=((2+\cos u) \cos v,(2+\cos u) \sin v, \sin u) \\](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/2baf73b6.jpg)
+$$f(u, v)=((2+\cos u) \cos v,(2+\cos u) \sin v, \sin u)$$
 
-这里和上面的![f(x,y,z)=0](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/dbad11b4.jpg)不一样，因为这里我们是直接将二维uv坐边上的某个点的左边通过某种映射关系直接映射到三维某个具体的坐标点了，所以这是显示的。我们只需要对二维平面上所有点遍历一遍即可得到映射后的几何形状，而前面介绍的隐式方法则需要我们根据等式来判断而为上的某个点是否在映射后的几何物体表面。这个区别需要区分开来。
+这里和上面的$f(x,y,z)=0$不一样，因为这里我们是直接将二维uv坐边上的某个点的左边通过某种映射关系直接映射到三维某个具体的坐标点了，所以这是显示的。我们只需要对二维平面上所有点遍历一遍即可得到映射后的几何形状，而前面介绍的隐式方法则需要我们根据等式来判断而为上的某个点是否在映射后的几何物体表面。这个区别需要区分开来。
 
 很自然地，显式的缺点对应着隐式的优点，即判断一个点在物体表面内部或者外部就变得麻烦一些了。
 

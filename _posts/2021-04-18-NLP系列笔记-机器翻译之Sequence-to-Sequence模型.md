@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "NLP系列笔记-机器翻译之Sequence-to-Sequence模型"
-date: 2021-04-18
+title: NLP系列笔记-机器翻译之Sequence-to-Sequence模型
+date: '2021-04-18'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/365891060
@@ -75,11 +76,11 @@ Decoder最开始的输入是起始符号`\t`，初始状态是Encoder传入的`(
 
 假设Seq2Seq模型训练好了，那它的inference流程是什么样的呢？
 
-* Step 1： 首先Decoder接收Encoder的输入 ![(h_0,c_0)](/assets/img/marsggbo/2021-04-18-NLP系列笔记-机器翻译之Sequence-to-Sequence模型/9b81472b.jpg)，输入为`\t`，其输出为![(h_1,c_1)](/assets/img/marsggbo/2021-04-18-NLP系列笔记-机器翻译之Sequence-to-Sequence模型/ee793be8.jpg)和`m`
+* Step 1： 首先Decoder接收Encoder的输入 $(h_0,c_0)$，输入为`\t`，其输出为$(h_1,c_1)$和`m`
 
 ![](/assets/img/marsggbo/2021-04-18-NLP系列笔记-机器翻译之Sequence-to-Sequence模型/cb4debae.jpg)
 
-* Step 2：之后Decoder的初始状态不再是Encoder的输出，而是上一时刻的![(h_1,c_1)](/assets/img/marsggbo/2021-04-18-NLP系列笔记-机器翻译之Sequence-to-Sequence模型/ee793be8.jpg)，其输入也变成了上一时刻预测的`m`
+* Step 2：之后Decoder的初始状态不再是Encoder的输出，而是上一时刻的$(h_1,c_1)$，其输入也变成了上一时刻预测的`m`
 * ... 重复上面的操作知道输出为`\n`就停止inference。
 
 ![](/assets/img/marsggbo/2021-04-18-NLP系列笔记-机器翻译之Sequence-to-Sequence模型/51786633.jpg)

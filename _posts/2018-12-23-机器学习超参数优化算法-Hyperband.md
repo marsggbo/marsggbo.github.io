@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "机器学习超参数优化算法-Hyperband"
-date: 2018-12-23
+title: 机器学习超参数优化算法-Hyperband
+date: '2018-12-23'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/53088201
@@ -43,12 +44,12 @@ Hyperband算法对 [Jamieson & Talwlkar(2015)](https://link.zhihu.com/?target=ht
 
 * r: 单个超参数组合**实际**所能分配的预算；
 * R: 单个超参数组合所能分配的**最大**预算；
-* ![s_{max}](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/0335cd24.jpg) : 用来控制总预算的大小。上面算法中 ![s_{max}=⌊log_η(R)⌋](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/8b345fdd.jpg) *,当然也可以定义为* ![s_{max}=⌊log_η(n_{max})⌋](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/ac953149.jpg)
-* B: 总共的预算,B=(![s_{max}](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/0335cd24.jpg)+1)R
+* $s_{max}$ : 用来控制总预算的大小。上面算法中 $s_{max}=⌊log_η(R)⌋$ *,当然也可以定义为* $s_{max}=⌊log_η(n_{max})⌋$
+* B: 总共的预算,B=($s_{max}$+1)R
 * η: 用于控制每次迭代后淘汰参数设置的比例
 * **get\_hyperparameter\_configuration(n)**:采样得到n组不同的超参数设置
-* **run\_then\_return\_val\_loss(t,** ![r_i](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/f6aa5ff2.jpg) **)**:根据指定的参数设置和预算计算valid loss。LL表示在预算为![r_i](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/f6aa5ff2.jpg)的情况下各个超参数设置的验证误差
-* ![topk(T,L,⌊n_i/η⌋)](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/05f29a2b.jpg) :第三个参数表示需要选择top k(k=***⌊n\_*i/η⌋**)参数设置。
+* **run\_then\_return\_val\_loss(t,** $r_i$ **)**:根据指定的参数设置和预算计算valid loss。LL表示在预算为$r_i$的情况下各个超参数设置的验证误差
+* $topk(T,L,⌊n_i/η⌋)$ :第三个参数表示需要选择top k(k=***⌊n\_*i/η⌋**)参数设置。
 
 > 注意上述算法中对超参数设置采样使用的是均匀随机采样，所以有算法在此基础上结合贝叶斯进行采样，提出了[BOHB:Practical Hyperparameter Optimization for Deep Learning](https://link.zhihu.com/?target=https%3A//openreview.net/forum%3Fid%3DHJMudFkDf)
 
@@ -56,7 +57,7 @@ Hyperband算法对 [Jamieson & Talwlkar(2015)](https://link.zhihu.com/?target=ht
 
 文中给出了一个基于MNIST数据集的示例，并将迭代次数定义为预算(Budget),即一个epoch代表一个预算。超参数搜索空间包括学习率，batch size,kernel数量等。
 
-令 ![R=81,η=3](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/28dec8db.jpg) ，所以 ![s_{max}=4,B=5,R=5×81](/assets/img/marsggbo/2018-12-23-机器学习超参数优化算法-Hyperband/998b108e.jpg) 。
+令 $R=81,η=3$ ，所以 $s_{max}=4,B=5,R=5×81$ 。
 
 下图给出了需要训练的超参数组和数量和每组超参数资源分配情况。
 

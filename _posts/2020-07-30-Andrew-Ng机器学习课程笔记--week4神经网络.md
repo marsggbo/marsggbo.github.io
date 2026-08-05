@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week4(神经网络)"
-date: 2020-07-30
+title: Andrew Ng机器学习课程笔记--week4(神经网络)
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165326460
@@ -52,17 +53,17 @@ Neural Networks: Representation
 
 * 神经网络结构示例
 
-![\begin{align*} a_1^{(2)} = g(\Theta_{10}^{(1)}x_0 + \Theta_{11}^{(1)}x_1 + \Theta_{12}^{(1)}x_2 + \Theta_{13}^{(1)}x_3) \newline a_2^{(2)} = g(\Theta_{20}^{(1)}x_0 + \Theta_{21}^{(1)}x_1 + \Theta_{22}^{(1)}x_2 + \Theta_{23}^{(1)}x_3) \newline a_3^{(2)} = g(\Theta_{30}^{(1)}x_0 + \Theta_{31}^{(1)}x_1 + \Theta_{32}^{(1)}x_2 + \Theta_{33}^{(1)}x_3) \newline h_\Theta(x) = a_1^{(3)} = g(\Theta_{10}^{(2)}a_0^{(2)} + \Theta_{11}^{(2)}a_1^{(2)} + \Theta_{12}^{(2)}a_2^{(2)} + \Theta_{13}^{(2)}a_3^{(2)}) \newline \end{align*} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week4神经网络/159c112b.jpg)
+$$\begin{align*} a_1^{(2)} = g(\Theta_{10}^{(1)}x_0 + \Theta_{11}^{(1)}x_1 + \Theta_{12}^{(1)}x_2 + \Theta_{13}^{(1)}x_3) \newline a_2^{(2)} = g(\Theta_{20}^{(1)}x_0 + \Theta_{21}^{(1)}x_1 + \Theta_{22}^{(1)}x_2 + \Theta_{23}^{(1)}x_3) \newline a_3^{(2)} = g(\Theta_{30}^{(1)}x_0 + \Theta_{31}^{(1)}x_1 + \Theta_{32}^{(1)}x_2 + \Theta_{33}^{(1)}x_3) \newline h_\Theta(x) = a_1^{(3)} = g(\Theta_{10}^{(2)}a_0^{(2)} + \Theta_{11}^{(2)}a_1^{(2)} + \Theta_{12}^{(2)}a_2^{(2)} + \Theta_{13}^{(2)}a_3^{(2)}) \newline \end{align*}$$
 
 * 向量化
 
-![z_k^{(j)}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week4神经网络/c551935b.jpg) 来向量化g()函数内的值，例如 ![z_k^{(2)} = \Theta_{k,0}^{(1)}x_0 + \Theta_{k,1}^{(1)}x_1 + \cdots + \Theta_{k,n}^{(1)}x_n](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week4神经网络/9c6a55e5.jpg)
+$z_k^{(j)}$ 来向量化g()函数内的值，例如 $z_k^{(2)} = \Theta_{k,0}^{(1)}x_0 + \Theta_{k,1}^{(1)}x_1 + \cdots + \Theta_{k,n}^{(1)}x_n$
 
-![\begin{align*}a_1^{(2)} = g(z_1^{(2)}) \newline a_2^{(2)} = g(z_2^{(2)}) \newline a_3^{(2)} = g(z_3^{(2)}) \newline \end{align*} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week4神经网络/ef60d099.jpg)
+$$\begin{align*}a_1^{(2)} = g(z_1^{(2)}) \newline a_2^{(2)} = g(z_2^{(2)}) \newline a_3^{(2)} = g(z_3^{(2)}) \newline \end{align*}$$
 
 * z与α的关系
 
-![z^{(j)} = \Theta^{(j-1)}a^{(j-1)} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week4神经网络/ce7f573d.jpg)![a^{(j)} = g(z^{(j)}) \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week4神经网络/524c9c44.jpg)![h_\Theta(x) = a^{(j+1)} = g(z^{(j+1)}) \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week4神经网络/f978130d.jpg)
+$z^{(j)} = \Theta^{(j-1)}a^{(j-1)}$$a^{(j)} = g(z^{(j)})$$h_\Theta(x) = a^{(j+1)} = g(z^{(j+1)})$
 
 ## **2. Applications**
 

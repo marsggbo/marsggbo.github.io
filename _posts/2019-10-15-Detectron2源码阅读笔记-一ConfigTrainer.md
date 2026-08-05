@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Detectron2源码阅读笔记-(一)Config&Trainer"
-date: 2019-10-15
+title: Detectron2源码阅读笔记-(一)Config&Trainer
+date: '2019-10-15'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/86749823

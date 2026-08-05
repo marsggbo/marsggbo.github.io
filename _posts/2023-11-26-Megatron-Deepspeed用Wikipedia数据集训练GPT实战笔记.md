@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Megatron-Deepspeed：用Wikipedia数据集训练GPT实战笔记"
-date: 2023-11-26
+title: Megatron-Deepspeed：用Wikipedia数据集训练GPT实战笔记
+date: '2023-11-26'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/668913089
@@ -71,7 +72,7 @@ fi
 touch "$ROOT/wiki_all.json"
   
 # 遍历ROOT路径下所有的文件  
-find $ROOT -type f -name "*" -print0 | while IFS= read -r -d $'\0' file; do  
+find$ROOT -type f -name "*" -print0 | while IFS= read -r -d $'\0' file; do  
     # 将所有文件内容追加到wiki_all.json文件中  
     cat "$file" >> "$ROOT/wiki_all.json"  
 done  

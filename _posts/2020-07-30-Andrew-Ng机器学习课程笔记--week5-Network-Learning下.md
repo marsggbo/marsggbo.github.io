@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week5 Network: Learning(下)"
-date: 2020-07-30
+title: 'Andrew Ng机器学习课程笔记--week5 Network: Learning(下)'
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165331366
@@ -44,11 +45,11 @@ Neural Networks: Learning 内容较多，故分成上下两篇文章。
 
 神经网络算法是一个很复杂的算法，所以我们很难凭直觉观察出结果是否正确，因此有必要在实现的时候做一些检查，本节给出一个检验梯度的数值化方法。
 
-首先我们可以将损失函数的梯度近似为 ![\frac{∂J(θ)}{∂θ}≈\frac{J(θ+ε)-J(θ-ε)}{2ε}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning下/9fcb1df3.jpg)
+首先我们可以将损失函数的梯度近似为 $\frac{∂J(θ)}{∂θ}≈\frac{J(θ+ε)-J(θ-ε)}{2ε}$
 
-推广到一般形式是： ![\frac{∂J(θ)}{∂θ_j}≈\frac{J(θ_1,θ_2,θ_j+ε……,θ_n)-J(θ_1,θ_2,θ_j-ε……,θ_n)}{2ε}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning下/2f8175e8.jpg)
+推广到一般形式是： $\frac{∂J(θ)}{∂θ_j}≈\frac{J(θ_1,θ_2,θ_j+ε……,θ_n)-J(θ_1,θ_2,θ_j-ε……,θ_n)}{2ε}$
 
-一般来说![\epsilon ≈10^{-4}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning下/c1167acd.jpg)时就比较接近了
+一般来说$\epsilon ≈10^{-4}$时就比较接近了
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning下/e0d00b58.jpg)
 
@@ -71,7 +72,7 @@ Neural Networks: Learning 内容较多，故分成上下两篇文章。
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning下/73f8435f.jpg)
 
-在神经网络中,如果将参数全部初始化为0 会导致一个问题，例如对于上面的神经网络的例子，如果将参数全部初始化为0，在每轮参数更新的时候，与输入单元相关的两个隐藏单元的结果将是相同的，既： ![a_1^{(2)} = a_2^{(2)}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning下/3607f9c4.jpg) 这个问题又称之为**对称的权重问题**，因此我们需要打破这种对称，这里提供一种随机初始化参数向量的方法： 初始化![θ_{ij}^{(l)}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week5-Network-Learning下/259980df.jpg)为一个落在 [-ε,ε]区间内的随机数, 可以很小，但是与上面梯度检验( Gradient Checking)中的ε没有任何关系。
+在神经网络中,如果将参数全部初始化为0 会导致一个问题，例如对于上面的神经网络的例子，如果将参数全部初始化为0，在每轮参数更新的时候，与输入单元相关的两个隐藏单元的结果将是相同的，既： $a_1^{(2)} = a_2^{(2)}$ 这个问题又称之为**对称的权重问题**，因此我们需要打破这种对称，这里提供一种随机初始化参数向量的方法： 初始化$θ_{ij}^{(l)}$为一个落在 [-ε,ε]区间内的随机数, 可以很小，但是与上面梯度检验( Gradient Checking)中的ε没有任何关系。
 
 ### **4)Putting it together(组合到一起-如何训练一个神经网络)**
 

@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "【论文笔记系列】AutoML：A Survey of State-of-the-art （上）"
-date: 2020-02-11
+date: '2020-02-11'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/106205363
@@ -78,7 +79,7 @@ toc:
 
 ### **4.1.1 Entire structure**
 
-Entire structure简单理解就是我们假设模型深度是![L](/assets/img/marsggbo/2020-02-11-论文笔记系列AutoMLA-Survey-of-State-of-the-art-上/600ccfe8.jpg)层,然后每一层被指定一个操作，上层可以连接到其后所有层，如下图示：左边是最简单设计方法，右边则加入了skip-connection
+Entire structure简单理解就是我们假设模型深度是$L$层,然后每一层被指定一个操作，上层可以连接到其后所有层，如下图示：左边是最简单设计方法，右边则加入了skip-connection
 
 ![](/assets/img/marsggbo/2020-02-11-论文笔记系列AutoMLA-Survey-of-State-of-the-art-上/886d56a1.jpg)
 
@@ -92,7 +93,7 @@ Entire structure简单理解就是我们假设模型深度是![L](/assets/img/ma
 
 cell内部结构如上图右边所示，很多论文后面都是参考了这种设计方式：
 
-一个cell由![B](/assets/img/marsggbo/2020-02-11-论文笔记系列AutoMLA-Survey-of-State-of-the-art-上/24500c30.jpg)个block组成，一个block又由2个node组成，可以看到：
+一个cell由$B$个block组成，一个block又由2个node组成，可以看到：
 
 * 每个node会被分配一个operation（如conv 3x3等），这个operation是从预定义的search space中选择的，常见的主要就是卷积操作和池化操作，或者一个类似于ResBlock的自定义的模块。
 * Node还被分配一个输入数据，**可以看到block是有序号的**，也就是说block1可以接收block 0的输出，但是不能接收block 2.另外block 0只能接收前面两个cell的输出作为输入。
@@ -119,7 +120,7 @@ P-DARTS则是从layer level的角度来实现渐进式，如下图示。可以�
 
 ### **4.1.4 Network Morphism based Structure (NM)**
 
-牛顿曾经说过：“if I have seen further it is by standing on the shoulders of Giants"。Net2Net【7】则是使用了这个思想，它可以直接基于现有的模型进行修改，使得模型变得更宽更深从而提高模型的性能。示意图如下,使得模型更深的方法其实就是插入一个等幂操作，也就是蓝色的结构，用数学公式表示就等价于![f(x)=x](/assets/img/marsggbo/2020-02-11-论文笔记系列AutoMLA-Survey-of-State-of-the-art-上/b0040e00.jpg)，乍看起来加了等于没加，但是后面参数会不断更新的呀，而且选择等幂操作也是为了保证模型至少不会比原来的差。
+牛顿曾经说过：“if I have seen further it is by standing on the shoulders of Giants"。Net2Net【7】则是使用了这个思想，它可以直接基于现有的模型进行修改，使得模型变得更宽更深从而提高模型的性能。示意图如下,使得模型更深的方法其实就是插入一个等幂操作，也就是蓝色的结构，用数学公式表示就等价于$f(x)=x$，乍看起来加了等于没加，但是后面参数会不断更新的呀，而且选择等幂操作也是为了保证模型至少不会比原来的差。
 
 ![](/assets/img/marsggbo/2020-02-11-论文笔记系列AutoMLA-Survey-of-State-of-the-art-上/f57d152d.jpg)
 

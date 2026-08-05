@@ -1,9 +1,10 @@
 ---
 layout: post
-title: "Ghost in the Cloud: 地理分布式大模型训练的安全隐患 | Your Geo-distributed LLM Training is Easily Manipulated"
-date: 2026-03-12 15:20:00
+title: 'Ghost in the Cloud: 地理分布式大模型训练的安全隐患 | Your Geo-distributed LLM Training is Easily
+  Manipulated'
+date: '2026-03-12'
+tags: [LLM, Security, Federated-Learning, Distributed-Training, ICLR]
 category: research
-tags: LLM Security Federated-Learning Distributed-Training ICLR
 related_posts: false
 toc:
   sidebar: left

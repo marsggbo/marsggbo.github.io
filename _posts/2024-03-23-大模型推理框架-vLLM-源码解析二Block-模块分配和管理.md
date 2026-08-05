@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "大模型推理框架 vLLM 源码解析（二）：Block 模块分配和管理"
-date: 2024-03-23
+title: 大模型推理框架 vLLM 源码解析（二）：Block 模块分配和管理
+date: '2024-03-23'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/688660090

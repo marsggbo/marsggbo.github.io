@@ -1,9 +1,10 @@
 ---
 layout: post
-title: "GM-Skip: 基于度量引导的 Transformer 块跳过策略加速视觉语言模型 | Metric-Guided Transformer Block Skipping for Efficient VLMs"
-date: 2026-03-12 15:30:00
+title: 'GM-Skip: 基于度量引导的 Transformer 块跳过策略加速视觉语言模型 | Metric-Guided Transformer Block
+  Skipping for Efficient VLMs'
+date: '2026-03-12'
+tags: [VLM, Transformer, Efficiency, Inference-Acceleration]
 category: research
-tags: VLM Transformer Efficiency Inference-Acceleration
 related_posts: false
 toc:
   sidebar: left

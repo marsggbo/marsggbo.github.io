@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "DAC2026 | ExpertFlow：高效 MoE 推理系统，单卡部署省内存提速度"
-date: 2026-02-27
+title: DAC2026 | ExpertFlow：高效 MoE 推理系统，单卡部署省内存提速度
+date: '2026-02-27'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2010728514375144803

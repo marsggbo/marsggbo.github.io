@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "KV Cache 复用的第三条路：FAST 2026 CacheSlide 是怎么解决 Agent 推理的位置漂移问题的"
-date: 2026-04-26
+title: KV Cache 复用的第三条路：FAST 2026 CacheSlide 是怎么解决 Agent 推理的位置漂移问题的
+date: '2026-04-26'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2031738806794199145
@@ -122,7 +123,7 @@ CCPE 做的事情是：把 prompt 按模板切成若干 chunk，标注哪些是"
 
 1. **Layer 1**：对全部 token 做一次完整 recompute，计算每个 token 的偏差 `d_i = ||K_recompute - K_reuse||²`，取 deviation 最大的 top-k 个 token 放入集合 `Sk`。
 2. **Layer 2 以后**：只对 `Sk` 里的 token 重算 KV，然后用加权融合：  
-    ![ K_i = \alpha_i · K_{recompute} + (1 - \alpha_i) · K_{reuse}](/assets/img/marsggbo/2026-04-26-KV-Cache-复用的第三条路FAST-2026-CacheSlide-是怎么解决-Agent-推理的位置漂移问题的/068d2a26.jpg)   
+$$K_i = \alpha_i · K_{recompute} + (1 - \alpha_i) · K_{reuse}$$
      
     权重 `α` 根据 deviation 动态计算，漂移大的 token 更偏向 recompute，漂移小的 token 更偏向 cache。
 3. **每 4 层评估一次 CKSim**：如果某个 token 的 CKSim < 阈值 τ，说明它已经修正得差不多了，从 `Sk` 里移出；同时把 `S` 里下一个偏差最大的 token 加入。

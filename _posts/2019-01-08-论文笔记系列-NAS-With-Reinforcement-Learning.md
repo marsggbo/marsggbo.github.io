@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "论文笔记系列-NAS With Reinforcement Learning"
-date: 2019-01-08
+title: 论文笔记系列-NAS With Reinforcement Learning
+date: '2019-01-08'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/54361495
@@ -54,29 +55,29 @@ toc:
 
 ## **3.2 Training With Reinforcement**
 
-RNN的参数用![θ_c](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/86925552.jpg)表示。controller所预测的一系列tokens记为一系列的actions，即![a_{1:T}](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/1453c855.jpg)，这些tokens是为了子网络(Child network)设计结构。子网络在验证集上得到的准确率用![R](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/cb0492f4.jpg)表示，该准确率作为 **reward signal**，并且会用到增强学习来训练controller。
+RNN的参数用$θ_c$表示。controller所预测的一系列tokens记为一系列的actions，即$a_{1:T}$，这些tokens是为了子网络(Child network)设计结构。子网络在验证集上得到的准确率用$R$表示，该准确率作为 **reward signal**，并且会用到增强学习来训练controller。
 
 通过求解最大化reward找到最优的结构，reward表达式如下：
 
-![J(θ_c)=E_{P(a_{1:T;θ_c})}[R] \\](https://www.zhihu.com/equation?tex=J%28%CE%B8_c%29%3DE_%7BP%28a_%7B1%3AT%3B%CE%B8_c%7D%29%7D%5BR%5D+%5C%5C)
+$$J(θ_c)=E_{P(a_{1:T;θ_c})}[R]$$
 
-因为奖励信号![R](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/cb0492f4.jpg)是不可微分的，所以我们需要一个策略梯度方法来迭代更新![θ_c](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/86925552.jpg)。在本文中，使用到来自 **Williams (1992)** 的增强学习规则：
+因为奖励信号$R$是不可微分的，所以我们需要一个策略梯度方法来迭代更新$θ_c$。在本文中，使用到来自 **Williams (1992)** 的增强学习规则：
 
-![\nabla_{θ_c}J(θ_c)=\sum_{t=1}^{T}E_{P(a_{1:T;θ_c})}[\nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R] \\](https://www.zhihu.com/equation?tex=%5Cnabla_%7B%CE%B8_c%7DJ%28%CE%B8_c%29%3D%5Csum_%7Bt%3D1%7D%5E%7BT%7DE_%7BP%28a_%7B1%3AT%3B%CE%B8_c%7D%29%7D%5B%5Cnabla_%7B%CE%B8_c%7DlogP%28a_t%7Ca_%7B%28t-1%29%3A1%7D%3B%CE%B8_c%29R%5D+%5C%5C)
+$$\nabla_{θ_c}J(θ_c)=\sum_{t=1}^{T}E_{P(a_{1:T;θ_c})}[\nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R]$$
 
 根据经验上式约等于：
 
-![\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R_k \\](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/73ca60b9.jpg)
+$$\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R_k$$
 
-其中![m](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/f79ab5c4.jpg)是controller在一个batch中采样得到的结构的数量，![T](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/51d9020f.jpg)是controller用于预测和设计神经网络结构的超参数的数量。
+其中$m$是controller在一个batch中采样得到的结构的数量，$T$是controller用于预测和设计神经网络结构的超参数的数量。
 
-![R_k](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/097cd56d.jpg)表示第k个网络结构在验证集上的准确度。
+$R_k$表示第k个网络结构在验证集上的准确度。
 
 上述的更新算法是对梯度的无偏估计，但是有很高的方差。为了降低方差，文中使用如下基线函数：
 
-![\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)(R_k-b) \\](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/04135eae.jpg)
+$$\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)(R_k-b)$$
 
-只要![b](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/111cf5c2.jpg)不依懒于当前的action，那么其仍是无偏梯度估计，且![b](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/111cf5c2.jpg)是前面的结构准确率的 **指数平均数指标(Exponential Moving Average, EMA)**
+只要$b$不依懒于当前的action，那么其仍是无偏梯度估计，且$b$是前面的结构准确率的 **指数平均数指标(Exponential Moving Average, EMA)**
 
 > “ EMA（Exponential Moving Average）是指数平均数指标，它也是一种趋向类指标，指数平均数指标是以指数式递减加权的移动平均。  
 >  其公式为： EMA\_{today}=α \* Price\_{today} + ( 1 - α ) \* EMA\_{yesterday};  
@@ -84,13 +85,13 @@ RNN的参数用![θ_c](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-Wi
 
 **Accelerate Training with Parallelism and Asynchronous Updates 使用并行算法和异步更新来加速训练**
 
-每一次用于更新controller的参数![θ_c](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/86925552.jpg)的梯度都对应于一个子网络训练达到收敛。但是因为子网络众多，且每次训练收敛耗时长，所以使用 **分布式训练和异步参数更新**的方法来加速controller的学习速度。
+每一次用于更新controller的参数$θ_c$的梯度都对应于一个子网络训练达到收敛。但是因为子网络众多，且每次训练收敛耗时长，所以使用 **分布式训练和异步参数更新**的方法来加速controller的学习速度。
 
 ![](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/b3005f7a.jpg)
 
-训练模型如上图所示，一共有![S](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/e6217fb4.jpg)个 **Parameter Server**用于存储 ![K](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/645746d8.jpg)个 **Controller Replica**的共享参数。然后每个 **Controller Replica** 生成![m](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/f79ab5c4.jpg)个并行训练的自网络。
+训练模型如上图所示，一共有$S$个 **Parameter Server**用于存储 $K$个 **Controller Replica**的共享参数。然后每个 **Controller Replica** 生成$m$个并行训练的自网络。
 
-controller会根据![m](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/f79ab5c4.jpg)个子网络结构在收敛时得到的结果收集得到梯度值，然后为了更新所有 **Controller Replica**，会把梯度值传递给 **Parameter Server**。
+controller会根据$m$个子网络结构在收敛时得到的结果收集得到梯度值，然后为了更新所有 **Controller Replica**，会把梯度值传递给 **Parameter Server**。
 
 在本文中，当训练迭代次数超过一定次数则认为子网络收敛。
 
@@ -100,11 +101,11 @@ controller会根据![m](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-W
 
 为实现准确预测connections，本文采用了 **(Neelakantan et al., 2015)** 中的基于注意力机制的**set-selection type attention**方法。
 
-在![N](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/39082460.jpg)层，根据sigmoid函数判断与其前面的![N-1](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/8cd7c442.jpg)个层是否相连。sigmoid函数如下：
+在$N$层，根据sigmoid函数判断与其前面的$N-1$个层是否相连。sigmoid函数如下：
 
-![P(Layer\,j\,is\,an\,input\,to\,layer\,i)=sigmoid(v^T tanh(W_{prev}*h_j+W_{curr}*h_i)) \\](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/b7b44a2d.jpg)
+$$P(Layer\,j\,is\,an\,input\,to\,layer\,i)=sigmoid(v^T tanh(W_{prev}*h_j+W_{curr}*h_i))$$
 
-上式中![h_j](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/5a32481a.jpg)表示controller在第![j](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/ebe2c52d.jpg)层的隐藏状态(![j](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/ebe2c52d.jpg)的大小是从0到![N-1](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/8cd7c442.jpg))。
+上式中$h_j$表示controller在第$j$层的隐藏状态($j$的大小是从0到$N-1$)。
 
 ![](/assets/img/marsggbo/2019-01-08-论文笔记系列-NAS-With-Reinforcement-Learning/5ed24d47.jpg)
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "李宏毅-Network Compression课程笔记"
-date: 2019-12-22
+title: 李宏毅-Network Compression课程笔记
+date: '2019-12-22'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/98740359
@@ -85,11 +86,11 @@ BUT！！！后面有一篇文章[Rethinking the value of network pruning](https
 
 那Student Net到底如何学习呢？首先回顾一下在多类别分类任务中，我们用到的是softmax来计算最终的概率，即
 
-![ y_{i}=\frac{\exp \left(x_{i}\right)}{\sum_{j} \exp \left(x_{j}\right)}](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/bba57f37.jpg)
+$$y_{i}=\frac{\exp \left(x_{i}\right)}{\sum_{j} \exp \left(x_{j}\right)}$$
 
 但是这样有一个缺点，因为使用了指数函数，如果在使用softmax之前的预测值是x1=100,x2=10,x3=1,那么使用softmax之后三者对应的概率接近于y1=1,y2=0,y3=0，那这和常规的label无异了，所以为了解决这个问题就引入了一个新的参数T,称之为**Temperature**,即有:
 
-![ y_{i}=\frac{\exp \left(x_{i} / T\right)}{\sum_{j} \exp \left(x_{j} / T\right)}](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/36dc13b5.jpg)
+$$y_{i}=\frac{\exp \left(x_{i} / T\right)}{\sum_{j} \exp \left(x_{j} / T\right)}$$
 
 此时，如果我们令T=100,那么最后的预测概率是y1=0.56,y2=0.23,y3=0.21。（不过李宏毅老师在视频里提到说这个方法在实际使用时貌似用处不大hhhh，感觉这个方法可以回答知乎上的 **什么东西看起来很厉害但是没什么用?** 哈哈哈哈哈哈哈哈哈哈或或）
 
@@ -135,9 +136,9 @@ BUT！！！后面有一篇文章[Rethinking the value of network pruning](https
 
 ## 1. Low Rank Approximation(低秩近似)
 
-下图是低秩近似的简单示意图，左边是一个普通的全连接层，可以看到权重矩阵大小为 ![M\times N](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/65ff5732.jpg) ，而低秩近似的原理就是在两个全连接层之间再插入一层K。是不是很反直观？插入一层后，参数还能变少？
+下图是低秩近似的简单示意图，左边是一个普通的全连接层，可以看到权重矩阵大小为 $M\times N$ ，而低秩近似的原理就是在两个全连接层之间再插入一层K。是不是很反直观？插入一层后，参数还能变少？
 
-没错，的确变少了，我们可以看看新插入一层后的参数数量为: ![N\times K+K\times M=K\times (M+N)](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/655bfcee.jpg) ,因为 ![K<M,K<N](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/f562360b.jpg) ,所以参数减少了。
+没错，的确变少了，我们可以看看新插入一层后的参数数量为: $N\times K+K\times M=K\times (M+N)$ ,因为 $K<M,K<N$ ,所以参数减少了。
 
 ![](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/d28aff9c.jpg)
 
@@ -159,11 +160,11 @@ BUT！！！后面有一篇文章[Rethinking the value of network pruning](https
 
 下面我们算一下标准卷积和Depthwise Separable卷积参数数量大小关系：假设输入特征图通道数为$I$,输出特征图通道数为$O$,卷积核大小为$k\times k$。
 
-标准卷积参数数量= ![k\times k\times I\times O](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/5b22f6d5.jpg)
+标准卷积参数数量= $k\times k\times I\times O$
 
-Depthwise Separable卷积参数数量= ![k\times k\times I+I\times O](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/c92b8192.jpg) 。
+Depthwise Separable卷积参数数量= $k\times k\times I+I\times O$ 。
 
-因为通常输出特征图的通道数 ![O](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/8a8f4c37.jpg) 会设置的比较大，所以可以看到Depthwise Separable卷积的参数量会明显少于标准卷积。
+因为通常输出特征图的通道数 $O$ 会设置的比较大，所以可以看到Depthwise Separable卷积的参数量会明显少于标准卷积。
 
 ![](/assets/img/marsggbo/2019-12-22-李宏毅-Network-Compression课程笔记/0e19b116.jpg)
 

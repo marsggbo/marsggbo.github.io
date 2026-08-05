@@ -1,7 +1,7 @@
 ---
 layout: post
-title: "LLM 时代，还有人搞 AutoML 吗？有，而且变得更难了"
-date: 2026-06-02
+title: LLM 时代，还有人搞 AutoML 吗？有，而且变得更难了
+date: '2026-06-02'
 tags: [AutoML, NAS, LLM, 论文解读, 新书]
 ---
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "说人话理解 RoPE：从 sin/cos 位置编码到旋转矩阵，一次讲清楚"
-date: 2026-04-29
+title: 说人话理解 RoPE：从 sin/cos 位置编码到旋转矩阵，一次讲清楚
+date: '2026-04-29'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2032881588019663675
@@ -31,7 +32,7 @@ toc:
 
 ![](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/0c682e69.jpg)
 
-注：后面为了简洁，有时用 ![d](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/da5354ac.jpg) 统一表示 hidden dim 或 head dim，具体含义从上下文判断。
+注：后面为了简洁，有时用 $d$ 统一表示 hidden dim 或 head dim，具体含义从上下文判断。
 
 ---
 
@@ -43,45 +44,45 @@ toc:
 
 为什么？来直接算一遍。
 
-假设序列只有 2 个 token，embedding 维度 ![d=2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/c97d5052.jpg)。两个 token 的 embedding 分别是：
+假设序列只有 2 个 token，embedding 维度 $d=2$。两个 token 的 embedding 分别是：
 
-![\\\mathbf{x}_A = [1, 0],\quad \mathbf{x}_B = [0, 1]](https://www.zhihu.com/equation?tex=%5C%5C%5Cmathbf%7Bx%7D_A+%3D+%5B1%2C+0%5D%2C%5Cquad+%5Cmathbf%7Bx%7D_B+%3D+%5B0%2C+1%5D)
+$$\mathbf{x}_A = [1, 0],\quad \mathbf{x}_B = [0, 1]$$
 
-为了简化，令 ![W_Q = W_K = W_V = I](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/501c8b5a.jpg)（单位矩阵），即 ![Q = K = V = X](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/85153f80.jpg)（直接用 embedding 自身）。
+为了简化，令 $W_Q = W_K = W_V = I$（单位矩阵），即 $Q = K = V = X$（直接用 embedding 自身）。
 
 **情形 1：输入顺序是 `[A, B]`**
 
-![\\X = \begin{bmatrix}1 &amp; 0 \\ 0 &amp; 1\end{bmatrix},\quad Q = K = V = \begin{bmatrix}1 &amp; 0 \\ 0 &amp; 1\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/38ead250.jpg)
+$$\X = \begin{bmatrix}1 & 0 \\ 0 & 1\end{bmatrix},\quad Q = K = V = \begin{bmatrix}1 & 0 \\ 0 & 1\end{bmatrix}$$
 
 注意力分数矩阵（缩放后）：
 
-![\\\text{scores} = QK^T = \begin{bmatrix}1\cdot1+0\cdot0 &amp; 1\cdot0+0\cdot1 \\ 0\cdot1+1\cdot0 &amp; 0\cdot0+1\cdot1\end{bmatrix} = \begin{bmatrix}1 &amp; 0 \\ 0 &amp; 1\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/271dab2c.jpg)
+$$\text{scores} = QK^T = \begin{bmatrix}1\cdot1+0\cdot0 & 1\cdot0+0\cdot1 \\ 0\cdot1+1\cdot0 & 0\cdot0+1\cdot1\end{bmatrix} = \begin{bmatrix}1 & 0 \\ 0 & 1\end{bmatrix}$$
 
 经过 softmax（按行）：
 
-![\\\text{attn} = \text{softmax}\begin{bmatrix}1 &amp; 0 \\ 0 &amp; 1\end{bmatrix} = \begin{bmatrix}0.731 &amp; 0.269 \\ 0.269 &amp; 0.731\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/62f618fa.jpg)
+$$\text{attn} = \text{softmax}\begin{bmatrix}1 & 0 \\ 0 & 1\end{bmatrix} = \begin{bmatrix}0.731 & 0.269 \\ 0.269 & 0.731\end{bmatrix}$$
 
-输出 ![O = \text{attn} \cdot V](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/eb1e5e6e.jpg)：
+输出 $O = \text{attn} \cdot V$：
 
-![\\O_A = 0.731 \cdot [1,0] + 0.269 \cdot [0,1] = [0.731,\ 0.269]](https://www.zhihu.com/equation?tex=%5C%5CO_A+%3D+0.731+%5Ccdot+%5B1%2C0%5D+%2B+0.269+%5Ccdot+%5B0%2C1%5D+%3D+%5B0.731%2C%5C+0.269%5D)
+$$\O_A = 0.731 \cdot [1,0] + 0.269 \cdot [0,1] = [0.731,\ 0.269]$$
 
-![\\O_B = 0.269 \cdot [1,0] + 0.731 \cdot [0,1] = [0.269,\ 0.731]](https://www.zhihu.com/equation?tex=%5C%5CO_B+%3D+0.269+%5Ccdot+%5B1%2C0%5D+%2B+0.731+%5Ccdot+%5B0%2C1%5D+%3D+%5B0.269%2C%5C+0.731%5D)
+$$\O_B = 0.269 \cdot [1,0] + 0.731 \cdot [0,1] = [0.269,\ 0.731]$$
 
 **情形 2：输入顺序是 `[B, A]`**
 
-![\\X = \begin{bmatrix}0 &amp; 1 \\ 1 &amp; 0\end{bmatrix},\quad Q = K = V = \begin{bmatrix}0 &amp; 1 \\ 1 &amp; 0\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/48893811.jpg)
+$$\X = \begin{bmatrix}0 & 1 \\ 1 & 0\end{bmatrix},\quad Q = K = V = \begin{bmatrix}0 & 1 \\ 1 & 0\end{bmatrix}$$
 
 注意力分数：
 
-![\\\text{scores} = QK^T = \begin{bmatrix}0\cdot0+1\cdot1 &amp; 0\cdot1+1\cdot0 \\ 1\cdot0+0\cdot1 &amp; 1\cdot1+0\cdot0\end{bmatrix} = \begin{bmatrix}1 &amp; 0 \\ 0 &amp; 1\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/0c6c74f3.jpg)
+$$\text{scores} = QK^T = \begin{bmatrix}0\cdot0+1\cdot1 & 0\cdot1+1\cdot0 \\ 1\cdot0+0\cdot1 & 1\cdot1+0\cdot0\end{bmatrix} = \begin{bmatrix}1 & 0 \\ 0 & 1\end{bmatrix}$$
 
 和情形 1 的分数矩阵完全一样！softmax 后也一样，输出是：
 
-![\\O_B = 0.731 \cdot [0,1] + 0.269 \cdot [1,0] = [0.269,\ 0.731]](https://www.zhihu.com/equation?tex=%5C%5CO_B+%3D+0.731+%5Ccdot+%5B0%2C1%5D+%2B+0.269+%5Ccdot+%5B1%2C0%5D+%3D+%5B0.269%2C%5C+0.731%5D)
+$$\O_B = 0.731 \cdot [0,1] + 0.269 \cdot [1,0] = [0.269,\ 0.731]$$
 
-![\\O_A = 0.269 \cdot [0,1] + 0.731 \cdot [1,0] = [0.731,\ 0.269]](https://www.zhihu.com/equation?tex=%5C%5CO_A+%3D+0.269+%5Ccdot+%5B0%2C1%5D+%2B+0.731+%5Ccdot+%5B1%2C0%5D+%3D+%5B0.731%2C%5C+0.269%5D)
+$$\O_A = 0.269 \cdot [0,1] + 0.731 \cdot [1,0] = [0.731,\ 0.269]$$
 
-两种顺序下，![A](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/a86f8657.jpg) 的输出都是 ![[0.731, 0.269]](https://www.zhihu.com/equation?tex=%5B0.731%2C+0.269%5D)，![B](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/24500c30.jpg) 的输出都是 ![[0.269, 0.731]](https://www.zhihu.com/equation?tex=%5B0.269%2C+0.731%5D)。**换个顺序输入，只是输出行的顺序变了，每个 token 对应的输出向量本身没有任何变化。**
+两种顺序下，$A$ 的输出都是 $[0.731, 0.269]$，$B$ 的输出都是 $[0.269, 0.731]$。**换个顺序输入，只是输出行的顺序变了，每个 token 对应的输出向量本身没有任何变化。**
 
 这就是所谓的置换不变：Attention 不在乎你是先说 A 还是先说 B，它对每个 token 的处理方式取决于 token 的内容，和位置无关。
 
@@ -93,13 +94,13 @@ toc:
 
 在设计具体方案之前，先想清楚"好的位置编码"应该有什么性质。
 
-最核心的一条：**位置 ![m](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/f79ab5c4.jpg) 的 query 向量 ![\mathbf{q}_m](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/4c0fedd8.jpg) 和位置 ![n](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/ce59f558.jpg) 的 key 向量 ![\mathbf{k}_n](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/69990ccf.jpg) 的内积，应该只依赖相对位置 ![(m-n)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/9c541860.jpg)，而不依赖 ![m](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/f79ab5c4.jpg)、![n](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/ce59f558.jpg) 的绝对值。**
+最核心的一条：**位置 $m$ 的 query 向量 $\mathbf{q}_m$ 和位置 $n$ 的 key 向量 $\mathbf{k}_n$ 的内积，应该只依赖相对位置 $(m-n)$，而不依赖 $m$、$n$ 的绝对值。**
 
 用公式写就是：
 
-![\\\mathbf{q}_m \cdot \mathbf{k}_n = f(m - n)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/a7010bbd.jpg)
+$$\mathbf{q}_m \cdot \mathbf{k}_n = f(m - n)$$
 
-其中 ![f](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b1546fe5.jpg) 是某个只和差值 ![(m-n)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/9c541860.jpg) 有关的函数。
+其中 $f$ 是某个只和差值 $(m-n)$ 有关的函数。
 
 **为什么这个性质很重要？**
 
@@ -111,11 +112,11 @@ toc:
 
 ## **4. Sinusoidal 位置编码：sin 和 cos 为什么要搭配用？**
 
-原始 Transformer（Vaswani et al., 2017）的方案是对每个位置索引 ![t](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/3b1922fd.jpg)（第几个 token）和维度索引 ![i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b1677f94.jpg) 计算一个标量，直接加到 token embedding 上：
+原始 Transformer（Vaswani et al., 2017）的方案是对每个位置索引 $t$（第几个 token）和维度索引 $i$ 计算一个标量，直接加到 token embedding 上：
 
-![\\\text{PE}(t,\ 2i) = \sin(t \cdot \theta_i),\qquad \text{PE}(t,\ 2i+1) = \cos(t \cdot \theta_i),\qquad \theta_i = 10000^{-2i/d}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/16bec0f2.jpg)
+$$\text{PE}(t,\ 2i) = \sin(t \cdot \theta_i),\qquad \text{PE}(t,\ 2i+1) = \cos(t \cdot \theta_i),\qquad \theta_i = 10000^{-2i/d}$$
 
-偶数维度用 sin，奇数维度用 cos，两个维度共用同一频率 ![\theta_i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/5dd2da12.jpg)，成对出现。
+偶数维度用 sin，奇数维度用 cos，两个维度共用同一频率 $\theta_i$，成对出现。
 
 这个设计有两个很自然的问题：
 
@@ -126,68 +127,68 @@ toc:
 
 ### 4.1 为什么一个用 sin，一个用 cos？
 
-PE 是加到 token embedding 上再做投影的，注入 attention 后效果是什么？以位置 ![s](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/4aa2212c.jpg) 的 token 和位置 ![t](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/3b1922fd.jpg) 的 token 为例（注意：![s, t](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/107db91b.jpg) 是位置索引整数，不是 query/key 向量）：
+PE 是加到 token embedding 上再做投影的，注入 attention 后效果是什么？以位置 $s$ 的 token 和位置 $t$ 的 token 为例（注意：$s, t$ 是位置索引整数，不是 query/key 向量）：
 
-![\\\tilde{\mathbf{x}}_s = \mathbf{x}_s + \text{PE}(s),\qquad \tilde{\mathbf{x}}_t = \mathbf{x}_t + \text{PE}(t)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/4b00e961.jpg)
+$$\tilde{\mathbf{x}_s = \mathbf{x}_s + \text{PE}(s),\qquad \tilde{\mathbf{x}_t = \mathbf{x}_t + \text{PE}(t)$$
 
 经过线性投影后计算 attention score：
 
-![\\Q_s \cdot K_t = \underbrace{(W_Q \mathbf{x}_s) \cdot (W_K \mathbf{x}_t)}_{\text{语义交互}} + \underbrace{(W_Q \mathbf{x}_s) \cdot (W_K \text{PE}(t)) + (W_Q \text{PE}(s)) \cdot (W_K \mathbf{x}_t)}_{\text{语义 × 位置交叉项}} + \underbrace{(W_Q\,\text{PE}(s)) \cdot (W_K\,\text{PE}(t))}_{\text{位置 × 位置}}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/73ba6a0f.jpg)
+$$\Q_s \cdot K_t = \underbrace{(W_Q \mathbf{x}_s) \cdot (W_K \mathbf{x}_t)}_{\text{语义交互} + \underbrace{(W_Q \mathbf{x}_s) \cdot (W_K \text{PE}(t)) + (W_Q \text{PE}(s)) \cdot (W_K \mathbf{x}_t)}_{\text{语义 × 位置交叉项} + \underbrace{(W_Q\,\text{PE}(s)) \cdot (W_K\,\text{PE}(t))}_{\text{位置 × 位置}$$
 
-前三项涉及 ![W_Q, W_K](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/e54352aa.jpg) 的参数，模型在训练中可以灵活学习如何处理。**最后一项 ![(W_Q\,\text{PE}(s)) \cdot (W_K\,\text{PE}(t))](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/34d53533.jpg) 完全由位置编码决定**——如果它只依赖相对距离 ![(s-t)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/761eca1c.jpg)，就给模型一个稳定的"位置锚点"。
+前三项涉及 $W_Q, W_K$ 的参数，模型在训练中可以灵活学习如何处理。**最后一项 $(W_Q\,\text{PE}(s)) \cdot (W_K\,\text{PE}(t))$ 完全由位置编码决定**——如果它只依赖相对距离 $(s-t)$，就给模型一个稳定的"位置锚点"。
 
-为了分析最方便，令 ![W_Q = W_K = I](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/85f5cd45.jpg)（单位矩阵），此时这一项简化为 ![\text{PE}(s) \cdot \text{PE}(t)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b67282ce.jpg)。
+为了分析最方便，令 $W_Q = W_K = I$（单位矩阵），此时这一项简化为 $\text{PE}(s) \cdot \text{PE}(t)$。
 
 **先看全用 sin 会怎样**。两个位置的 PE 内积：
 
-![\\\text{PE}_{\sin}(s) \cdot \text{PE}_{\sin}(t) = \sum_i \sin(s\theta_i)\sin(t\theta_i)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/df7eacb1.jpg)
+$$\text{PE}_{\sin}(s) \cdot \text{PE}_{\sin}(t) = \sum_i \sin(s\theta_i)\sin(t\theta_i)$$
 
-用积化和差 ![\sin(a)\sin(b) = \frac{1}{2}[\cos(a-b) - \cos(a+b)]](https://www.zhihu.com/equation?tex=%5Csin%28a%29%5Csin%28b%29+%3D+%5Cfrac%7B1%7D%7B2%7D%5B%5Ccos%28a-b%29+-+%5Ccos%28a%2Bb%29%5D)：
+用积化和差 $\sin(a)\sin(b) = \frac{1}{2}[\cos(a-b) - \cos(a+b)]$：
 
-![\\= \frac{1}{2}\sum_i \bigl[\cos\!\bigl((s-t)\theta_i\bigr) - \cos\!\bigl((s+t)\theta_i\bigr)\bigr]](https://www.zhihu.com/equation?tex=%5C%5C%3D+%5Cfrac%7B1%7D%7B2%7D%5Csum_i+%5Cbigl%5B%5Ccos%5C%21%5Cbigl%28%28s-t%29%5Ctheta_i%5Cbigr%29+-+%5Ccos%5C%21%5Cbigl%28%28s%2Bt%29%5Ctheta_i%5Cbigr%29%5Cbigr%5D)
+$$\\= \frac{1}{2}\sum_i \bigl[\cos\!\bigl((s-t)\theta_i\bigr) - \cos\!\bigl((s+t)\theta_i\bigr)\bigr]$$
 
-里面有 ![\cos((s-t)\theta_i)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/2a9a6ae4.jpg)（相对位置），**同时还有** ![\cos((s+t)\theta_i)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/beea8286.jpg)（绝对位置之和）。两者都在，内积同时依赖相对和绝对位置，没办法给模型纯粹的"相对位置信号"。
+里面有 $\cos((s-t)\theta_i)$（相对位置），**同时还有** $\cos((s+t)\theta_i)$（绝对位置之和）。两者都在，内积同时依赖相对和绝对位置，没办法给模型纯粹的"相对位置信号"。
 
 **换成 sin + cos 配对**：
 
-![\\\text{PE}(s) \cdot \text{PE}(t) = \sum_i \bigl[\sin(s\theta_i)\sin(t\theta_i) + \cos(s\theta_i)\cos(t\theta_i)\bigr] = \sum_i \cos\!\bigl((s-t)\theta_i\bigr)](https://www.zhihu.com/equation?tex=%5C%5C%5Ctext%7BPE%7D%28s%29+%5Ccdot+%5Ctext%7BPE%7D%28t%29+%3D+%5Csum_i+%5Cbigl%5B%5Csin%28s%5Ctheta_i%29%5Csin%28t%5Ctheta_i%29+%2B+%5Ccos%28s%5Ctheta_i%29%5Ccos%28t%5Ctheta_i%29%5Cbigr%5D+%3D+%5Csum_i+%5Ccos%5C%21%5Cbigl%28%28s-t%29%5Ctheta_i%5Cbigr%29)
+$$\text{PE}(s) \cdot \text{PE}(t) = \sum_i \bigl[\sin(s\theta_i)\sin(t\theta_i) + \cos(s\theta_i)\cos(t\theta_i)\bigr] = \sum_i \cos\!\bigl((s-t)\theta_i\bigr)$$
 
-利用 ![\sin(a)\sin(b) + \cos(a)\cos(b) = \cos(a-b)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/388bb66e.jpg)，**绝对位置完全消掉，只剩相对位置差 ![(s-t)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/761eca1c.jpg)**。
+利用 $\sin(a)\sin(b) + \cos(a)\cos(b) = \cos(a-b)$，**绝对位置完全消掉，只剩相对位置差 $(s-t)$**。
 
-这就是 sin/cos 必须配对的根本原因：![\cos(a-b)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/2c2fdf73.jpg) 的恒等式展开式天然需要 sin 和 cos 各一个。全用 sin 缺少 cos 项，内积里就会多出 ![\cos(s+t)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/380603df.jpg) 这个绝对位置污染项。
+这就是 sin/cos 必须配对的根本原因：$\cos(a-b)$ 的恒等式展开式天然需要 sin 和 cos 各一个。全用 sin 缺少 cos 项，内积里就会多出 $\cos(s+t)$ 这个绝对位置污染项。
 
 ### 4.2 为什么要每两个维度一组，且每组频率不同？
 
-上面的结论直接决定了分组方式：**一个 sin + 一个 cos 凑在一起，内积才能只依赖 ![(s-t)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/761eca1c.jpg)**，两者必须成对出现，不能单打独斗。
+上面的结论直接决定了分组方式：**一个 sin + 一个 cos 凑在一起，内积才能只依赖 $(s-t)$**，两者必须成对出现，不能单打独斗。
 
 attention 的内积计算是逐维度累加的：
 
-![\\Q_s \cdot K_t = \sum_{j=0}^{d-1} Q_s^{(j)} \cdot K_t^{(j)} = \underbrace{Q_s^{(0)} K_t^{(0)} + Q_s^{(1)} K_t^{(1)}}_{\text{第 0 对}} + \underbrace{Q_s^{(2)} K_t^{(2)} + Q_s^{(3)} K_t^{(3)}}_{\text{第 1 对}} + \cdots](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/2955f7a4.jpg)
+$$\Q_s \cdot K_t = \sum_{j=0}^{d-1} Q_s^{(j)} \cdot K_t^{(j)} = \underbrace{Q_s^{(0)} K_t^{(0)} + Q_s^{(1)} K_t^{(1)}_{\text{第 0 对} + \underbrace{Q_s^{(2)} K_t^{(2)} + Q_s^{(3)} K_t^{(3)}_{\text{第 1 对} + \cdots$$
 
-sinusoidal PE 的奇偶设计使得维度 ![2i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/6ad1e5e4.jpg) 和维度 ![2i+1](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/96435bd5.jpg) 天然成一对，其内积之和恰好构成 ![\cos((s-t)\theta_i)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/2a9a6ae4.jpg)：
+sinusoidal PE 的奇偶设计使得维度 $2i$ 和维度 $2i+1$ 天然成一对，其内积之和恰好构成 $\cos((s-t)\theta_i)$：
 
-![\\\sin(s\theta_i)\sin(t\theta_i) + \cos(s\theta_i)\cos(t\theta_i) = \cos\!\bigl((s-t)\theta_i\bigr)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/44073e3a.jpg)
+$$\sin(s\theta_i)\sin(t\theta_i) + \cos(s\theta_i)\cos(t\theta_i) = \cos\!\bigl((s-t)\theta_i\bigr)$$
 
-**这就是"每两个维度一组"的根本来源**：内积的每一对加法项对应一个 ![\cos(a-b)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/2c2fdf73.jpg) 恒等式，强制要求 sin 和 cos 必须成对落在相邻维度。
+**这就是"每两个维度一组"的根本来源**：内积的每一对加法项对应一个 $\cos(a-b)$ 恒等式，强制要求 sin 和 cos 必须成对落在相邻维度。
 
 ---
 
-**那为什么 ![d/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/e76c6448.jpg) 对要各用不同的频率 ![\theta_i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/5dd2da12.jpg)？**
+**那为什么 $d/2$ 对要各用不同的频率 $\theta_i$？**
 
-想象极端情形：![d=64](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/26031d86.jpg)，但全部 32 对都用同一频率 ![\theta_0 = 1](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/e0d6f3d2.jpg)。
+想象极端情形：$d=64$，但全部 32 对都用同一频率 $\theta_0 = 1$。
 
-* 位置 ![t = 0](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/ca93a6be.jpg)：![\text{PE} = [\sin 0, \cos 0, \sin 0, \cos 0, \ldots] = [0, 1, 0, 1, \ldots]](https://www.zhihu.com/equation?tex=%5Ctext%7BPE%7D+%3D+%5B%5Csin+0%2C+%5Ccos+0%2C+%5Csin+0%2C+%5Ccos+0%2C+%5Cldots%5D+%3D+%5B0%2C+1%2C+0%2C+1%2C+%5Cldots%5D)
-* 位置 ![t = 2\pi \approx 6.28](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/660fb2f0.jpg)：![\text{PE} = [\sin 2\pi, \cos 2\pi, \ldots] = [0, 1, 0, 1, \ldots]](https://www.zhihu.com/equation?tex=%5Ctext%7BPE%7D+%3D+%5B%5Csin+2%5Cpi%2C+%5Ccos+2%5Cpi%2C+%5Cldots%5D+%3D+%5B0%2C+1%2C+0%2C+1%2C+%5Cldots%5D)
+* 位置 $t = 0$：$\text{PE} = [\sin 0, \cos 0, \sin 0, \cos 0, \ldots] = [0, 1, 0, 1, \ldots]$
+* 位置 $t = 2\pi \approx 6.28$：$\text{PE} = [\sin 2\pi, \cos 2\pi, \ldots] = [0, 1, 0, 1, \ldots]$
 
-两个完全不同的位置，PE 向量**一模一样**——模型根本分不清。sin/cos 的值在 ![[-1, 1]](https://www.zhihu.com/equation?tex=%5B-1%2C+1%5D) 之间震荡，周期是 ![2\pi / \theta_i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/05ff26ce.jpg)。同一频率意味着超过一个周期就会"碰撞"。
+两个完全不同的位置，PE 向量**一模一样**——模型根本分不清。sin/cos 的值在 $[-1, 1]$ 之间震荡，周期是 $2\pi / \theta_i$。同一频率意味着超过一个周期就会"碰撞"。
 
 解决办法：让每对维度用不同的频率，就像时钟三根指针各自独立旋转：
 
 ![](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/a982ff7d.jpg)
 
-秒针（高频）区分秒级差距，时针（低频）区分小时级差距，三根指针组合才能唯一确定时刻。同理，高频维度对区分相邻 token，低频维度对感知长程位置，![d/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/e76c6448.jpg) 对频率合在一起唯一表示任意位置。
+秒针（高频）区分秒级差距，时针（低频）区分小时级差距，三根指针组合才能唯一确定时刻。同理，高频维度对区分相邻 token，低频维度对感知长程位置，$d/2$ 对频率合在一起唯一表示任意位置。
 
-**结论：![d](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/da5354ac.jpg) 维 embedding 里有 ![d/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/e76c6448.jpg) 个计时器，每个计时器占 2 个维度（sin + cos 各一），每个计时器转速不同。sin/cos 必须配对，是 ![\cos(a-b)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/2c2fdf73.jpg) 公式的要求；频率必须各异，是为了避免碰撞、覆盖所有距离范围。**
+**结论：$d$ 维 embedding 里有 $d/2$ 个计时器，每个计时器占 2 个维度（sin + cos 各一），每个计时器转速不同。sin/cos 必须配对，是 $\cos(a-b)$ 公式的要求；频率必须各异，是为了避免碰撞、覆盖所有距离范围。**
 
 ---
 
@@ -195,37 +196,37 @@ sinusoidal PE 的奇偶设计使得维度 ![2i](/assets/img/marsggbo/2026-04-29-
 
 Sinusoidal PE 把位置加到 embedding 再做投影，内积展开后有 4 项，位置和语义信息混在一起，相对位置的保证并不精确。苏剑林（苏大神，@苏建林）在 2021 年提出了 RoPE（Rotary Position Embedding），核心思路翻转：**不在 embedding 上加位置，直接对 Q 和 K 施加依赖于位置的旋转变换**。
 
-直觉：如果位置 ![m](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/f79ab5c4.jpg) 的 Q 被旋转了 ![m\theta](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/76aac3e0.jpg) 角度，位置 ![n](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/ce59f558.jpg) 的 K 被旋转了 ![n\theta](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b05a6dc2.jpg) 角度，内积里自然包含角度差 ![(m-n)\theta](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/f276fa72.jpg)——相对位置，而且是**精确地**只有相对位置，没有绝对位置的污染。
+直觉：如果位置 $m$ 的 Q 被旋转了 $m\theta$ 角度，位置 $n$ 的 K 被旋转了 $n\theta$ 角度，内积里自然包含角度差 $(m-n)\theta$——相对位置，而且是**精确地**只有相对位置，没有绝对位置的污染。
 
 ### 5.1 从 2D 推到 d_h 维
 
-先把问题化到最简单：head dimension ![d_h = 2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/846641e8.jpg)，query ![\mathbf{q} = [q_1, q_2]^T](https://www.zhihu.com/equation?tex=%5Cmathbf%7Bq%7D+%3D+%5Bq_1%2C+q_2%5D%5ET)，key ![\mathbf{k} = [k_1, k_2]^T](https://www.zhihu.com/equation?tex=%5Cmathbf%7Bk%7D+%3D+%5Bk_1%2C+k_2%5D%5ET)，只有一个频率 ![\theta](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/679f2e1d.jpg)。
+先把问题化到最简单：head dimension $d_h = 2$，query $\mathbf{q} = [q_1, q_2]^T$，key $\mathbf{k} = [k_1, k_2]^T$，只有一个频率 $\theta$。
 
-RoPE 对位置 ![m](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/f79ab5c4.jpg) 的 query 做旋转：
+RoPE 对位置 $m$ 的 query 做旋转：
 
-![\\\mathbf{q}_m^{\text{rope}} = \begin{bmatrix}\cos m\theta &amp; -\sin m\theta \\ \sin m\theta &amp; \cos m\theta\end{bmatrix} \begin{bmatrix}q_1 \\ q_2\end{bmatrix} = \begin{bmatrix}q_1\cos m\theta - q_2\sin m\theta \\ q_1\sin m\theta + q_2\cos m\theta\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/728dd8bf.jpg)
+$$\mathbf{q}_m^{\text{rope} = \begin{bmatrix}\cos m\theta & -\sin m\theta \\ \sin m\theta & \cos m\theta\end{bmatrix} \begin{bmatrix}q_1 \\ q_2\end{bmatrix} = \begin{bmatrix}q_1\cos m\theta - q_2\sin m\theta \\ q_1\sin m\theta + q_2\cos m\theta\end{bmatrix}$$
 
-这是平面几何里的**逆时针旋转**：把向量 ![\mathbf{q}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/05f4ae1e.jpg) 旋转 ![m\theta](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/76aac3e0.jpg) 弧度，模长不变。同样对位置 ![n](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/ce59f558.jpg) 的 key 旋转 ![n\theta](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b05a6dc2.jpg)，然后算内积（展开后利用 ![\cos(a)\cos(b)+\sin(a)\sin(b)=\cos(a-b)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/65322e4d.jpg)）：
+这是平面几何里的**逆时针旋转**：把向量 $\mathbf{q}$ 旋转 $m\theta$ 弧度，模长不变。同样对位置 $n$ 的 key 旋转 $n\theta$，然后算内积（展开后利用 $\cos(a)\cos(b)+\sin(a)\sin(b)=\cos(a-b)$）：
 
-![\\\langle \mathbf{q}_m^{\text{rope}},\ \mathbf{k}_n^{\text{rope}} \rangle = (q_1 k_1 + q_2 k_2)\cos\!\bigl((m-n)\theta\bigr) + (q_1 k_2 - q_2 k_1)\sin\!\bigl((m-n)\theta\bigr)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/656dd2e6.jpg)
+$$\langle \mathbf{q}_m^{\text{rope},\ \mathbf{k}_n^{\text{rope} \rangle = (q_1 k_1 + q_2 k_2)\cos\!\bigl((m-n)\theta\bigr) + (q_1 k_2 - q_2 k_1)\sin\!\bigl((m-n)\theta\bigr)$$
 
-只含 ![(m-n)\theta](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/f276fa72.jpg)，**精确地只依赖相对位置**，绝对位置 ![m, n](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/d962c8f6.jpg) 完全消掉了。
+只含 $(m-n)\theta$，**精确地只依赖相对位置**，绝对位置 $m, n$ 完全消掉了。
 
-扩展到 ![d_h](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/c5f90a97.jpg) 维也是同样的道理：把 ![d_h](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/c5f90a97.jpg) 维 query 切成 ![d_h/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/4fe1c387.jpg) 对，每对独立做一次 2D 旋转，各自用不同的频率 ![\theta_i = 10000^{-2i/d_h}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/7797a49a.jpg)：
+扩展到 $d_h$ 维也是同样的道理：把 $d_h$ 维 query 切成 $d_h/2$ 对，每对独立做一次 2D 旋转，各自用不同的频率 $\theta_i = 10000^{-2i/d_h}$：
 
-![\\\text{第 } i \text{ 对} \quad (q_{2i+1}, q_{2i+2}) \xrightarrow{\;\text{旋转}\; m\theta_i\;} \begin{bmatrix}q_{2i+1}\cos m\theta_i - q_{2i+2}\sin m\theta_i \\ q_{2i+1}\sin m\theta_i + q_{2i+2}\cos m\theta_i\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/69a0d1be.jpg)
+$$\text{第 } i \text{ 对} \quad (q_{2i+1}, q_{2i+2}) \xrightarrow{\;\text{旋转}\; m\theta_i\;} \begin{bmatrix}q_{2i+1}\cos m\theta_i - q_{2i+2}\sin m\theta_i \\ q_{2i+1}\sin m\theta_i + q_{2i+2}\cos m\theta_i\end{bmatrix}$$
 
-全部 ![d_h/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/4fe1c387.jpg) 对旋转完拼在一起，等价于施加一个**块对角旋转矩阵** ![R_{\Theta,m}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/8b08d73e.jpg)。内积性质对全部维度精确成立：
+全部 $d_h/2$ 对旋转完拼在一起，等价于施加一个**块对角旋转矩阵** $R_{\Theta,m}$。内积性质对全部维度精确成立：
 
-![\\\langle \mathbf{q}_m^{\text{rope}},\ \mathbf{k}_n^{\text{rope}} \rangle = \mathbf{q}^T R_{\Theta,m}^T R_{\Theta,n}\,\mathbf{k} = \mathbf{q}^T R_{\Theta,n-m}\,\mathbf{k}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/8e62d6cc.jpg)
+$$\langle \mathbf{q}_m^{\text{rope},\ \mathbf{k}_n^{\text{rope} \rangle = \mathbf{q}^T R_{\Theta,m}^T R_{\Theta,n}\,\mathbf{k} = \mathbf{q}^T R_{\Theta,n-m}\,\mathbf{k}$$
 
 ### 5.2 代码实现
 
-实际代码不会构造那个稀疏块对角矩阵，而是把矩阵乘法等价分解成两次逐元素乘法。以 ![d_h=4](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/82895bcb.jpg)、相邻配对为例展开：
+实际代码不会构造那个稀疏块对角矩阵，而是把矩阵乘法等价分解成两次逐元素乘法。以 $d_h=4$、相邻配对为例展开：
 
-![\\\mathbf{q}^{\text{rope}} = \begin{bmatrix}q_1 \\ q_2 \\ q_3 \\ q_4\end{bmatrix} \odot \begin{bmatrix}\cos m\theta_0 \\ \cos m\theta_0 \\ \cos m\theta_1 \\ \cos m\theta_1\end{bmatrix} + \begin{bmatrix}-q_2 \\ q_1 \\ -q_4 \\ q_3\end{bmatrix} \odot \begin{bmatrix}\sin m\theta_0 \\ \sin m\theta_0 \\ \sin m\theta_1 \\ \sin m\theta_1\end{bmatrix}](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/0f9a4c27.jpg)
+$$\mathbf{q}^{\text{rope} = \begin{bmatrix}q_1 \\ q_2 \\ q_3 \\ q_4\end{bmatrix} \odot \begin{bmatrix}\cos m\theta_0 \\ \cos m\theta_0 \\ \cos m\theta_1 \\ \cos m\theta_1\end{bmatrix} + \begin{bmatrix}-q_2 \\ q_1 \\ -q_4 \\ q_3\end{bmatrix} \odot \begin{bmatrix}\sin m\theta_0 \\ \sin m\theta_0 \\ \sin m\theta_1 \\ \sin m\theta_1\end{bmatrix}$$
 
-"邻位交换取负"——把每对 ![(q_{2i+1}, q_{2i+2})](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/7ce7335b.jpg) 变成 ![(-q_{2i+2}, q_{2i+1})](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/395af865.jpg)——是 HuggingFace LLaMA 实现里的相邻配对方式。还有另一种等价实现：把整个向量**前半段和后半段**对应配对，维度 ![i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b1677f94.jpg) 和维度 ![i + d_h/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/714dd583.jpg) 配成一对：
+"邻位交换取负"——把每对 $(q_{2i+1}, q_{2i+2})$ 变成 $(-q_{2i+2}, q_{2i+1})$——是 HuggingFace LLaMA 实现里的相邻配对方式。还有另一种等价实现：把整个向量**前半段和后半段**对应配对，维度 $i$ 和维度 $i + d_h/2$ 配成一对：
 
 ```
 import torch
@@ -243,11 +244,11 @@ def apply_rope(q, k, cos, sin):
            (k * cos) + (rotate_half(k) * sin)
 ```
 
-以 ![d_h = 4](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/eef654e5.jpg)，位置 ![m](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/f79ab5c4.jpg) 为例展开：前半 `x1 = [q₁, q₂]`，后半 `x2 = [q₃, q₄]`，`rotate_half(q) = [-q₃, -q₄, q₁, q₂]`。cos 表为 `[cos(mθ₀), cos(mθ₁), cos(mθ₀), cos(mθ₁)]`，结果：![(q_1, q_3)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/29afc2cc.jpg) 配对旋转 ![m\theta_0](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/d5835510.jpg)，![(q_2, q_4)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/c63deb0b.jpg) 配对旋转 ![m\theta_1](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/bf2c8a21.jpg)。和相邻配对只是分组方式不同，**数学性质完全一致**。
+以 $d_h = 4$，位置 $m$ 为例展开：前半 `x1 = [q₁, q₂]`，后半 `x2 = [q₃, q₄]`，`rotate_half(q) = [-q₃, -q₄, q₁, q₂]`。cos 表为 `[cos(mθ₀), cos(mθ₁), cos(mθ₀), cos(mθ₁)]`，结果：$(q_1, q_3)$ 配对旋转 $m\theta_0$，$(q_2, q_4)$ 配对旋转 $m\theta_1$。和相邻配对只是分组方式不同，**数学性质完全一致**。
 
 **为什么用前后切两半，而不像 sinusoidal 那样奇偶间隔？**
 
-sinusoidal 的相邻配对（维度 ![2i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/6ad1e5e4.jpg) 和 ![2i+1](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/96435bd5.jpg)）需要"隔一个取一个"，实现稍复杂。前后切两半只需要一次 chunk 操作，逻辑更清晰——因为频率查找表是把 ![d_h/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/4fe1c387.jpg) 个频率直接重复两遍，前半段和后半段天然共享相同频率，只需做整块交换。
+sinusoidal 的相邻配对（维度 $2i$ 和 $2i+1$）需要"隔一个取一个"，实现稍复杂。前后切两半只需要一次 chunk 操作，逻辑更清晰——因为频率查找表是把 $d_h/2$ 个频率直接重复两遍，前半段和后半段天然共享相同频率，只需做整块交换。
 
 cos/sin 查找表的预计算：
 
@@ -269,7 +270,7 @@ def build_rope_cache(head_dim: int, max_seq_len: int = 512, base: float = 10000.
 
 ### 5.3 与 KV Cache 的配合
 
-RoPE 和 KV cache 配合得天衣无缝。Prefill 阶段一次性处理 prompt，每个位置 ![t](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/3b1922fd.jpg) 的 K 在生成时编码了位置 ![t](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/3b1922fd.jpg) 的旋转并缓存。Decode 阶段新 token 在位置 `past_len`，只需对新的 Q、K 施加该位置的旋转：
+RoPE 和 KV cache 配合得天衣无缝。Prefill 阶段一次性处理 prompt，每个位置 $t$ 的 K 在生成时编码了位置 $t$ 的旋转并缓存。Decode 阶段新 token 在位置 `past_len`，只需对新的 Q、K 施加该位置的旋转：
 
 ```
 cos_table, sin_table = build_rope_cache(head_dim)
@@ -285,9 +286,9 @@ k_full = torch.cat([k_cache, k_rope_new], dim=2)
 
 历史 K 不动（已编好各自位置的旋转），新 Q 旋转到当前位置，做 attention 时：
 
-![\\\langle \mathbf{q}_m^{\text{rope}},\ \mathbf{k}_n^{\text{rope}} \rangle = f(\mathbf{q}, \mathbf{k},\ m - n)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/2bf79de3.jpg)
+$$\langle \mathbf{q}_m^{\text{rope},\ \mathbf{k}_n^{\text{rope} \rangle = f(\mathbf{q}, \mathbf{k},\ m - n)$$
 
-相对距离 ![(m-n)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/9c541860.jpg) 自动从旋转角度之差中来，**不需要对历史 K 重新编码，cache 可以直接复用**。这也是为什么 prefix sharing（前缀 KV 共享）在 RoPE 模型里能正确工作：只要前缀从位置 0 开始，其 KV 就和任何共享同一前缀的请求完全一致。
+相对距离 $(m-n)$ 自动从旋转角度之差中来，**不需要对历史 K 重新编码，cache 可以直接复用**。这也是为什么 prefix sharing（前缀 KV 共享）在 RoPE 模型里能正确工作：只要前缀从位置 0 开始，其 KV 就和任何共享同一前缀的请求完全一致。
 
 ---
 
@@ -295,12 +296,12 @@ k_full = torch.cat([k_cache, k_rope_new], dim=2)
 
 ![](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/91328362.jpg)
 
-**为什么 sin/cos 要配对用，不能全用 sin？** 因为 ![\sin(a)\sin(b) + \cos(a)\cos(b) = \cos(a-b)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/388bb66e.jpg)，配对后内积只剩相对位置差。全用 sin 的话，积化和差会多出 ![\cos(a+b)](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/8aa5cd62.jpg) 项，绝对位置混进来了。
+**为什么 sin/cos 要配对用，不能全用 sin？** 因为 $\sin(a)\sin(b) + \cos(a)\cos(b) = \cos(a-b)$，配对后内积只剩相对位置差。全用 sin 的话，积化和差会多出 $\cos(a+b)$ 项，绝对位置混进来了。
 
-**为什么 position embedding 跟维度索引 ![i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b1677f94.jpg) 也有关？** 每对维度充当不同频率的计时器，高频区分相邻 token，低频感知长程结构。如果所有维度用同一频率，不同位置的编码会碰撞。
+**为什么 position embedding 跟维度索引 $i$ 也有关？** 每对维度充当不同频率的计时器，高频区分相邻 token，低频感知长程结构。如果所有维度用同一频率，不同位置的编码会碰撞。
 
-**RoPE 从 2D 到 ![d_h](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/c5f90a97.jpg) 维怎么扩展？** 把 ![d_h](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/c5f90a97.jpg) 维切成 ![d_h/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/4fe1c387.jpg) 对，每对独立做 2D 旋转，每对频率不同——就是 2D 的简单重复，合在一起是块对角矩阵。
+**RoPE 从 2D 到 $d_h$ 维怎么扩展？** 把 $d_h$ 维切成 $d_h/2$ 对，每对独立做 2D 旋转，每对频率不同——就是 2D 的简单重复，合在一起是块对角矩阵。
 
-**代码里的 `rotate_half` 为什么直接前后切两半？** 前后半段配对是一种等价的分组方式（维度 ![i](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/b1677f94.jpg) 和 ![i+d_h/2](/assets/img/marsggbo/2026-04-29-说人话理解-RoPE从-sincos-位置编码到旋转矩阵一次讲清楚/bef33431.jpg) 配对），`chunk(2, dim=-1)` + `cat([-x2, x1])` 比相邻配对实现更简洁，数学性质完全一样。
+**代码里的 `rotate_half` 为什么直接前后切两半？** 前后半段配对是一种等价的分组方式（维度 $i$ 和 $i+d_h/2$ 配对），`chunk(2, dim=-1)` + `cat([-x2, x1])` 比相邻配对实现更简洁，数学性质完全一样。
 
 欢迎评论区讨论，有理解不对的地方也欢迎指出。

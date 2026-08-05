@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "《Transformer Quality in Linear Time》论文解读"
-date: 2023-06-24
+date: '2023-06-24'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/639135451
@@ -16,7 +17,7 @@ toc:
 
 原本的Transformer的Block遵循如下的设计范式：MHSA（多头自注意力）+ 一层或者两层的FFN（全连接层），如下图所示。我们只考虑FFN的话，其数学表达式如下：T表示句子长度，d表示词向量维度（也表示模型隐藏层维度），e表示expanded intermediate 特征大小。
 
-![{\cal O}=\phi(X W_{u})W_{o}\mathrm{\~Where\~}\,\, X\in\mathbb{R}^{T\times d}, W _{u}\in\mathbb{R}^{d\times e},W_{o}\in\mathbb{R}^{e\times d} \\](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6874334c.jpg)
+$${\cal O}=\phi(X W_{u})W_{o}\mathrm{Where}\,\, X\in\mathbb{R}^{T\times d}, W _{u}\in\mathbb{R}^{d\times e},W_{o}\in\mathbb{R}^{e\times d}$$
 
 ![](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/ed1c599d.jpg)
 
@@ -32,9 +33,9 @@ toc:
 
 上图左边的GLU结构的数学表达式如下：
 
-![\begin{array}{l l}{{U=\phi_{u}(X W_{u}),}}&{{V=\phi_{v}(X W_{v})}}\\ {{{O}=\left(U \odot V\right)W_{o}}}\tag{1}\end{array} ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/224cc22c.jpg)
+$$\begin{array}{l l}{U=\phi_{u}(X W_{u}),}&{V=\phi_{v}(X W_{v})}\\ {O}=\left(U \odot V\right)W_{o}\tag{1}\end{array}$$
 
-其中![U,V\in\mathbb{R}^{T\times e}，O\in\mathbb{R}^{T\times d}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/9955fa9c.jpg)
+其中$U,V\in\mathbb{R}^{T\times e}，O\in\mathbb{R}^{T\times d}$
 
 ## **3. GAU（Gated Attention Unit）**
 
@@ -46,13 +47,13 @@ toc:
 
 GAU的数学表达式如下：
 
-![{O}=(U\odot\hat{V})W_{o}\quad\mathrm{where}\quad\hat{V}=A V \tag{2} ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/cee663e1.jpg)
+$${O}=(U\odot\hat{V})W_{o}\quad\mathrm{where}\quad\hat{V}=A V \tag{2}$$
 
 其中
 
-![\begin{array}{l l}{{Z=\phi_{z}(X W_{z})}}&{{\qquad\in\mathbb{R}^{T\times s} }}\\ {{A=\operatorname{relu}^{2}\left(\mathcal{Q}(Z)\mathcal{K}(Z)^{\top}+b\right)}}&{{\qquad\in\mathbb{R}^{T\times T} }}\tag{3}\end{array} ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/5ca1df0e.jpg)
+$$\begin{array}{l l}{Z=\phi_{z}(X W_{z})}&{\qquad\in\mathbb{R}^{T\times s} }\\ {A=\operatorname{relu}^{2}\left(\mathcal{Q}(Z)\mathcal{K}(Z)^{\top}+b\right)}&{\qquad\in\mathbb{R}^{T\times T} }\tag{3}\end{array}$$
 
-可以看到在计算注意力矩阵A用到的Q和K是基于共享的矩阵Z计算得到的，![\mathcal{Q}(Z), \mathcal{K}(Z)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/0cc999a0.jpg)都是对矩阵Z做per-dim的归一化，类似于LayerNorm。得到注意力A后，还要经过ReLU激活函数，然后取二次方，即![relu^2](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/435c7daf.jpg)，这个是在《[Primer: Searching for Efficient Transformers for Language Modeling](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2109.08668)》论文中用NAS搜索出来的。
+可以看到在计算注意力矩阵A用到的Q和K是基于共享的矩阵Z计算得到的，$\mathcal{Q}(Z), \mathcal{K}(Z)$都是对矩阵Z做per-dim的归一化，类似于LayerNorm。得到注意力A后，还要经过ReLU激活函数，然后取二次方，即$relu^2$，这个是在《[Primer: Searching for Efficient Transformers for Language Modeling](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2109.08668)》论文中用NAS搜索出来的。
 
 ## **3.1 参数量比较**
 
@@ -60,12 +61,12 @@ GAU的数学表达式如下：
 
 * MHSA+MLP/GLU
 
-+ MHSA: Q, K, V对应的映射模块权重均为 ![h\times d\times d/h=d^2](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/52504c40.jpg) *,最后MHSA的Dense层的权重参数量也是* ![d^2 ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/1f8eb6b4.jpg) ，所以MHSA的参数量为4![d^2 ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/1f8eb6b4.jpg)
-+ MLP: 通常是两个全连接层，每个的权重参数量为d*e,一般e=4d，所以MLP模块的权重参数量为* ![2(d*e)=2 (d*4d)=8d^2](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/5ca5eab0.jpg)
-+ GLU: 如果采用GLU结构，那么权重参数量则为 ![3*d*e=12d^2](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/e83eeea0.jpg)
++ MHSA: Q, K, V对应的映射模块权重均为 $h\times d\times d/h=d^2$ *,最后MHSA的Dense层的权重参数量也是* $d^2$ ，所以MHSA的参数量为4$d^2$
++ MLP: 通常是两个全连接层，每个的权重参数量为d*e,一般e=4d，所以MLP模块的权重参数量为* $2(d*e)=2 (d*4d)=8d^2$
++ GLU: 如果采用GLU结构，那么权重参数量则为 $3*d*e=12d^2$
 + 总结：如果采用MHSA+MLP，则参数量是12*d*d；如果采用MHSA+GLU，则参数量是16*d*d
 
-* GAU参数量为3*d*e+d*s。通常s会远远小于d,所以参数量近似为3*d*e。改论文中，作者设置e=2d,那么GAU模块的参数量则为* ![6d^2](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/bab3d1ae.jpg) 。换言之两个GAU级联后的参数量等价于MHSA+MLP。
+* GAU参数量为3*d*e+d*s。通常s会远远小于d,所以参数量近似为3*d*e。改论文中，作者设置e=2d,那么GAU模块的参数量则为* $6d^2$ 。换言之两个GAU级联后的参数量等价于MHSA+MLP。
 
 ## **3.2 计算复杂度比较**
 
@@ -75,35 +76,35 @@ GAU的数学表达式如下：
 
 图4 GAU和Transformer实验结果对比
 
-但是，仔细分析一下，我们会发现GAU的计算复杂度和原本的自注意力机制一样，仍旧是句子长度的二次方，即![O(T^2)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/eace77f5.jpg)。
+但是，仔细分析一下，我们会发现GAU的计算复杂度和原本的自注意力机制一样，仍旧是句子长度的二次方，即$O(T^2)$。
 
 下面我们分析一下二次复杂度的来源，GAU和原始的自注意力机制的计算都可以用如下的数学公式表示：
 
-![A=\phi(QK^T)V \\](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/b1b113f3.jpg)
+$$A=\phi(QK^T)V$$
 
-在原始的自注意力机制中，激活函数![\phi](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/a84b1e00.jpg)是softmax，而在GAU中是![ReLU^2](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/403ef57f.jpg)。矩阵![Q, K\in\mathbb{R}^{T\times d}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/2c93938f.jpg)，二者矩阵乘法的复杂度为![O(T\times d \times T)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/d5ffaf1b.jpg),如果只考虑句子长度，我们可以将d忽视，所以复杂度为![O(T^2)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/eace77f5.jpg).
+在原始的自注意力机制中，激活函数$\phi$是softmax，而在GAU中是$ReLU^2$。矩阵$Q, K\in\mathbb{R}^{T\times d}$，二者矩阵乘法的复杂度为$O(T\times d \times T)$,如果只考虑句子长度，我们可以将d忽视，所以复杂度为$O(T^2)$.
 
 后续的一些尝试将复杂度降低至线性复杂度的方法的思路如下所示：
 
-![\phi(QK^T)V\rightarrow(\phi_q(Q)\phi_k(K)^T)V=\phi_q(Q)(\phi_k(K)^TV) \\](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6323566f.jpg)
+$$\phi(QK^T)V\rightarrow(\phi_q(Q)\phi_k(K)^T)V=\phi_q(Q)(\phi_k(K)^TV)$$
 
-简而言之就是尝试将矩阵![K^T](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/912d76bc.jpg)和![V](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/0f3111bb.jpg)先做矩阵乘法，这样一来它们的复杂度则为![O(d\times T \times d)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/1813e3a1.jpg)，得到大小为![\mathbb{R}^{d\times d}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/1d87c2d6.jpg)的矩阵，该矩阵再和![Q](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/7eb07b99.jpg)相乘，计算复杂度同样是![O(d\times T \times d)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/1813e3a1.jpg)。
+简而言之就是尝试将矩阵$K^T$和$V$先做矩阵乘法，这样一来它们的复杂度则为$O(d\times T \times d)$，得到大小为$\mathbb{R}^{d\times d}$的矩阵，该矩阵再和$Q$相乘，计算复杂度同样是$O(d\times T \times d)$。
 
 ## **3.3 推理阶段的复杂度**
 
 我们接下来考虑推理时GAU的复杂度。
 
-我们知道GAU会先算![M=K^TV](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/d09d4130.jpg)，然后再计算![QM](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/32b42094.jpg)，所以我们先着重分析一下矩阵![M](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/4d1c242a.jpg)的计算。
+我们知道GAU会先算$M=K^TV$，然后再计算$QM$，所以我们先着重分析一下矩阵$M$的计算。
 
-由于推理阶段采用的是自回归的解码方式，也就是说K和V的长度（即词数量）是从1逐渐增加到T的。考虑t时刻的情况，要得到矩阵![M_t](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/ed43d5ac.jpg), 我们需要![O(d*t*d)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/85122252.jpg)的计算复杂度，随着t逐渐从1增加到T，计算复杂度是不断增加的，换言之计算复杂度是![O(Td^2)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/5fd46cd0.jpg)。
+由于推理阶段采用的是自回归的解码方式，也就是说K和V的长度（即词数量）是从1逐渐增加到T的。考虑t时刻的情况，要得到矩阵$M_t$, 我们需要$O(d*t*d)$的计算复杂度，随着t逐渐从1增加到T，计算复杂度是不断增加的，换言之计算复杂度是$O(Td^2)$。
 
-这里其实有一个计算上的技巧，即我们需要先存储上一次的结果![M_{t-1}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/74bde1e4.jpg)。当到t时刻的时候，我们计算出新词的![K_t,V_t\in\mathbb{R}^{1\times d}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/24347d2b.jpg)向量，然后计算![K_t^TV_t\in\mathbb{R}^{d\times d}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/635b2066.jpg)，最后将这个值和![M_{t-1}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/74bde1e4.jpg)累加即可得到![M_t](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/ed43d5ac.jpg)，即
+这里其实有一个计算上的技巧，即我们需要先存储上一次的结果$M_{t-1}$。当到t时刻的时候，我们计算出新词的$K_t,V_t\in\mathbb{R}^{1\times d}$向量，然后计算$K_t^TV_t\in\mathbb{R}^{d\times d}$，最后将这个值和$M_{t-1}$累加即可得到$M_t$，即
 
-![M_t=M_{t-1}+K_t^TV_t \tag{4} ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/18ff1415.jpg)
+$$M_t=M_{t-1}+K_t^TV_t \tag{4}$$
 
-简而言之，每个时刻（即有新的词输入的时候），只需要计算新词的![K_t^TV_t](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/800747bd.jpg)即可，因此空间复杂度是![O(d^2)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/78e43a8a.jpg)，计算复杂度始终保持为![O(d^2)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/78e43a8a.jpg)，相比于原来的![O(Td^2)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/5fd46cd0.jpg)计算复杂度有了明显改进。
+简而言之，每个时刻（即有新的词输入的时候），只需要计算新词的$K_t^TV_t$即可，因此空间复杂度是$O(d^2)$，计算复杂度始终保持为$O(d^2)$，相比于原来的$O(Td^2)$计算复杂度有了明显改进。
 
-上述这种计算技巧在推理阶段非常有效，可以很巧妙地降低计算复杂度。但是，在训练阶段就会有问题了，因为这个技巧是基于自回归的特点设计的，也就是说推理阶段就像RNN一样，每次只新增一个单词，无需考虑并行性。训练阶段输入的数据一般是大小为![b\times T\times d](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6453c2ec.jpg)的张量，如果想采用上面的计算技巧，那么训练阶段的输入就需要像推理阶段一样，显然这会得不偿失，因为这样无法并行计算了。
+上述这种计算技巧在推理阶段非常有效，可以很巧妙地降低计算复杂度。但是，在训练阶段就会有问题了，因为这个技巧是基于自回归的特点设计的，也就是说推理阶段就像RNN一样，每次只新增一个单词，无需考虑并行性。训练阶段输入的数据一般是大小为$b\times T\times d$的张量，如果想采用上面的计算技巧，那么训练阶段的输入就需要像推理阶段一样，显然这会得不偿失，因为这样无法并行计算了。
 
 ## **4. Mixed Chunk Attention**
 
@@ -113,43 +114,33 @@ GAU的数学表达式如下：
 
 图5 三种不同注意力计算方法
 
-上面图中每个圆圈代表一个单词的词向量，中间的正方形表示![M_t=M_{t-1}+K_t^TV_t](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/376eb1e4.jpg)。
+上面图中每个圆圈代表一个单词的词向量，中间的正方形表示$M_t=M_{t-1}+K_t^TV_t$。
 
-图（top）表示原始的注意力机制计算方法，每次计算注意力矩阵的复杂度是![O(T^2d)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/3890d85b.jpg)。
+图（top）表示原始的注意力机制计算方法，每次计算注意力矩阵的复杂度是$O(T^2d)$。
 
-图（middle）即表示通过公式(4)可以复用前一时刻的结果，将计算复杂度降低至![O(d^2)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/78e43a8a.jpg)，但是在这种类似RNN的计算方式缺乏并行性，很难在训练阶段使用
+图（middle）即表示通过公式(4)可以复用前一时刻的结果，将计算复杂度降低至$O(d^2)$，但是在这种类似RNN的计算方式缺乏并行性，很难在训练阶段使用
 
-图（bottom）则做了这种，所以称作mixed chunk attention （MCA）。假设输入序列维度是![b\times T\times d](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6453c2ec.jpg)，后面为避免符号太多，我们省略batch size，即![b](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/111cf5c2.jpg)。由图（bottom）可以看到，MCA其实就是将原来的一个句子划分成![G](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/53777947.jpg)个chunk，每个chunk包含![C](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/b75975e6.jpg)个单词（该论文取![C=256](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/dd46840f.jpg)），也就是说原来的句子长度![T=G\times C](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6a362e46.jpg)。所以原本的输入序列![T\times d\rightarrow G\times C\times d](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/fbe27e63.jpg)。原本的GAU模块转变成了如下图：
+图（bottom）则做了这种，所以称作mixed chunk attention （MCA）。假设输入序列维度是$b\times T\times d$，后面为避免符号太多，我们省略batch size，即$b$。由图（bottom）可以看到，MCA其实就是将原来的一个句子划分成$G$个chunk，每个chunk包含$C$个单词（该论文取$C=256$），也就是说原来的句子长度$T=G\times C$。所以原本的输入序列$T\times d\rightarrow G\times C\times d$。原本的GAU模块转变成了如下图：
 
 ![](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/d14c2a4e.jpg)
 
 图6 Mixed Chunk Attention
 
-为方便理解，我们只考虑单个chunk，那么对于第![g](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/ac4bed4b.jpg)个chunk，则中间结果![U_g\in\mathbb{R}^{C\times e},V_g\in\mathbb{R}^{C\times e},Z_g\in\mathbb{R}^{C\times s},](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/24f677b6.jpg)其中Q，K矩阵是基于共享的![Z_g](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/d9d62c14.jpg)采用不同的放射变化得到的，具体而言会有两套Q，K矩阵：
+为方便理解，我们只考虑单个chunk，那么对于第$g$个chunk，则中间结果$U_g\in\mathbb{R}^{C\times e},V_g\in\mathbb{R}^{C\times e},Z_g\in\mathbb{R}^{C\times s},$其中Q，K矩阵是基于共享的$Z_g$采用不同的放射变化得到的，具体而言会有两套Q，K矩阵：
 
-* 一套用于计算local Attention的复杂度为二次方的![Q_g^{quad},K_g^{quad}\in\mathbb{R}^{C\times s}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/4a5bcf36.jpg)。如图5（bottom）最下面那一行圆圈所示，每两个圆圈之间会计算彼此之间的注意力矩阵，这其实可以理解成一种稀疏的注意力，其计算公式如下
+* 一套用于计算local Attention的复杂度为二次方的$Q_g^{quad},K_g^{quad}\in\mathbb{R}^{C\times s}$。如图5（bottom）最下面那一行圆圈所示，每两个圆圈之间会计算彼此之间的注意力矩阵，这其实可以理解成一种稀疏的注意力，其计算公式如下
 
-![\hat{V}_g^{quad}=relu^2(Q_g^{quad}K_g^{quad}+B)V_g \tag{5} ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/d859ab8d.jpg)
+$$\hat{V}_g^{quad}=relu^2(Q_g^{quad}K_g^{quad}+B)V_g \tag{5}$$
 
-单个chunk的local Attention的计算中的![Q_g^{quad}K_g^{quad}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/2c8efeba.jpg)计算复杂度为![O(C^2s)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/1fde6816.jpg)，计算得到的结果与矩阵![V_g](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/4ee81d44.jpg)相乘的计算复杂度为![O(C^2e)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/50a2d3f7.jpg)，因为$s<
+单个chunk的local Attention的计算中的$Q_g^{quad}K_g^{quad}$计算复杂度为$O(C^2s)$，计算得到的结果与矩阵$V_g$相乘的计算复杂度为$O(C^2e)$，因为$s<
 
-* 另一套是用于计算global Attention的复杂度为线性的![Q_g^{lin},K_g^{lin}\in\mathbb{R}^{C\times s}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/36a59909.jpg)。我们其实可以将图5（bottom）最下面每两个圆圈视为一个圆圈，就像图5（middle）一样。此时计算global Attention可以分成两种情况：训练和推理，或者也可以称作Non-Causal和Causal。Causal表示因果，即下一个单词的预测依赖前面的输入，这就对应推理。两种情况的具体计算公式如下：
+* 另一套是用于计算global Attention的复杂度为线性的$Q_g^{lin},K_g^{lin}\in\mathbb{R}^{C\times s}$。我们其实可以将图5（bottom）最下面每两个圆圈视为一个圆圈，就像图5（middle）一样。此时计算global Attention可以分成两种情况：训练和推理，或者也可以称作Non-Causal和Causal。Causal表示因果，即下一个单词的预测依赖前面的输入，这就对应推理。两种情况的具体计算公式如下：
 
-1. Non-Causal (适用于非自回归任务，比如完形填空、情感分类等):
+1. Non-Causal (适用于非自回归任务，比如完形填空、情感分类等):$$\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^G{K_h^{lin}^TV_h) \tag{6}$$训练阶段其实可以不用像公式(6)那样分chunk的去计算，我们其实可以直接用完整的矩阵$Q^{lin},K^{lin}\in\mathbb{R}^{T\times s}$直接计算得到公式(6)右边的累加项。
 
-![\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^G{K_h^{lin}}^TV_h) \tag{6} ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/5919971c.jpg)
+我们再看看计算复杂度，${K_h^{lin}^TV_h$的计算复杂度为$O(Cse)$，累加G个chunk，那么复杂度就是$O(GCse)=O(Tse)=O(Tsd)$。矩阵Q与KV计算的到矩阵相乘的复杂度为$O(Cse)=O(Csd)$。所以公式(6)的计算复杂度近似为$O(Tsd)$。
 
-训练阶段其实可以不用像公式(6)那样分chunk的去计算，我们其实可以直接用完整的矩阵![Q^{lin},K^{lin}\in\mathbb{R}^{T\times s}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/6bedcb55.jpg)直接计算得到公式(6)右边的累加项。
-
-我们再看看计算复杂度，![{K_h^{lin}}^TV_h](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/944f7894.jpg)的计算复杂度为![O(Cse)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/4b1cba4b.jpg)，累加G个chunk，那么复杂度就是![O(GCse)=O(Tse)=O(Tsd)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/3022552d.jpg)。矩阵Q与KV计算的到矩阵相乘的复杂度为![O(Cse)=O(Csd)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/5e5798d4.jpg)。所以公式(6)的计算复杂度近似为![O(Tsd)](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/c1e22d90.jpg)。
-
-2. Causal (适用于自回归任务，如语言翻译、语言模型、文本生产等)：
-
-![\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^{g-1}{K_h^{lin}}^TV_h) \tag{7} ](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/c2a83807.jpg)
-
-根据两套Q，K矩阵，我们可以分别求得![\hat{V}_g^{quad},\hat{V}_g^{lin}](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/c48235d5.jpg)，最后我们将二者相加得到混合注意力，最终第![g](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/ac4bed4b.jpg)个chunk的输出计算公式如下
-
-![O_g=[U_g\odot(\hat{V}_g^{quad}+\hat{V}_g^{lin})]W_o \tag{8} ](https://www.zhihu.com/equation?tex=O_g%3D%5BU_g%5Codot%28%5Chat%7BV%7D_g%5E%7Bquad%7D%2B%5Chat%7BV%7D_g%5E%7Blin%7D%29%5DW_o+%5Ctag%7B8%7D+)
+2. Causal (适用于自回归任务，如语言翻译、语言模型、文本生产等)：$$\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^{g-1}{K_h^{lin}^TV_h) \tag{7}$$根据两套Q，K矩阵，我们可以分别求得$\hat{V}_g^{quad},\hat{V}_g^{lin}$，最后我们将二者相加得到混合注意力，最终第$g$个chunk的输出计算公式如下$$O_g=[U_g\odot(\hat{V}_g^{quad}+\hat{V}_g^{lin})]W_o \tag{8}$$
 
 Mixed Chunk Attention伪代码如下：
 

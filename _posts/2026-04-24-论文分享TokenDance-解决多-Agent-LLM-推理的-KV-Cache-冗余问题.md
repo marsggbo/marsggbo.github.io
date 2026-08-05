@@ -1,7 +1,8 @@
 ---
 layout: post
 title: "【论文分享】TokenDance 解决多 Agent LLM 推理的 KV Cache 冗余问题"
-date: 2026-04-24
+date: '2026-04-24'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/2031034890666390988

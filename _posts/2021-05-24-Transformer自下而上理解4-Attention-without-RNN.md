@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Transformer自下而上理解(4) Attention without RNN"
-date: 2021-05-24
+title: Transformer自下而上理解(4) Attention without RNN
+date: '2021-05-24'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/374940241
@@ -23,29 +24,29 @@ toc:
 
 ## **1.1 Hidden state**
 
-对应到上图，隐状态![s_j](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/65bc9493.jpg)计算公式如下，
+对应到上图，隐状态$s_j$计算公式如下，
 
-![\mathrm{s}_{j}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{j}^{\prime} \\ \mathrm{s}_{j-1} \\ \mathrm{c}_{j-1} \end{array}\right]+\mathbf{b}\right) \\](https://www.zhihu.com/equation?tex=%5Cmathrm%7Bs%7D_%7Bj%7D%3D%5Ctanh+%5Cleft%28%5Cmathbf%7BA%7D%5E%7B%5Cprime%7D+%5Ccdot%5Cleft%5B%5Cbegin%7Barray%7D%7Bl%7D+%5Cmathbf%7Bx%7D_%7Bj%7D%5E%7B%5Cprime%7D+%5C%5C+%5Cmathrm%7Bs%7D_%7Bj-1%7D+%5C%5C+%5Cmathrm%7Bc%7D_%7Bj-1%7D+%5Cend%7Barray%7D%5Cright%5D%2B%5Cmathbf%7Bb%7D%5Cright%29+%5C%5C)
+$$\mathrm{s}_{j}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{j}^{\prime} \\ \mathrm{s}_{j-1} \\ \mathrm{c}_{j-1} \end{array}\right]+\mathbf{b}\right)$$
 
 ## **1.2 Context Vector**
 
-虽然看起来![s_j](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/65bc9493.jpg)只依赖于上一时刻（单词）的结果，其实其中的Context vector ![c_{j-1}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/9283c56d.jpg) 已经包含了前面单词的信息。以![c_j](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/a83d8974.jpg)的计算为例：
+虽然看起来$s_j$只依赖于上一时刻（单词）的结果，其实其中的Context vector $c_{j-1}$ 已经包含了前面单词的信息。以$c_j$的计算为例：
 
-![c_{j}=\alpha_{1j} h_{1}+\ldots \alpha_{mj} h_{m},\,\,\,\,s.t.\,\,\alpha_{ij}=align(h_i,s_j) \\](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/1f02fb0c.jpg)
+$$c_{j}=\alpha_{1j} h_{1}+\ldots \alpha_{mj} h_{m},\,\,\,\,s.t.\,\,\alpha_{ij}=align(h_i,s_j)$$
 
-上面公式中的![align](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/888111b3.jpg)可以有不同的计算方式，它计算的是![h_i](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/f73d80f7.jpg)和![s_j](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/65bc9493.jpg)的关系。注意，我们需要计算![s_j](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/65bc9493.jpg)与左边所有![\{h_i,i\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bh_i%2Ci%5Cin%5B1%2Cm%5D%5C%7D)的关系，得到对应的权重![\{\alpha_{ij},i\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7B%5Calpha_%7Bij%7D%2Ci%5Cin%5B1%2Cm%5D%5C%7D)，最后把所有的![\{h_i,i\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bh_i%2Ci%5Cin%5B1%2Cm%5D%5C%7D)加权求和就得到了第![j](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/ebe2c52d.jpg)个预测单词的特征和原句子每个单词之间的关系。
+上面公式中的$align$可以有不同的计算方式，它计算的是$h_i$和$s_j$的关系。注意，我们需要计算$s_j$与左边所有$\{h_i,i\in[1,m]\}$的关系，得到对应的权重$\{\alpha_{ij},i\in[1,m]\}$，最后把所有的$\{h_i,i\in[1,m]\}$加权求和就得到了第$j$个预测单词的特征和原句子每个单词之间的关系。
 
 ## **1.3 Q,K,V**
 
-上一节中![\alpha_{ij}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/967e8968.jpg)要通过计算![h_i](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/f73d80f7.jpg)和![s_j](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/65bc9493.jpg)之间的关系得到，一个最简单的办法就是把这两个矩阵直接相乘，但是这样一来可能会有问题：一是两个矩阵可能形状不匹配，没法直接做矩阵乘法；二是直接相乘可能并不能求出二者之间的关系。所以很自然地我们给这两个矩阵分别左乘一个矩阵![W_k](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/2ff8c361.jpg)和![W_Q](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/1836c926.jpg)，这两个矩阵的参数都是可学习的。
+上一节中$\alpha_{ij}$要通过计算$h_i$和$s_j$之间的关系得到，一个最简单的办法就是把这两个矩阵直接相乘，但是这样一来可能会有问题：一是两个矩阵可能形状不匹配，没法直接做矩阵乘法；二是直接相乘可能并不能求出二者之间的关系。所以很自然地我们给这两个矩阵分别左乘一个矩阵$W_k$和$W_Q$，这两个矩阵的参数都是可学习的。
 
-为了方便理解，下图仅以计算![align(h_i,s_j)](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/5abee859.jpg)为例。
+为了方便理解，下图仅以计算$align(h_i,s_j)$为例。
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/aa0d7a20.jpg)
 
-在实际计算的时候不会像上图一样，一个一个地去算，而是以矩阵相乘的形式计算。比如把m个![h_i](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/f73d80f7.jpg)合并成一个大矩阵![H\in\mathbb{R}^{emb\times m}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/fff23c13.jpg)，它会被左乘一个矩阵![W_K\in \mathbb{R}^{j\times emb}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/78dd3bd1.jpg)，得到![K=W_KH\in\mathbb{R}^{j\times m}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/e19fd0f5.jpg)。同理右边所有的![s](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/4aa2212c.jpg)拼接成大矩阵![S\in\mathbb{R}^{emb\times j}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/4ddd116f.jpg)，然后左乘![W_Q\in \mathbb{R}^{j\times emb}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/626ad7f3.jpg),得到![Q=W_QS\in\mathbb{R}^{j\times j}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/a01d78fe.jpg)，其中![emb](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/61cb425e.jpg)表示每个词向量映射成隐状态矢量的长度，即![h_i\in \mathbb{R}^{emb\times 1}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/0677bf39.jpg)。
+在实际计算的时候不会像上图一样，一个一个地去算，而是以矩阵相乘的形式计算。比如把m个$h_i$合并成一个大矩阵$H\in\mathbb{R}^{emb\times m}$，它会被左乘一个矩阵$W_K\in \mathbb{R}^{j\times emb}$，得到$K=W_KH\in\mathbb{R}^{j\times m}$。同理右边所有的$s$拼接成大矩阵$S\in\mathbb{R}^{emb\times j}$，然后左乘$W_Q\in \mathbb{R}^{j\times emb}$,得到$Q=W_QS\in\mathbb{R}^{j\times j}$，其中$emb$表示每个词向量映射成隐状态矢量的长度，即$h_i\in \mathbb{R}^{emb\times 1}$。
 
-有了![q,k](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/2108e92d.jpg),就可以计算出权重![\alpha](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/b5edc039.jpg),其实按照1.2节中的公式就能计算出![c](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/b67fcc1b.jpg)了，只不过这里将![h](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/aaaa0c45.jpg)进一步做了映射，替换成了![v](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/2bd40b4a.jpg)。
+有了$q,k$,就可以计算出权重$\alpha$,其实按照1.2节中的公式就能计算出$c$了，只不过这里将$h$进一步做了映射，替换成了$v$。
 
 这也就解释了Transformer的Attention机制中Q,K,V三个矩阵的来源了。下图给出了完整的用于SequenceToSequence的注意力机制计算示意图。
 
@@ -59,7 +60,7 @@ toc:
 
 1. Encoder和Decoder的输入
 
-可以看到Encoder和Decoder的输入长度是不一样的，这也可以理解，在做汉英翻译任务的时候，两种语言的单词数通常是不一样的。![x_1](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/1d118709.jpg)表示原句子的第一个词的embedding，通常是一个一维向量。
+可以看到Encoder和Decoder的输入长度是不一样的，这也可以理解，在做汉英翻译任务的时候，两种语言的单词数通常是不一样的。$x_1$表示原句子的第一个词的embedding，通常是一个一维向量。
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/fd3f19d9.jpg)
 
@@ -75,7 +76,7 @@ toc:
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/0bcefd37.jpg)
 
-1. 计算权重![\alpha](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/b5edc039.jpg)
+1. 计算权重$\alpha$
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/872036f7.jpg)
 
@@ -89,11 +90,11 @@ toc:
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/d5d12ec3.jpg)
 
-以此类推，我们可以计算出Decoder所有词对应的Query(![q](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/45c95dc0.jpg))和Context(![c](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/b67fcc1b.jpg))
+以此类推，我们可以计算出Decoder所有词对应的Query($q$)和Context($c$)
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/fa1ec820.jpg)
 
-有一个需要注意的地方是Decoder的输入是依赖于上一时刻的预测，比如第2个词![x_2'](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/7edca44f.jpg)通过计算得到了![c_{:2}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/73d65207.jpg)，之后会被喂给一个Softmax分类器得到一个词分布![p_2](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/47572ef0.jpg)，简单理解就是类似于分类任务，每个词会有不同的置信度，假如我们选择置信度最高的词，然后该词就会作为下一次输入，即![x_3'](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/e05204b1.jpg)。
+有一个需要注意的地方是Decoder的输入是依赖于上一时刻的预测，比如第2个词$x_2'$通过计算得到了$c_{:2}$，之后会被喂给一个Softmax分类器得到一个词分布$p_2$，简单理解就是类似于分类任务，每个词会有不同的置信度，假如我们选择置信度最高的词，然后该词就会作为下一次输入，即$x_3'$。
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/8275a047.jpg)
 
@@ -123,11 +124,11 @@ toc:
 
 1. 权重
 
-如果要计算第![i](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/b1677f94.jpg)个单词和其他单词之间的权重，就只需要拿第![i](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/b1677f94.jpg)个单词的Query![q_{:i}](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/512f0b37.jpg)和所有单词的Key![\{k_{:,j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bk_%7B%3A%2Cj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)进行计算。
+如果要计算第$i$个单词和其他单词之间的权重，就只需要拿第$i$个单词的Query$q_{:i}$和所有单词的Key$\{k_{:,j},j\in[1,m]\}$进行计算。
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/92cb7ab6.jpg)
 
-在真实代码实现的时候，其实就是![Softmax(K^TQ)](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/d47e2609.jpg)就完事了，得到如下图的结果
+在真实代码实现的时候，其实就是$Softmax(K^TQ)$就完事了，得到如下图的结果
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/9b3af143.jpg)
 
@@ -137,7 +138,7 @@ toc:
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/f53b1e45.jpg)
 
-同理，在真实代码层面，也是直接计算![V \cdot Softmax(K^TQ)](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/34109fad.jpg)就可以得到所有的![\{c_{:j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bc_%7B%3Aj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)
+同理，在真实代码层面，也是直接计算$V \cdot Softmax(K^TQ)$就可以得到所有的$\{c_{:j},j\in[1,m]\}$
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/2fa90e00.jpg)
 

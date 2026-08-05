@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Detectron2源码阅读笔记-（三）Dataset pipeline"
-date: 2019-10-23
+title: Detectron2源码阅读笔记-（三）Dataset pipeline
+date: '2019-10-23'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/88149772

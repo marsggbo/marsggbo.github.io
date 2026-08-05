@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Andrew Ng机器学习课程笔记--week9(下)（推荐系统&协同过滤）"
-date: 2020-07-30
+title: Andrew Ng机器学习课程笔记--week9(下)（推荐系统&协同过滤）
+date: '2020-07-30'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/165343529
@@ -64,12 +65,12 @@ toc:
 
 上面的分数表示用户对该电影的评分（0~5分，？表示未获得评分数据） 为方便下面叙述，对如下符号进行说明：
 
-* ![n_u](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/30fe3895.jpg)：表示用户数量
-* ![n_m](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/b13f0ef6.jpg)：表示电影数量
+* $n_u$：表示用户数量
+* $n_m$：表示电影数量
 * r(i,j)：如果等于1则表示用户j对电影i进行了评分
-* ![y^{(i,j)}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/b6a908d4.jpg)：表示用户j对电影i的评分
+* $y^{(i,j)}$：表示用户j对电影i的评分
 
-上面例子中可以知道 ![n_u=4 \quad n_m=5 \quad y^{(1,1)}=5](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/ef9e315a.jpg)
+上面例子中可以知道 $n_u=4 \quad n_m=5 \quad y^{(1,1)}=5$
 
 ### **2）Content Based Recommendations(基于内容的推荐)**
 
@@ -79,25 +80,25 @@ toc:
 
 由上表可知每部电影都可以用一组特征向量表示：
 
-* 每一步电影都加上一个额外的特征，即 ![x_0=1](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/2efeb925.jpg)
-* 每部电影都有一个(3,1)的特征向量，例如第一部电影（Love at last）：![x^{(1)}=[1,0.9,0.1]^T](https://www.zhihu.com/equation?tex=x%5E%7B%281%29%7D%3D%5B1%2C0.9%2C0.1%5D%5ET)
-* 对于所有数据我们有数据特征向量组为![\{x^{(1)},x^{(2)},x^{(3)},x^{(4)},x^{(5)}\}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/4b70c8c1.jpg)
-* **2.特征权重θ** 用户j对电影i的评分预测可以表示为![(θ^j)^Tx^i=stars](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/0ef9ad61.jpg)
+* 每一步电影都加上一个额外的特征，即 $x_0=1$
+* 每部电影都有一个(3,1)的特征向量，例如第一部电影（Love at last）：$x^{(1)}=[1,0.9,0.1]^T$
+* 对于所有数据我们有数据特征向量组为$\{x^{(1)},x^{(2)},x^{(3)},x^{(4)},x^{(5)}\}$
+* **2.特征权重θ** 用户j对电影i的评分预测可以表示为$(θ^j)^Tx^i=stars$
 * **3. 线性回归预测**
 
 和线性回归一样，可以得到如下优化目标函数:
 
 * 对单个用户而言
 
-![\min_{θ^{(j)}}\frac{1}{2}\sum_{i;r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 + \frac{λ}{2}\sum_{k=1}^n (θ_k^{(j)})^2  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/b9d1067c.jpg)
+$$\min_{θ^{(j)}\frac{1}{2}\sum_{i;r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 + \frac{λ}{2}\sum_{k=1}^n (θ_k^{(j)})^2$$
 
 * 对所有用户而言
 
-![\min_{θ^{(1)},...,θ^{(n_u)}}\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 + \frac{λ}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n (θ_k^{(j)})^2  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/c6cb0fba.jpg)
+$$\min_{θ^{(1)},...,θ^{(n_u)}\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 + \frac{λ}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n (θ_k^{(j)})^2$$
 
 应用梯度下降：
 
-![当k=0，θ_k^{(j)}:=θ_k^{(j)}-α\sum_{i:r(i,j)=1}( (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )x_k^{(i)} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/7253455b.jpg)![当k≠0，θ_k^{(j)}:=θ_k^{(j)}-α\sum_{i:r(i,j)=1}( (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )x_k^{(i)}+λθ_k^{(j)} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/54c2d68d.jpg)
+$当k=0，θ_k^{(j)}:=θ_k^{(j)}-α\sum_{i:r(i,j)=1}( (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )x_k^{(i)}$$当k≠0，θ_k^{(j)}:=θ_k^{(j)}-α\sum_{i:r(i,j)=1}( (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )x_k^{(i)}+λθ_k^{(j)}$
 
 ### **2.Collaborative Filtering(协同过滤)**
 
@@ -105,23 +106,23 @@ toc:
 
 在之前的基于内容的推荐系统中，对于每一部电影，我们都掌握了可用的特征，使用这些特征训练出了每一个用户的参数。相反地，如果我们拥有用户的参数，我们可以学习得出电影的特征。即由θ求出x。
 
-![\min_{θ^{(1)},...,θ^{(n_m)}}\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 + \frac{λ}{2}\sum_{j=1}^{n_m}\sum_{k=1}^n (θ_k^{(j)})^2  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/fa11862b.jpg)
+$$\min_{θ^{(1)},...,θ^{(n_m)}\frac{1}{2}\sum_{j=1}^{n_u}\sum_{i:r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 + \frac{λ}{2}\sum_{j=1}^{n_m}\sum_{k=1}^n (θ_k^{(j)})^2$$
 
-> 注意累计符号的上限由![n_u](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/30fe3895.jpg)变成了![n_m](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/b13f0ef6.jpg)
+> 注意累计符号的上限由$n_u$变成了$n_m$
 
 但是如果我们既没有用户的参数也没有电影的特征该怎么办？这时协同过滤就可以起作用了，只需要对优化目标函数进行改进，如下：
 
-![J(x^{(1)},...,x^{(n_m)},θ^{(1)},...,θ^{(n_u)}) = \frac{1}{2}\sum_{(i,j):r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 \\ \quad\quad\quad\quad\quad\quad\quad +\frac{λ}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n (θ_k^{(j)})^2 \\ \quad\quad\quad\quad\quad\quad\quad+ \frac{λ}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n (x_k^{(i)})^2 \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/333eff0a.jpg)
+$$J(x^{(1)},...,x^{(n_m)},θ^{(1)},...,θ^{(n_u)}) = \frac{1}{2}\sum_{(i,j):r(i,j)=1}((θ^{(j)})^Tx^{(i)}-y^{(i,j)})^2 \\ \quad\quad\quad\quad\quad\quad\quad +\frac{λ}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n (θ_k^{(j)})^2 \\ \quad\quad\quad\quad\quad\quad\quad+ \frac{λ}{2}\sum_{i=1}^{n_m}\sum_{k=1}^n (x_k^{(i)})^2$$
 
 对代价函数求偏导结果如下：
 
-![x_k^{(i)} := x_k^{(i)} - α(\sum_{j:r(i,j)=1}(   (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )θ_k^{(j)} +λx_k^{(i)}   )  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/ad52c9c4.jpg)![θ_k^{(j)} := θ_k^{(j)} - α(\sum_{i:r(i,j)=1}(   (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )x_k^{(i)} +λθ_k^{(j)}   )  \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/0af9698f.jpg)
+$x_k^{(i)} := x_k^{(i)} - α(\sum_{j:r(i,j)=1}(   (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )θ_k^{(j)} +λx_k^{(i)}   )$$θ_k^{(j)} := θ_k^{(j)} - α(\sum_{i:r(i,j)=1}(   (θ^{(j)})^Tx^{(i)}-y^{(i,j)} )x_k^{(i)} +λθ_k^{(j)}   )$
 
 协同过滤算法使用步骤如下：
 
-1. 初始 x (1) ,x (2) ,...,x (![n_m](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/b13f0ef6.jpg)) ，θ (1) ,θ (2) ,...,θ (![n_u](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/30fe3895.jpg)) 为一些随机小值
+1. 初始 x (1) ,x (2) ,...,x ($n_m$) ，θ (1) ,θ (2) ,...,θ ($n_u$) 为一些随机小值
 2. 使用梯度下降算法最小化代价函数
-3. 在训练完算法后，我们预测![(θ ^{(j)} )^ T x^{ (i)}](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/43c98a69.jpg) 为用户 j 给电影 i 的评分
+3. 在训练完算法后，我们预测$(θ ^{(j)} )^ T x^{ (i)}$ 为用户 j 给电影 i 的评分
 
 ### **3. Low Rank Matrix Factorization（低秩矩阵分解）**
 
@@ -131,13 +132,13 @@ toc:
 
 （同样的例子）很显然我们可以得到评分矩阵Y
 
-![Y= \left[     \begin{array}{cccc}       5&5&0&0 \\       5&?&?&0 \\       ?&4&0&? \\       0&0&5&4 \\       0&0&5&0 \\     \end{array} \right] \\](https://www.zhihu.com/equation?tex=Y%3D+%5Cleft%5B+++++%5Cbegin%7Barray%7D%7Bcccc%7D+++++++5%265%260%260+%5C%5C+++++++5%26%3F%26%3F%260+%5C%5C+++++++%3F%264%260%26%3F+%5C%5C+++++++0%260%265%264+%5C%5C+++++++0%260%265%260+%5C%5C+++++%5Cend%7Barray%7D+%5Cright%5D+%5C%5C)
+$$Y= \left[     \begin{array}{cccc}       5&5&0&0 \\       5&?&?&0 \\       ?&4&0&? \\       0&0&5&4 \\       0&0&5&0 \\     \end{array} \right]$$
 
 推出评分
 
-![\begin{pmatrix}      (θ^{(1)})^T(x^{(1)}) &(θ^{(2)})^T(x^{(1)})& \cdots & (θ^{(n_u)})^T(x^{(1)}) \\      (θ^{(1)})^T(x^{(2)}) &(θ^{(2)})^T(x^{(2)})& \cdots & (θ^{(n_u)})^T(x^{(2)}) \\      \vdots  & \vdots& \ddots & \vdots \\      (θ^{(1)})^T(x^{(n_m)}) &(θ^{(2)})^T(x^{(n_m)})& \cdots & (θ^{(n_u)})^T(x^{(n_m)}) \\      \end{pmatrix} \\](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/9d6ca6f7.jpg)
+$$\begin{pmatrix}      (θ^{(1)})^T(x^{(1)}) &(θ^{(2)})^T(x^{(1)})& \cdots & (θ^{(n_u)})^T(x^{(1)}) \\      (θ^{(1)})^T(x^{(2)}) &(θ^{(2)})^T(x^{(2)})& \cdots & (θ^{(n_u)})^T(x^{(2)}) \\      \vdots  & \vdots& \ddots & \vdots \\      (θ^{(1)})^T(x^{(n_m)}) &(θ^{(2)})^T(x^{(n_m)})& \cdots & (θ^{(n_u)})^T(x^{(n_m)}) \\      \end{pmatrix}$$
 
-如何寻找与电影i相关的电影j呢？满足![||x^{(i)}-x^{(j)}||](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/b7ea3e68.jpg)较小的前几部影片即可。
+如何寻找与电影i相关的电影j呢？满足$||x^{(i)}-x^{(j)}||$较小的前几部影片即可。
 
 ### **2）Implementational Detail：Mean Normalization**
 
@@ -147,15 +148,15 @@ toc:
 
 此时的评分矩阵为
 
-![Y= \left[     \begin{array}{cccc}       5&5&0&0&? \\       5&?&?&0&? \\       ?&4&0&?&? \\       0&0&5&4&? \\       0&0&5&0&? \\     \end{array} \right] \\](https://www.zhihu.com/equation?tex=Y%3D+%5Cleft%5B+++++%5Cbegin%7Barray%7D%7Bcccc%7D+++++++5%265%260%260%26%3F+%5C%5C+++++++5%26%3F%26%3F%260%26%3F+%5C%5C+++++++%3F%264%260%26%3F%26%3F+%5C%5C+++++++0%260%265%264%26%3F+%5C%5C+++++++0%260%265%260%26%3F+%5C%5C+++++%5Cend%7Barray%7D+%5Cright%5D+%5C%5C)
+$$Y= \left[     \begin{array}{cccc}       5&5&0&0&? \\       5&?&?&0&? \\       ?&4&0&?&? \\       0&0&5&4&? \\       0&0&5&0&? \\     \end{array} \right]$$
 
 首先求出每行的均值（未评分不用计算）
 
-![\mu=\left[\begin{array}{l} .5 \\ 2.5 \\ 2 \\ 2.25 \\ 1.25 \end{array}\right] \rightarrow Y=\left[\begin{array}{ccccc} 2.5 & 2.5 & -2.5 & -2.5 & ? \\ 2.5 & ? & ? & -2.5 & ? \\ ? & 2 & -2 & ? & ? \\ -2.25 & -2.25 & 2.75 & 1.75 & ? \\ -1.25 & -1.25 & 3.75 & -1.25 & ? \end{array}\right]](https://www.zhihu.com/equation?tex=%5Cmu%3D%5Cleft%5B%5Cbegin%7Barray%7D%7Bl%7D+.5+%5C%5C+2.5+%5C%5C+2+%5C%5C+2.25+%5C%5C+1.25+%5Cend%7Barray%7D%5Cright%5D+%5Crightarrow+Y%3D%5Cleft%5B%5Cbegin%7Barray%7D%7Bccccc%7D+2.5+%26+2.5+%26+-2.5+%26+-2.5+%26+%3F+%5C%5C+2.5+%26+%3F+%26+%3F+%26+-2.5+%26+%3F+%5C%5C+%3F+%26+2+%26+-2+%26+%3F+%26+%3F+%5C%5C+-2.25+%26+-2.25+%26+2.75+%26+1.75+%26+%3F+%5C%5C+-1.25+%26+-1.25+%26+3.75+%26+-1.25+%26+%3F+%5Cend%7Barray%7D%5Cright%5D)
+$$\mu=\left[\begin{array}{l} .5 \\ 2.5 \\ 2 \\ 2.25 \\ 1.25 \end{array}\right] \rightarrow Y=\left[\begin{array}{ccccc} 2.5 & 2.5 & -2.5 & -2.5 & ? \\ 2.5 & ? & ? & -2.5 & ? \\ ? & 2 & -2 & ? & ? \\ -2.25 & -2.25 & 2.75 & 1.75 & ? \\ -1.25 & -1.25 & 3.75 & -1.25 & ? \end{array}\right]$$
 
-预测值为![(θ^{(j)})^T(x^{(i)})+μ_i](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/a8473aa5.jpg)，因为优没有评分。所以化目的函数只需要![min\frac{λ}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n (θ_k^{(j)})^2](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/7f87f4e9.jpg),很显然![θ=\vec0](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week9下推荐系统协同过滤/901f3d13.jpg)，所以新增用户评分数据可初始化为均值，即
+预测值为$(θ^{(j)})^T(x^{(i)})+μ_i$，因为优没有评分。所以化目的函数只需要$min\frac{λ}{2}\sum_{j=1}^{n_u}\sum_{k=1}^n (θ_k^{(j)})^2$,很显然$θ=\vec0$，所以新增用户评分数据可初始化为均值，即
 
-![Y= \left[     \begin{array}{cccc}       5&5&0&0&2.5 \\       5&?&?&0&2.5 \\       ?&4&0&?&2 \\       0&0&5&4&2.25  \\       0&0&5&0&1.25  \\     \end{array} \right] \\](https://www.zhihu.com/equation?tex=Y%3D+%5Cleft%5B+++++%5Cbegin%7Barray%7D%7Bcccc%7D+++++++5%265%260%260%262.5+%5C%5C+++++++5%26%3F%26%3F%260%262.5+%5C%5C+++++++%3F%264%260%26%3F%262+%5C%5C+++++++0%260%265%264%262.25++%5C%5C+++++++0%260%265%260%261.25++%5C%5C+++++%5Cend%7Barray%7D+%5Cright%5D+%5C%5C)
+$$Y= \left[     \begin{array}{cccc}       5&5&0&0&2.5 \\       5&?&?&0&2.5 \\       ?&4&0&?&2 \\       0&0&5&4&2.25  \\       0&0&5&0&1.25  \\     \end{array} \right]$$
 
 ### **微信公众号：AutoML机器学习**
 

@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Transformer自下而上理解系列文章目录"
-date: 2021-05-25
+title: Transformer自下而上理解系列文章目录
+date: '2021-05-25'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/375161591

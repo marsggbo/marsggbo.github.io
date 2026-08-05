@@ -1,7 +1,8 @@
 ---
 layout: post
-title: "Pytorch Sampler详解"
-date: 2019-09-18
+title: Pytorch Sampler详解
+date: '2019-09-18'
+tags: [techniques]
 category: techniques
 grammar_cjkRuby: true
 zhihu_url: http://zhuanlan.zhihu.com/p/82985227

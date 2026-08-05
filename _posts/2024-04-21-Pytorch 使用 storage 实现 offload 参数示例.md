@@ -1,9 +1,9 @@
 ---
-title: Pytorch 使用 storage 实现 offload 参数示例
-tags: 技术,pytorch,offload,torch.Storage
-category: /techniques
 layout: post
-date: 2024-04-10 14:04:10
+title: Pytorch 使用 storage 实现 offload 参数示例
+date: '2024-04-21'
+tags: [技术, pytorch, offload, torch.Storage]
+category: techniques
 related_posts: false
 toc:
   sidebar: left
