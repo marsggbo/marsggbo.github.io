@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Andrew Ng机器学习课程笔记--week1（机器学习介绍及线性回归）
+title: "Andrew Ng机器学习课程笔记--week1（机器学习介绍及线性回归）"
 date: '2020-07-30'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: UltraOpt：比HyperOpt更强的超参优化库
+title: "UltraOpt：比HyperOpt更强的超参优化库"
 date: '2021-01-12'
 tags: [techniques]
 category: techniques

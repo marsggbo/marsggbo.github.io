@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ICLR2021 | The Intrinsic Dimension of Images and Its Impact on Learning
+title: "ICLR2021 | The Intrinsic Dimension of Images and Its Impact on Learning"
 date: '2021-12-09'
 tags: [techniques]
 category: techniques

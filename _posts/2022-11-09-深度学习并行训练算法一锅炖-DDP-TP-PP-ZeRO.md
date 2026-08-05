@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 深度学习并行训练算法一锅炖: DDP, TP, PP, ZeRO
+title: "深度学习并行训练算法一锅炖: DDP, TP, PP, ZeRO"
 date: '2022-11-09'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【GAMES101-现代计算机图形学课程笔记】Lecture 01 Overview
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture 01 Overview"
 date: '2020-04-25'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Pytorch之Dataparallel源码解析
+title: "Pytorch之Dataparallel源码解析"
 date: '2019-06-02'
 tags: [techniques]
 category: techniques

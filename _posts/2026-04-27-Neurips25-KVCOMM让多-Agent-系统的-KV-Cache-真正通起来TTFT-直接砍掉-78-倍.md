@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Neurips25 | KVCOMM：让多 Agent 系统的 KV Cache 真正“通起来”，TTFT 直接砍掉 7.8 倍
+title: "Neurips25 | KVCOMM：让多 Agent 系统的 KV Cache 真正“通起来”，TTFT 直接砍掉 7.8 倍"
 date: '2026-04-27'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 论文笔记系列-Auto-DeepLab:Hierarchical NAS
+title: "论文笔记系列-Auto-DeepLab:Hierarchical NAS"
 date: '2019-09-14'
 tags: [techniques]
 category: techniques

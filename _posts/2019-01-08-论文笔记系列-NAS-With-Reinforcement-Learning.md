@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 论文笔记系列-NAS With Reinforcement Learning
+title: "论文笔记系列-NAS With Reinforcement Learning"
 date: '2019-01-08'
 tags: [techniques]
 category: techniques

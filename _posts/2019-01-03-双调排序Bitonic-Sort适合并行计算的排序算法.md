@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 双调排序Bitonic Sort，适合并行计算的排序算法
+title: "双调排序Bitonic Sort，适合并行计算的排序算法"
 date: '2019-01-03'
 tags: [techniques]
 category: techniques

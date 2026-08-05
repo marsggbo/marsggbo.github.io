@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 当 AI 开始学会'记住'：LLM Agent 记忆系统的统一视角
+title: "当 AI 开始学会'记住'：LLM Agent 记忆系统的统一视角"
 date: '2026-04-03'
 tags: [techniques]
 category: techniques

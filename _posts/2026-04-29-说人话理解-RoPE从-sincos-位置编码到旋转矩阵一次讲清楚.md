@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 说人话理解 RoPE：从 sin/cos 位置编码到旋转矩阵，一次讲清楚
+title: "说人话理解 RoPE：从 sin/cos 位置编码到旋转矩阵，一次讲清楚"
 date: '2026-04-29'
 tags: [techniques]
 category: techniques

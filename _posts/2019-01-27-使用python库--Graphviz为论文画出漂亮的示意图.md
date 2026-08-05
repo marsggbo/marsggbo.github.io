@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 使用python库--Graphviz为论文画出漂亮的示意图
+title: "使用python库--Graphviz为论文画出漂亮的示意图"
 date: '2019-01-27'
 tags: [techniques]
 category: techniques

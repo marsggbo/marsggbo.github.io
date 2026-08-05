@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Latex表格太宽怎么办？用 sidewaystable ！
+title: "Latex表格太宽怎么办？用 sidewaystable ！"
 date: '2022-09-29'
 tags: [techniques]
 category: techniques

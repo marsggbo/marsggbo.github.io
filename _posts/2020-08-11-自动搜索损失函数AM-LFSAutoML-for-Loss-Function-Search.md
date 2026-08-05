@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 自动搜索损失函数？AM-LFS：AutoML for Loss Function Search
+title: "自动搜索损失函数？AM-LFS：AutoML for Loss Function Search"
 date: '2020-08-11'
 tags: [techniques]
 category: techniques

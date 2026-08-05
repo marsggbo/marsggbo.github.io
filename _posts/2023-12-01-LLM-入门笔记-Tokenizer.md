@@ -1,6 +1,6 @@
 ---
 layout: post
-title: LLM 入门笔记-Tokenizer
+title: "LLM 入门笔记-Tokenizer"
 date: '2023-12-01'
 tags: [techniques]
 category: techniques

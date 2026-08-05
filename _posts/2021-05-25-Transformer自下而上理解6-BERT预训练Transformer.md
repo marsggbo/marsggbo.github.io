@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Transformer自下而上理解(6) BERT：预训练Transformer
+title: "Transformer自下而上理解(6) BERT：预训练Transformer"
 date: '2021-05-25'
 tags: [techniques]
 category: techniques

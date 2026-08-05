@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Detectron2源码阅读笔记-(二)Registry&build_*方法
+title: "Detectron2源码阅读笔记-(二)Registry&build_*方法"
 date: '2019-10-15'
 tags: [techniques]
 category: techniques

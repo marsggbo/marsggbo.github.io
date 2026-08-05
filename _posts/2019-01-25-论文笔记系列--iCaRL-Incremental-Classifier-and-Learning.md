@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 论文笔记系列--iCaRL： Incremental Classifier and Learning
+title: "论文笔记系列--iCaRL： Incremental Classifier and Learning"
 date: '2019-01-25'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Python的super函数直观理解
+title: "Python的super函数直观理解"
 date: '2021-03-12'
 tags: [techniques]
 category: techniques

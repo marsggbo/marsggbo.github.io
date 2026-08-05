@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 详解Pytorch里的pin_memory 和 non_blocking
+title: "详解Pytorch里的pin_memory 和 non_blocking"
 date: '2022-03-08'
 tags: [techniques]
 category: techniques

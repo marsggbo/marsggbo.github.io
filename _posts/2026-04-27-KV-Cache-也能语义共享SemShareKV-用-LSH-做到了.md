@@ -1,6 +1,6 @@
 ---
 layout: post
-title: KV Cache 也能「语义共享」？SemShareKV 用 LSH 做到了
+title: "KV Cache 也能「语义共享」？SemShareKV 用 LSH 做到了"
 date: '2026-04-27'
 tags: [techniques]
 category: techniques

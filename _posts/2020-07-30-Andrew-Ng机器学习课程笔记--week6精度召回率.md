@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Andrew Ng机器学习课程笔记--week6(精度&召回率)
+title: "Andrew Ng机器学习课程笔记--week6(精度&召回率)"
 date: '2020-07-30'
 tags: [techniques]
 category: techniques

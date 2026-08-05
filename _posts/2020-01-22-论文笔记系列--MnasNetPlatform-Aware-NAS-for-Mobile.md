@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 论文笔记系列--MnasNet：Platform-Aware NAS for Mobile
+title: "论文笔记系列--MnasNet：Platform-Aware NAS for Mobile"
 date: '2020-01-22'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 将markdown中的Latex公式转换成知乎格式
+title: "将markdown中的Latex公式转换成知乎格式"
 date: '2019-12-24'
 tags: [techniques]
 category: techniques

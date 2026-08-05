@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Transformer自下而上（1）机器翻译之Sequence-to-Sequence模型
+title: "Transformer自下而上（1）机器翻译之Sequence-to-Sequence模型"
 date: '2021-05-24'
 tags: [techniques]
 category: techniques

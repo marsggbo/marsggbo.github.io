@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 理解Pytorch中LSTM的输入输出参数含义
+title: "理解Pytorch中LSTM的输入输出参数含义"
 date: '2019-12-31'
 tags: [techniques]
 category: techniques

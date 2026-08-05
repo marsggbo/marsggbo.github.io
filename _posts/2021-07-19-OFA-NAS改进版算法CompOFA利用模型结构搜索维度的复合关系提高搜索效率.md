@@ -1,6 +1,6 @@
 ---
 layout: post
-title: OFA-NAS改进版算法：CompOFA利用模型结构搜索维度的复合关系提高搜索效率
+title: "OFA-NAS改进版算法：CompOFA利用模型结构搜索维度的复合关系提高搜索效率"
 date: '2021-07-19'
 tags: [techniques]
 category: techniques

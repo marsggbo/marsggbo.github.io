@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【论文笔记系列】Understanding and simplifying One-Shot NAS
+title: "【论文笔记系列】Understanding and simplifying One-Shot NAS"
 date: '2020-06-26'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: LLM 学习笔记-transformers库的 PreTrainedModel 和 ModelOutput 到底是什么
+title: "LLM 学习笔记-transformers库的 PreTrainedModel 和 ModelOutput 到底是什么"
 date: '2023-12-02'
 tags: [techniques]
 category: techniques

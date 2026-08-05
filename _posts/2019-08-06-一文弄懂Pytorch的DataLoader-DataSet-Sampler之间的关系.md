@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 一文弄懂Pytorch的DataLoader, DataSet, Sampler之间的关系
+title: "一文弄懂Pytorch的DataLoader, DataSet, Sampler之间的关系"
 date: '2019-08-06'
 tags: [techniques]
 category: techniques

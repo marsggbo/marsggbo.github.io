@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Megatron-Deepspeed：用Wikipedia数据集训练GPT实战笔记
+title: "Megatron-Deepspeed：用Wikipedia数据集训练GPT实战笔记"
 date: '2023-11-26'
 tags: [techniques]
 category: techniques

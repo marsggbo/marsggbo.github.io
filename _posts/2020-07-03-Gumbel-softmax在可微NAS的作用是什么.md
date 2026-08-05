@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Gumbel softmax在可微NAS的作用是什么？
+title: "Gumbel softmax在可微NAS的作用是什么？"
 date: '2020-07-03'
 tags: [techniques]
 category: techniques

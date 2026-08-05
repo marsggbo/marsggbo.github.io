@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Transformer自下而上(2) 注意力（Attention）机制
+title: "Transformer自下而上(2) 注意力（Attention）机制"
 date: '2021-05-24'
 tags: [techniques]
 category: techniques

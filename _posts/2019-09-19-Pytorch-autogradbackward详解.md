@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Pytorch autograd,backward详解
+title: "Pytorch autograd,backward详解"
 date: '2019-09-19'
 tags: [techniques]
 category: techniques

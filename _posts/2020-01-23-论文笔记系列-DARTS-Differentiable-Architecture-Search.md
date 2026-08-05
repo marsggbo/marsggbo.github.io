@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 论文笔记系列-DARTS: Differentiable Architecture Search
+title: "论文笔记系列-DARTS: Differentiable Architecture Search"
 date: '2020-01-23'
 tags: [techniques]
 category: techniques

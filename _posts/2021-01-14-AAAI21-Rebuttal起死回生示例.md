@@ -1,6 +1,6 @@
 ---
 layout: post
-title: AAAI21-Rebuttal起死回生示例
+title: "AAAI21-Rebuttal起死回生示例"
 date: '2021-01-14'
 tags: [techniques]
 category: techniques

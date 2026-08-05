@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ICLR2020 | Decoupling representation and classifier for long-tailed recognition
+title: "ICLR2020 | Decoupling representation and classifier for long-tailed recognition"
 date: '2022-01-02'
 tags: [techniques]
 category: techniques

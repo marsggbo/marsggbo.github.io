@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【GAMES101-现代计算机图形学课程笔记】Lecture 07 Shading (着色&漫反射)
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture 07 Shading (着色&漫反射)"
 date: '2020-04-28'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【GAMES101-现代计算机图形学课程笔记】Lecture 09 Shading 3 （纹理映射）
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture 09 Shading 3 （纹理映射）"
 date: '2020-05-27'
 tags: [techniques]
 category: techniques

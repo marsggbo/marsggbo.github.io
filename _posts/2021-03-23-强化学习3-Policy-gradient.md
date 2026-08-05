@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 强化学习3-Policy gradient
+title: "强化学习3-Policy gradient"
 date: '2021-03-23'
 tags: [techniques]
 category: techniques

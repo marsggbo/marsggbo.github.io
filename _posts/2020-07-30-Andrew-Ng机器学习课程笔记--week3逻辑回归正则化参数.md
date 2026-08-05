@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Andrew Ng机器学习课程笔记--week3（逻辑回归&正则化参数）
+title: "Andrew Ng机器学习课程笔记--week3（逻辑回归&正则化参数）"
 date: '2020-07-30'
 tags: [techniques]
 category: techniques

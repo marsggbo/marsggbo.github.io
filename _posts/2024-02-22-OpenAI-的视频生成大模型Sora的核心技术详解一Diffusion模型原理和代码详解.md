@@ -1,6 +1,6 @@
 ---
 layout: post
-title: OpenAI 的视频生成大模型Sora的核心技术详解（一）：Diffusion模型原理和代码详解
+title: "OpenAI 的视频生成大模型Sora的核心技术详解（一）：Diffusion模型原理和代码详解"
 date: '2024-02-22'
 tags: [techniques]
 category: techniques

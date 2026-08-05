@@ -1,6 +1,6 @@
 ---
 layout: post
-title: torchline：让Pytorch使用的更加顺滑
+title: "torchline：让Pytorch使用的更加顺滑"
 date: '2019-12-13'
 tags: [techniques]
 category: techniques

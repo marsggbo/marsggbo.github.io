@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 贝叶斯优化(Bayesian Optimization)深入理解
+title: "贝叶斯优化(Bayesian Optimization)深入理解"
 date: '2019-01-02'
 tags: [techniques]
 category: techniques

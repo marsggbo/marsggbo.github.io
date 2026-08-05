@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 多 Agent 协作不需要说「人话」？LatentMAS 让 LLM 在隐空间里直接协作
+title: "多 Agent 协作不需要说「人话」？LatentMAS 让 LLM 在隐空间里直接协作"
 date: '2026-04-27'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Andrew Ng机器学习课程笔记--week2（多元线性回归&正规公式）
+title: "Andrew Ng机器学习课程笔记--week2（多元线性回归&正规公式）"
 date: '2020-07-30'
 tags: [techniques]
 category: techniques

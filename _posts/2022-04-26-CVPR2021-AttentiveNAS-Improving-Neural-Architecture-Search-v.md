@@ -1,6 +1,6 @@
 ---
 layout: post
-title: [CVPR2021] AttentiveNAS： Improving Neural Architecture Search via Attentive Sampling
+title: "[CVPR2021] AttentiveNAS： Improving Neural Architecture Search via Attentive Sampling"
 date: '2022-04-26'
 tags: [techniques]
 category: techniques

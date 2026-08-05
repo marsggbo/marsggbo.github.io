@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 《Transformer Quality in Linear Time》论文解读
+title: "《Transformer Quality in Linear Time》论文解读"
 date: '2023-06-24'
 tags: [techniques]
 category: techniques

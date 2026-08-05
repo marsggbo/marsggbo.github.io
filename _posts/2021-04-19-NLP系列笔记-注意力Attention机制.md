@@ -1,6 +1,6 @@
 ---
 layout: post
-title: NLP系列笔记-注意力（Attention）机制
+title: "NLP系列笔记-注意力（Attention）机制"
 date: '2021-04-19'
 tags: [techniques]
 category: techniques

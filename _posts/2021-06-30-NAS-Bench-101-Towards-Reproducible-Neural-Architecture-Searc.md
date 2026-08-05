@@ -1,6 +1,6 @@
 ---
 layout: post
-title: NAS-Bench-101: Towards Reproducible Neural Architecture Search
+title: "NAS-Bench-101: Towards Reproducible Neural Architecture Search"
 date: '2021-06-30'
 tags: [techniques]
 category: techniques

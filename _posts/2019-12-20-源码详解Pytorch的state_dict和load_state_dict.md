@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 源码详解Pytorch的state_dict和load_state_dict
+title: "源码详解Pytorch的state_dict和load_state_dict"
 date: '2019-12-20'
 tags: [techniques]
 category: techniques

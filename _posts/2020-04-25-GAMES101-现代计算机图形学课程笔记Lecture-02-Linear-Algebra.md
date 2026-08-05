@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【GAMES101-现代计算机图形学课程笔记】Lecture 02 Linear Algebra
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture 02 Linear Algebra"
 date: '2020-04-25'
 tags: [techniques]
 category: techniques

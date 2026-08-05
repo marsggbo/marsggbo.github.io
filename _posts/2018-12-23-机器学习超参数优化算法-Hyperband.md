@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 机器学习超参数优化算法-Hyperband
+title: "机器学习超参数优化算法-Hyperband"
 date: '2018-12-23'
 tags: [techniques]
 category: techniques

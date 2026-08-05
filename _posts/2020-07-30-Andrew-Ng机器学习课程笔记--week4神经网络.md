@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Andrew Ng机器学习课程笔记--week4(神经网络)
+title: "Andrew Ng机器学习课程笔记--week4(神经网络)"
 date: '2020-07-30'
 tags: [techniques]
 category: techniques

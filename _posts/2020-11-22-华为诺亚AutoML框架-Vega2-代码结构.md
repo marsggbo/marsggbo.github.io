@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 华为诺亚AutoML框架-Vega：(2) 代码结构
+title: "华为诺亚AutoML框架-Vega：(2) 代码结构"
 date: '2020-11-22'
 tags: [techniques]
 category: techniques

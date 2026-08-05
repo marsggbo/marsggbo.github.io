@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【论文笔记系列】AutoML：A Survey of State-of-the-art （下）
+title: "【论文笔记系列】AutoML：A Survey of State-of-the-art （下）"
 date: '2020-02-11'
 tags: [techniques]
 category: techniques

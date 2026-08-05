@@ -1,6 +1,6 @@
 ---
 layout: post
-title: NVIDIA GPU Cloud (NGC)集群使用笔记
+title: "NVIDIA GPU Cloud (NGC)集群使用笔记"
 date: '2022-06-27'
 tags: [techniques]
 category: techniques

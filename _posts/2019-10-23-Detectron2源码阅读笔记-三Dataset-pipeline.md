@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Detectron2源码阅读笔记-（三）Dataset pipeline
+title: "Detectron2源码阅读笔记-（三）Dataset pipeline"
 date: '2019-10-23'
 tags: [techniques]
 category: techniques

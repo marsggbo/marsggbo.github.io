@@ -1,6 +1,6 @@
 ---
 layout: post
-title: AutoML: A Survey of the state-of-the-art
+title: "AutoML: A Survey of the state-of-the-art"
 date: '2019-08-09'
 tags: [techniques]
 category: techniques

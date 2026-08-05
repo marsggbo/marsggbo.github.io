@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 搜索一次就完事 Once for all: Train One Network and Specialize it for Efficient Deployment
+title: "搜索一次就完事 Once for all: Train One Network and Specialize it for Efficient Deployment"
 date: '2021-07-19'
 tags: [techniques]
 category: techniques

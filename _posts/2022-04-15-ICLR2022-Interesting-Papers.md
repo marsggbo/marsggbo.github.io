@@ -1,6 +1,6 @@
 ---
 layout: post
-title: ICLR2022 Interesting Papers
+title: "ICLR2022 Interesting Papers"
 date: '2022-04-15'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【GAMES101-现代计算机图形学课程笔记】Lecture04 Transformation(续)
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture04 Transformation(续)"
 date: '2020-04-25'
 tags: [techniques]
 category: techniques

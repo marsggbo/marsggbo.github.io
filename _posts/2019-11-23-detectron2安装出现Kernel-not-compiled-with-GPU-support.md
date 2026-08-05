@@ -1,6 +1,6 @@
 ---
 layout: post
-title: detectron2安装出现Kernel not compiled with GPU support
+title: "detectron2安装出现Kernel not compiled with GPU support"
 date: '2019-11-23'
 tags: [techniques]
 category: techniques

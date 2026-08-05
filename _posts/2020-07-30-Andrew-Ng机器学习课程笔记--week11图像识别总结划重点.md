@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Andrew Ng机器学习课程笔记--week11（图像识别&总结划重点）
+title: "Andrew Ng机器学习课程笔记--week11（图像识别&总结划重点）"
 date: '2020-07-30'
 tags: [techniques]
 category: techniques

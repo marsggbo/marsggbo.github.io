@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 本地机器如何访问服务器上的docker容器内的tensorboard？
+title: "本地机器如何访问服务器上的docker容器内的tensorboard？"
 date: '2020-09-16'
 tags: [techniques]
 category: techniques

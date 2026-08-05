@@ -1,6 +1,6 @@
 ---
 layout: post
-title: GAMES201：高级物理引擎实战指南-Lecture 1 Taichi编程语言介绍
+title: "GAMES201：高级物理引擎实战指南-Lecture 1 Taichi编程语言介绍"
 date: '2020-06-02'
 tags: [techniques]
 category: techniques

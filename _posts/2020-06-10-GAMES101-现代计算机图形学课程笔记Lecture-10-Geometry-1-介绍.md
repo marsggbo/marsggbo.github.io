@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【GAMES101-现代计算机图形学课程笔记】Lecture 10 Geometry 1 （介绍）
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture 10 Geometry 1 （介绍）"
 date: '2020-06-10'
 tags: [techniques]
 category: techniques

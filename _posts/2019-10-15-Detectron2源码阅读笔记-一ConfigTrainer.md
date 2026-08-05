@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Detectron2源码阅读笔记-(一)Config&Trainer
+title: "Detectron2源码阅读笔记-(一)Config&Trainer"
 date: '2019-10-15'
 tags: [techniques]
 category: techniques

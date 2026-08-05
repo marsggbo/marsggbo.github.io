@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 为什么可逆矩阵又叫“非奇异矩阵(non-singular matrix)”?
+title: "为什么可逆矩阵又叫“非奇异矩阵(non-singular matrix)”?"
 date: '2018-12-24'
 tags: [techniques]
 category: techniques

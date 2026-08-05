@@ -1,6 +1,6 @@
 ---
 layout: post
-title: NLP系列笔记-机器翻译之Sequence-to-Sequence模型
+title: "NLP系列笔记-机器翻译之Sequence-to-Sequence模型"
 date: '2021-04-18'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Self-attention 计算 QK^T 为什么要缩放？
+title: "Self-attention 计算 QK^T 为什么要缩放？"
 date: '2024-05-03'
 tags: [techniques]
 category: techniques

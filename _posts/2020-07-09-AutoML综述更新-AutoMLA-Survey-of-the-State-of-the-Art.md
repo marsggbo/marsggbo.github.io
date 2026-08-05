@@ -1,6 +1,6 @@
 ---
 layout: post
-title: AutoML综述更新 【AutoML：A Survey of the State-of-the-Art】
+title: "AutoML综述更新 【AutoML：A Survey of the State-of-the-Art】"
 date: '2020-07-09'
 tags: [techniques]
 category: techniques

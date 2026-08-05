@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 写完 Markdown 还要手动排版？我写了个 VS Code 插件一键搞定微信公众号、知乎、小红书
+title: "写完 Markdown 还要手动排版？我写了个 VS Code 插件一键搞定微信公众号、知乎、小红书"
 date: '2026-04-27'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 显卡，显卡驱动,nvcc, cuda driver,cudatoolkit,cudnn到底是什么？
+title: "显卡，显卡驱动,nvcc, cuda driver,cudatoolkit,cudnn到底是什么？"
 date: '2019-11-11'
 tags: [techniques]
 category: techniques

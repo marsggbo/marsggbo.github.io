@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Slurm集群下如何远程连接Jupyter并使用GPU资源？
+title: "Slurm集群下如何远程连接Jupyter并使用GPU资源？"
 date: '2022-07-28'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 华为诺亚实验室AutoML框架-Vega：(1) 介绍
+title: "华为诺亚实验室AutoML框架-Vega：(1) 介绍"
 date: '2020-09-23'
 tags: [techniques]
 category: techniques

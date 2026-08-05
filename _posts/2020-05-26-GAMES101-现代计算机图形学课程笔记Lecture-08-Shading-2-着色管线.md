@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 【GAMES101-现代计算机图形学课程笔记】Lecture 08 Shading 2 （着色管线）
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture 08 Shading 2 （着色管线）"
 date: '2020-05-26'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Transformer自下而上理解(4) Attention without RNN
+title: "Transformer自下而上理解(4) Attention without RNN"
 date: '2021-05-24'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 强化学习1-基础概念(state,action,reward,policy)
+title: "强化学习1-基础概念(state,action,reward,policy)"
 date: '2021-03-21'
 tags: [techniques]
 category: techniques

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Github Actions教程：运行python代码并Push到远端仓库
+title: "Github Actions教程：运行python代码并Push到远端仓库"
 date: '2019-12-24'
 tags: [techniques]
 category: techniques
@@ -29,6 +29,7 @@ toc:
 
 action代码设置如下：
 
+{% raw %}
 ```yaml
 name: Python application
 
@@ -65,6 +66,7 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
+{% endraw %}
 
 代码解释：
 

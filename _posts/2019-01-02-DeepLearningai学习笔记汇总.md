@@ -1,6 +1,6 @@
 ---
 layout: post
-title: DeepLearning.ai学习笔记汇总
+title: "DeepLearning.ai学习笔记汇总"
 date: '2019-01-02'
 tags: [techniques]
 category: techniques

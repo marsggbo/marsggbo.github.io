@@ -1,6 +1,6 @@
 ---
 layout: post
-title: Pytorch Sampler详解
+title: "Pytorch Sampler详解"
 date: '2019-09-18'
 tags: [techniques]
 category: techniques

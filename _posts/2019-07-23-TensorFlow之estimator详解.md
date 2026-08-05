@@ -1,6 +1,6 @@
 ---
 layout: post
-title: TensorFlow之estimator详解
+title: "TensorFlow之estimator详解"
 date: '2019-07-23'
 tags: [techniques]
 category: techniques

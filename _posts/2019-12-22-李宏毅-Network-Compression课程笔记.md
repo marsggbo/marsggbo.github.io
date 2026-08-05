@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 李宏毅-Network Compression课程笔记
+title: "李宏毅-Network Compression课程笔记"
 date: '2019-12-22'
 tags: [techniques]
 category: techniques
