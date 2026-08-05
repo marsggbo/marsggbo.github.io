@@ -4,6 +4,6 @@ module.exports = {
   output: "_site/assets/css/",
   skippedContentGlobs: ["_site/assets/**/*.html"],
   safelist: {
-    greedy: [/post-content/],
+    greedy: [/post-content/, /^topic-/, /^tree-/, /^graph-/, /^blog-/, /^view-/, /^pagefind/, /active$/, /open$/],
   },
 };

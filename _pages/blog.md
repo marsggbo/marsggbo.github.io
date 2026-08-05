@@ -29,9 +29,19 @@ pagination:
   </div>
   {% endif %}
 
+  <!-- ===== Toolbar: search + view switch ===== -->
+  <div class="blog-toolbar">
+    <div id="blog-search"></div>
+    <div class="view-switch" id="view-switch">
+      <button data-view="list" class="active"><i class="fa-solid fa-list fa-sm"></i> 列表</button>
+      <button data-view="topics"><i class="fa-solid fa-sitemap fa-sm"></i> 主题浏览</button>
+      <button data-view="graph"><i class="fa-solid fa-circle-nodes fa-sm"></i> 知识图谱</button>
+    </div>
+  </div>
+
 {% if site.display_tags or site.display_categories %}
 
-  <div class="tag-category-list">
+  <div class="tag-category-list blog-view-list-only">
     <ul class="p-0 m-0">
       {% for tag in site.display_tags %}
         <li>
@@ -55,6 +65,11 @@ pagination:
     </ul>
   </div>
   {% endif %}
+
+  <!-- ===== VIEW 1: paginated timeline list (default, server-rendered) ===== -->
+  <div class="blog-view active" id="view-list">
+
+  <!-- BLOG_LIST_PLACEHOLDER -->
 
 {% assign featured_posts = site.posts | where: "featured", "true" %}
 {% if featured_posts.size > 0 %}
@@ -187,4 +202,30 @@ pagination:
 {% include pagination.liquid %}
 {% endif %}
 
+
+  </div>
+
+  <!-- ===== VIEW 2: topic browse (tree sidebar + cards) ===== -->
+  <div class="blog-view" id="view-topics">
+    <div class="tree-layout">
+      <nav class="tree-sidebar" id="tree-sidebar"></nav>
+      <div id="topic-cards-box"></div>
+    </div>
+  </div>
+
+  <div class="blog-view" id="view-graph">
+    <div class="graph-wrap">
+      <div class="graph-legend" id="graph-legend"></div>
+      <div class="graph-controls" id="graph-controls">
+        <button data-z="in" title="放大">+</button>
+        <button data-z="out" title="缩小">&minus;</button>
+        <button data-z="reset" title="复位">&#8634;</button>
+      </div>
+      <svg id="blog-graph" viewBox="0 0 900 560"></svg>
+    </div>
+    <p class="graph-hint">滚轮缩放、拖动空白处平移；悬停节点会高亮同主题与直接相关的文章、其余淡出；点击节点打开文章。</p>
+  </div>
+
 </div>
+
+{% include scripts/blog_views.liquid %}

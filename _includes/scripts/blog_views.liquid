@@ -1,0 +1,332 @@
+<!-- Pagefind search + multi-view blog logic -->
+<link href="{{ '/pagefind/pagefind-ui.css' | relative_url }}" rel="stylesheet" />
+<script src="{{ '/pagefind/pagefind-ui.js' | relative_url }}" type="text/javascript"></script>
+
+<script>
+  (function () {
+    "use strict";
+
+    // ---------- Pagefind search ----------
+    function initSearch() {
+      if (typeof PagefindUI === "undefined") return;
+      new PagefindUI({
+        element: "#blog-search",
+        showSubResults: true,
+        showImages: false,
+        pageSize: 8,
+        translations: {
+          placeholder: "搜索文章（支持模糊匹配）",
+          zero_results: "没有找到与 [SEARCH_TERM] 相关的文章",
+          many_results: "找到 [COUNT] 篇与 [SEARCH_TERM] 相关的文章",
+          one_result: "找到 [COUNT] 篇与 [SEARCH_TERM] 相关的文章",
+        },
+      });
+    }
+    if (document.readyState !== "loading") initSearch();
+    else document.addEventListener("DOMContentLoaded", initSearch);
+
+    // ---------- view switch ----------
+    var VIEW_KEY = "blogPreferredView";
+    var switchBox = document.getElementById("view-switch");
+    var buttons = switchBox ? switchBox.querySelectorAll("button") : [];
+    var built = { topics: false, graph: false };
+    var POSTS = null;
+
+    function activate(view) {
+      buttons.forEach(function (b) {
+        b.classList.toggle("active", b.dataset.view === view);
+      });
+      ["list", "topics", "graph"].forEach(function (v) {
+        var el = document.getElementById("view-" + v);
+        if (el) el.classList.toggle("active", v === view);
+      });
+      document.querySelectorAll(".blog-view-list-only").forEach(function (el) {
+        el.style.display = view === "list" ? "" : "none";
+      });
+      try { localStorage.setItem(VIEW_KEY, view); } catch (e) {}
+      if (view !== "list") ensureData(function () { buildView(view); });
+    }
+
+    buttons.forEach(function (b) {
+      b.addEventListener("click", function () { activate(b.dataset.view); });
+    });
+
+    // ---------- data loading ----------
+    function ensureData(cb) {
+      if (POSTS) { cb(); return; }
+      var url = "{{ '/blog/posts.json' | relative_url }}";
+      fetch(url)
+        .then(function (r) { return r.json(); })
+        .then(function (data) { POSTS = data; cb(); })
+        .catch(function (e) { console.error("blog posts.json load failed", e); });
+    }
+
+    function buildView(view) {
+      if (view === "topics" && !built.topics) { buildTopics(); built.topics = true; }
+      if (view === "graph" && !built.graph) { buildGraph(); built.graph = true; }
+    }
+
+    function esc(s) {
+      return (s || "").replace(/[&<>"]/g, function (c) {
+        return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;" }[c];
+      });
+    }
+
+    function groupByTopic() {
+      var map = {};
+      POSTS.forEach(function (p) {
+        var t = p.topic || "未分类";
+        (map[t] = map[t] || []).push(p);
+      });
+      return Object.keys(map)
+        .sort(function (a, b) { return map[b].length - map[a].length; })
+        .map(function (k) { return { name: k, posts: map[k] }; });
+    }
+
+    // ---------- VIEW 2: topic browse (tree sidebar + cards panel) ----------
+    function renderTopicCards(group) {
+      var box = document.getElementById("topic-cards-box");
+      var html = '<div class="topic-group"><h2>' + esc(group.name) +
+        '<span class="count">' + group.posts.length + "</span></h2>" +
+        '<div class="topic-cards">';
+      group.posts.forEach(function (p) {
+        html += '<div class="topic-card"><h4><a href="' + esc(p.url) + '">' +
+          esc(p.title) + "</a></h4>" +
+          '<div class="meta">' + esc(p.date) + "</div>" +
+          (p.desc ? "<p style='font-size:.8rem;color:var(--global-text-color-light);margin:0 0 .5rem'>" + esc(p.desc) + "</p>" : "") +
+          p.tags.slice(0, 3).map(function (t) {
+            return '<span class="blog-chip">#' + esc(t) + "</span>";
+          }).join("") +
+          "</div>";
+      });
+      html += "</div></div>";
+      box.innerHTML = html;
+    }
+
+    function buildTopics() {
+      var sb = document.getElementById("tree-sidebar");
+      var groups = groupByTopic();
+      var html = "";
+      groups.forEach(function (g, gi) {
+        html += '<div class="tree-sec">' +
+          '<div class="tree-sec-head" data-topic="' + gi + '">' +
+          '<span>' + esc(g.name) + " (" + g.posts.length + ")</span>" +
+          '<span class="arrow">&rsaquo;</span></div></div>';
+      });
+      sb.innerHTML = html;
+      var heads = sb.querySelectorAll(".tree-sec-head");
+      function select(gi) {
+        heads.forEach(function (h) {
+          h.parentElement.classList.toggle("open", h.dataset.topic === String(gi));
+        });
+        renderTopicCards(groups[gi]);
+      }
+      heads.forEach(function (h) {
+        h.addEventListener("click", function () { select(h.dataset.topic); });
+      });
+      if (groups.length) select(0); // open first topic by default
+    }
+
+    // ---------- VIEW 3: knowledge graph (dependency-free force layout) ----------
+    function buildGraph() {
+      var svg = document.getElementById("blog-graph");
+      var NS = "http://www.w3.org/2000/svg";
+      var W = 900, H = 560;
+      var palette = ["#B45309", "#1f7a5a", "#3b5bdb", "#8a4bd6", "#c2255c",
+                     "#0b7285", "#d9480f", "#5c940d", "#5f3dc4", "#a61e4d"];
+      var groups = groupByTopic();
+      var topicColor = {};
+      groups.forEach(function (g, i) { topicColor[g.name] = palette[i % palette.length]; });
+
+      // nodes = posts, seeded near topic centroids
+      var nodes = POSTS.map(function (p) {
+        var gi = groups.findIndex(function (g) { return g.name === p.topic; });
+        var cx = 150 + (gi % 4) * 200, cy = 140 + Math.floor(gi / 4) * 180;
+        return { p: p, x: cx + (Math.random() * 120 - 60), y: cy + (Math.random() * 120 - 60),
+                 color: topicColor[p.topic] || "#888", topic: p.topic, adj: [] };
+      });
+      // links = shared-tag between posts
+      var links = [];
+      var linkCount = {};
+      for (var i = 0; i < nodes.length; i++) {
+        for (var j = i + 1; j < nodes.length; j++) {
+          var shared = nodes[i].p.tags.filter(function (t) {
+            return nodes[j].p.tags.indexOf(t) !== -1;
+          });
+          if (shared.length >= 2 && (linkCount[i] || 0) < 5 && (linkCount[j] || 0) < 5) {
+            links.push({ s: nodes[i], t: nodes[j] });
+            nodes[i].adj.push(nodes[j]); nodes[j].adj.push(nodes[i]);
+            linkCount[i] = (linkCount[i] || 0) + 1;
+            linkCount[j] = (linkCount[j] || 0) + 1;
+          }
+        }
+      }
+
+      // node radius by degree (more connected = bigger)
+      nodes.forEach(function (n) { n.r = 5 + Math.min(6, n.adj.length); });
+
+      for (var it = 0; it < 240; it++) {
+        links.forEach(function (l) {
+          var dx = l.t.x - l.s.x, dy = l.t.y - l.s.y, d = Math.hypot(dx, dy) || 1;
+          var f = (d - 55) / d * 0.04;
+          l.s.x += dx * f; l.s.y += dy * f; l.t.x -= dx * f; l.t.y -= dy * f;
+        });
+        for (var a = 0; a < nodes.length; a++) {
+          for (var b = a + 1; b < nodes.length; b++) {
+            var na = nodes[a], nb = nodes[b];
+            var dx2 = nb.x - na.x, dy2 = nb.y - na.y, d2 = Math.hypot(dx2, dy2) || 1;
+            var min = na.r + nb.r + 8;
+            if (d2 < min) {
+              var f2 = (min - d2) / d2 * 0.5;
+              na.x -= dx2 * f2; na.y -= dy2 * f2; nb.x += dx2 * f2; nb.y += dy2 * f2;
+            }
+          }
+        }
+        nodes.forEach(function (n) {
+          n.x = Math.max(20, Math.min(W - 20, n.x));
+          n.y = Math.max(20, Math.min(H - 20, n.y));
+        });
+      }
+
+      // ----- build SVG with a zoom/pan viewport group -----
+      svg.innerHTML = "";
+      var vp = document.createElementNS(NS, "g");
+      svg.appendChild(vp);
+
+      var svgLinks = [];
+      links.forEach(function (l) {
+        var ln = document.createElementNS(NS, "line");
+        ln.setAttribute("x1", l.s.x); ln.setAttribute("y1", l.s.y);
+        ln.setAttribute("x2", l.t.x); ln.setAttribute("y2", l.t.y);
+        ln.setAttribute("stroke", "var(--global-divider-color)");
+        ln.setAttribute("stroke-width", "1");
+        vp.appendChild(ln);
+        svgLinks.push({ el: ln, l: l });
+      });
+
+      nodes.forEach(function (n) {
+        var c = document.createElementNS(NS, "circle");
+        c.setAttribute("cx", n.x); c.setAttribute("cy", n.y); c.setAttribute("r", n.r);
+        c.setAttribute("fill", n.color); c.setAttribute("opacity", "0.85");
+        c.setAttribute("class", "graph-node-c");
+        vp.appendChild(c);
+        n.el = c;
+      });
+
+      // ----- fast custom tooltip (single reused div) -----
+      var tip = document.getElementById("graph-tip");
+      if (!tip) {
+        tip = document.createElement("div");
+        tip.id = "graph-tip";
+        tip.className = "graph-tip";
+        svg.parentElement.appendChild(tip);
+      }
+
+      // ----- hover: highlight same-topic + neighbors, dim others -----
+      function highlight(n) {
+        var keep = {};
+        keep[n.p.title] = 1;
+        n.adj.forEach(function (m) { keep[m.p.title] = 1; });
+        nodes.forEach(function (m) {
+          var on = m === n || m.topic === n.topic || keep[m.p.title];
+          m.el.setAttribute("opacity", on ? "1" : "0.12");
+          m.el.setAttribute("stroke", m === n ? "var(--global-text-color)" : "none");
+          m.el.setAttribute("stroke-width", m === n ? "2" : "0");
+        });
+        svgLinks.forEach(function (o) {
+          var on = o.l.s === n || o.l.t === n;
+          o.el.setAttribute("stroke-opacity", on ? "0.9" : "0.05");
+          o.el.setAttribute("stroke", on ? o.l.s.color : "var(--global-divider-color)");
+        });
+      }
+      function clearHi() {
+        nodes.forEach(function (m) {
+          m.el.setAttribute("opacity", "0.85");
+          m.el.setAttribute("stroke-width", "0");
+        });
+        svgLinks.forEach(function (o) {
+          o.el.setAttribute("stroke-opacity", "1");
+          o.el.setAttribute("stroke", "var(--global-divider-color)");
+        });
+      }
+
+      nodes.forEach(function (n) {
+        n.el.addEventListener("mouseenter", function (e) {
+          highlight(n);
+          tip.textContent = n.p.title + "  ·  " + n.topic;
+          tip.style.display = "block";
+        });
+        n.el.addEventListener("mousemove", function (e) {
+          var pr = svg.parentElement.getBoundingClientRect();
+          tip.style.left = (e.clientX - pr.left + 12) + "px";
+          tip.style.top = (e.clientY - pr.top + 12) + "px";
+        });
+        n.el.addEventListener("mouseleave", function () {
+          clearHi(); tip.style.display = "none";
+        });
+        n.el.addEventListener("click", function () {
+          if (!panned) window.location.href = n.p.url;
+        });
+      });
+
+      // ----- zoom (wheel) + pan (drag empty canvas) on the viewport -----
+      var scale = 1, tx = 0, ty = 0, panned = false;
+      function applyT() { vp.setAttribute("transform", "translate(" + tx + "," + ty + ") scale(" + scale + ")"); }
+      svg.addEventListener("wheel", function (e) {
+        e.preventDefault();
+        var rect = svg.getBoundingClientRect();
+        var mx = (e.clientX - rect.left) * (W / rect.width);
+        var my = (e.clientY - rect.top) * (H / rect.height);
+        var k = e.deltaY < 0 ? 1.12 : 1 / 1.12;
+        var ns = Math.max(0.4, Math.min(5, scale * k));
+        // zoom toward cursor
+        tx = mx - (mx - tx) * (ns / scale);
+        ty = my - (my - ty) * (ns / scale);
+        scale = ns; applyT();
+      }, { passive: false });
+
+      var dragging = false, sx0 = 0, sy0 = 0, tx0 = 0, ty0 = 0;
+      svg.addEventListener("mousedown", function (e) {
+        if (e.target.classList.contains("graph-node-c")) return; // let node handle its own
+        dragging = true; panned = false;
+        sx0 = e.clientX; sy0 = e.clientY; tx0 = tx; ty0 = ty;
+      });
+      window.addEventListener("mousemove", function (e) {
+        if (!dragging) return;
+        var rect = svg.getBoundingClientRect();
+        tx = tx0 + (e.clientX - sx0) * (W / rect.width);
+        ty = ty0 + (e.clientY - sy0) * (H / rect.height);
+        if (Math.abs(e.clientX - sx0) + Math.abs(e.clientY - sy0) > 3) panned = true;
+        applyT();
+      });
+      window.addEventListener("mouseup", function () { dragging = false; setTimeout(function () { panned = false; }, 30); });
+
+      // ----- controls (zoom buttons + reset) -----
+      var ctrl = document.getElementById("graph-controls");
+      if (ctrl) {
+        ctrl.querySelector("[data-z='in']").onclick = function () { scale = Math.min(5, scale * 1.25); applyT(); };
+        ctrl.querySelector("[data-z='out']").onclick = function () { scale = Math.max(0.4, scale / 1.25); applyT(); };
+        ctrl.querySelector("[data-z='reset']").onclick = function () { scale = 1; tx = 0; ty = 0; applyT(); };
+      }
+
+      var lg = document.getElementById("graph-legend");
+      lg.innerHTML = groups.map(function (g) {
+        return '<div class="legend-item" data-topic="' + esc(g.name) + '"><span class="dot" style="background:' +
+          topicColor[g.name] + '"></span>' + esc(g.name) + " (" + g.posts.length + ")</div>";
+      }).join("");
+      // hover legend -> highlight that whole topic
+      lg.querySelectorAll(".legend-item").forEach(function (li) {
+        li.addEventListener("mouseenter", function () {
+          var tp = li.dataset.topic;
+          nodes.forEach(function (m) { m.el.setAttribute("opacity", m.topic === tp ? "1" : "0.1"); });
+        });
+        li.addEventListener("mouseleave", clearHi);
+      });
+    }
+
+    // ---------- restore preferred view ----------
+    var pref = "list";
+    try { pref = localStorage.getItem(VIEW_KEY) || "list"; } catch (e) {}
+    if (pref !== "list") activate(pref);
+  })();
+</script>
