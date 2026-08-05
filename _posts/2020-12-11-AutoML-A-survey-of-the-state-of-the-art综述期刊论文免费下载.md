@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'AutoML: A survey of the state-of-the-art综述期刊论文免费下载'
+title: AutoML: A survey of the state-of-the-art综述期刊论文免费下载
 date: '2020-12-11'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/336049721>
 
 我们实验室的自动机器学习（Automated Machine Learning, AutoML）综述论文终于正式在Elsevier上线了！！！
 

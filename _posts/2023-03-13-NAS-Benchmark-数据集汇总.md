@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/613711139>
+
 现有NAS Benchmark 数据集汇总[1] , 如下表示。
 
 NAS Benchmark dataset提供了查询式的数据库，每个模型都有对应的性能指标和结构信息，无需训练模型权重。可以帮助更快探索不同搜索算法的效率。

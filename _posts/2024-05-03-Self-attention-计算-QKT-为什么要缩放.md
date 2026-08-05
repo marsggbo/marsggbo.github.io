@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/695762892>
+
 在使用Transformer架构中的自注意力机制时，对Query（Q）和Key（K）的点积结果进行scaling（缩放）是一种常见的技术。这种操作的目的是为了提高模型的训练稳定性和性能。以下是进行scaling的几个关键原因：
 
 * **控制方差**：当输入向量的维度很大时，向量之间的点积通常会产生很大的值。在Transformer模型中，Query和Key通常是高维空间中的向量，它们的点积结果（即注意力分数）在没有缩放的情况下可能会非常大。
@@ -24,9 +26,9 @@ toc:
 
 Softmax 函数是一种在机器学习分类任务中常用的激活函数，它可以将一个含任意实数的K维向量“压缩”成另一个K维实向量，其中每一个元素的范围都是0到1之间，并且所有元素的和为1。这使得Softmax 函数的输出可以被解释为一个概率分布。函数的定义如下：
 
-$$\text{Softmax}(z_i) = \frac{e^{z_i}{\sum_{j} e^{z_j}$$
+![\[ \text{Softmax}(z_i) = \frac{e^{z_i}}{\sum_{j} e^{z_j}} \]](https://www.zhihu.com/equation?tex=%5C%5B+%5Ctext%7BSoftmax%7D%28z_i%29+%3D+%5Cfrac%7Be%5E%7Bz_i%7D%7D%7B%5Csum_%7Bj%7D+e%5E%7Bz_j%7D%7D+%5C%5D)
 
-这里， $z_i$ 是输入向量中的第i个元素，分母是对整个输入向量的元素进行指数函数计算后求和的结果。
+这里， $\( z_i \)$ 是输入向量中的第i个元素，分母是对整个输入向量的元素进行指数函数计算后求和的结果。
 
 ### 大的注意力分数如何导致极端概率分布
 
@@ -36,9 +38,9 @@ $$\text{Softmax}(z_i) = \frac{e^{z_i}{\sum_{j} e^{z_j}$$
 
 Softmax函数的这种特性在反向传播过程中会导致梯度问题。在机器学习中，我们通过反向传播算法调整模型的参数，这一过程依赖于损失函数对模型参数的梯度。Softmax函数的梯度由下面的公式给出：
 
-$$\frac{\partial \text{Softmax}(z_i)}{\partial z_j} = \text{Softmax}(z_i)(\delta_{ij} - \text{Softmax}(z_j))$$
+![\[ \frac{\partial \text{Softmax}(z_i)}{\partial z_j} = \text{Softmax}(z_i)(\delta_{ij} - \text{Softmax}(z_j)) \]](https://www.zhihu.com/equation?tex=%5C%5B+%5Cfrac%7B%5Cpartial+%5Ctext%7BSoftmax%7D%28z_i%29%7D%7B%5Cpartial+z_j%7D+%3D+%5Ctext%7BSoftmax%7D%28z_i%29%28%5Cdelta_%7Bij%7D+-+%5Ctext%7BSoftmax%7D%28z_j%29%29+%5C%5D)
 
-其中， $\delta_{ij}$ 是克罗内克Delta函数，当 $i = j$ 时值为1，否则为0。
+其中， $\( \delta_{ij} \)$ 是克罗内克Delta函数，当 $i = j$ 时值为1，否则为0。
 
 在极端概率分布的情况下，如果某一输出概率 $\text{Softmax}(z_i)$ 接近1而其他接近0，那么这个输出概率对于大部分输入 $z_j$ 的梯度 $\text{Softmax}(z_i)(1 - \text{Softmax}(z_j))$ 将会非常小，因为 $\text{Softmax}(z_j)$ 接近0。这意味着模型在这种状态下几乎无法从数据中学习，因为梯度消失使得参数更新非常缓慢。
 

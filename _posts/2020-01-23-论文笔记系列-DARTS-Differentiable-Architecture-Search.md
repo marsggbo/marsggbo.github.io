@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '论文笔记系列-DARTS: Differentiable Architecture Search'
+title: 论文笔记系列-DARTS: Differentiable Architecture Search
 date: '2020-01-23'
 tags: [techniques]
 category: techniques
@@ -11,9 +11,11 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/103856887>
+
 ## **Summary**
 
-我的理解就是原本节点和节点之间操作是离散的，因为就是从若干个操作中选择某一个，而作者试图使用softmax和relaxation（松弛化）将操作连续化，所以模型结构搜索的任务就转变成了对连续变量$α={α^{(i,j)}$以及$w$的学习。(这里$α$可以理解成the encoding of the architecture)。
+我的理解就是原本节点和节点之间操作是离散的，因为就是从若干个操作中选择某一个，而作者试图使用softmax和relaxation（松弛化）将操作连续化，所以模型结构搜索的任务就转变成了对连续变量$α={α^{(i,j)}}$以及$w$的学习。(这里$α$可以理解成the encoding of the architecture)。
 
 之后就是迭代计算$w$和$α$，这是一个双优化问题，具体处理细节参见**[3.Approximation](https://zhuanlan.zhihu.com/write##3.Approximation)**
 
@@ -61,19 +63,27 @@ $$x^{(i)} = \sum\_{j$o^{(i,j)}$中有一个特殊的操作，即$zero$操作，�
 
 令$\mathcal{O}$表示一组候选操作集合(如卷积，最大池化等)，而每一个操作用$o(·)$表示。
 
-为了使的搜索空间连续，我们将特定操作的分类选择放宽为所有可能操作的softmax，公式如下：$$\overline{o}^{(i,j)} = \sum_{o∈\mathcal{O} \frac{exp(α_o^{(i,j)})}{\sum_{o'∈\mathcal{O} exp(α_{o'}^{(i,j)})}o(x) \tag{1}$$其中，一对节点(i，j)的操作混合权重由维度$|\mathcal{O}|$的矢量α参数化。
+为了使的搜索空间连续，我们将特定操作的分类选择放宽为所有可能操作的softmax，公式如下：
 
-经过上面公式的松弛(relaxation)之后，模型结构搜索的任务就转变成了对连续变量$α={α^{(i,j)}$的学习，那么$α$即为模型结构的编码(encoding)如下图所示。
+$$
+\overline{o}^{(i,j)} = \sum_{o∈\mathcal{O}} \frac{exp(α_o^{(i,j)})}{\sum_{o'∈\mathcal{O}} exp(α_{o'}^{(i,j)})}o(x) \tag{1}
+$$
+
+其中，一对节点(i，j)的操作混合权重由维度$|\mathcal{O}|$的矢量α参数化。
+
+经过上面公式的松弛(relaxation)之后，模型结构搜索的任务就转变成了对连续变量$α={α^{(i,j)}}$的学习，那么$α$即为模型结构的编码(encoding)如下图所示。
 
 ![](/assets/img/marsggbo/2020-01-23-论文笔记系列-DARTS-Differentiable-Architecture-Search/54034ad2.jpg)
 
-搜索到最后，我们需要通过将**最大可能操作**(即$o^{(i,j)}=argmax_{o∈\mathcal{O} \,\,α_o^{(i,j)}$)代替**混合操作**(即$\overline{o}$)从而得到一个离散的网络结构参数，
+搜索到最后，我们需要通过将**最大可能操作**(即$o^{(i,j)}=argmax_{o∈\mathcal{O}} \,\,α_o^{(i,j)}$)代替**混合操作**(即$\overline{o}$)从而得到一个离散的网络结构参数，
 
 为了在所有混合操作中共同学习体系结构α和权重w,DARTS使用梯度下降的方法来优化损失值。
 
 下面将$\mathcal{L}_{train},\mathcal{L}_{val}$分别表示训练集和验证集损失值。二者均由$α$和$w$决定。最终的优化目标是找到在满足$w^*=argmin_w \,\, \mathcal{L}_{train}(w,α)$的前提下找到使得$\mathcal{L}_{val}(w^*,α^*)$最小化的$α^*$，用公式表示如下：
 
-$min_{\,α} \,\, \mathcal{L}_{val}(w^*(α),α) \tag{1}$$s.t. \,\,\, w^*(α)=argmin_{\,w} \,\, \mathcal{L}_{train}(w,α) \tag{2}$> **s.t. = subject to**,表示需要满足后面的条件，即公式(1)需要在满足公式(2)的情况下计算
+$min_{\,α} \,\, \mathcal{L}_{val}(w^*(α),α) \tag{1}$$s.t. \,\,\, w^*(α)=argmin_{\,w} \,\, \mathcal{L}_{train}(w,α) \tag{2}$
+
+> **s.t. = subject to**,表示需要满足后面的条件，即公式(1)需要在满足公式(2)的情况下计算
 
 ## **3.Approximation**
 
@@ -85,11 +95,37 @@ $min_{\,α} \,\, \mathcal{L}_{val}(w^*(α),α) \tag{1}$$s.t. \,\,\, w^*(α)=argm
 
 算法说明:
 
-假设在第k步，给定当前网络结构$α_{k-1}$,我们通过$\mathcal{L}_{train}(w_{k-1},α_{k-1})$计算梯度更新得到$w_k$。然后固定$w_k$,通过更新网络结构$a_k$来最小化验证集损失值(公式3)，其中$\xi$表示学习率。$$\mathcal{L}_{val}(w',a_{k-1}) = \mathcal{L}_{val}(w_k-\xi \nabla_w \mathcal{L}_{train}(w_{k},α_{k-1}),a_{k-1}) \tag{3}$$网络结构梯度是通过将公式3对$α$求导得到的，结果如公式4(为方便书写，用于表示步骤的k已省略)所示：$$\nabla_α \mathcal{L}_{val}(w',α) - \xi \nabla^2_{α,w} \,  \mathcal{L}_{train}(w,α) \nabla_{w'}\mathcal{L}_{val}(w',α) \tag{4}$$公式4 推导过程如下（为避免和偏微分符号混淆，下面推导过程将β替换了α）
+假设在第k步，给定当前网络结构$α_{k-1}$,我们通过$\mathcal{L}_{train}(w_{k-1},α_{k-1})$计算梯度更新得到$w_k$。然后固定$w_k$,通过更新网络结构$a_k$来最小化验证集损失值(公式3)，其中$\xi$表示学习率。
+
+$$
+\mathcal{L}_{val}(w',a_{k-1}) = \mathcal{L}_{val}(w_k-\xi \nabla_w \mathcal{L}_{train}(w_{k},α_{k-1}),a_{k-1}) \tag{3}
+$$
+
+网络结构梯度是通过将公式3对$α$求导得到的，结果如公式4(为方便书写，用于表示步骤的k已省略)所示：
+
+$$
+\nabla_α \mathcal{L}_{val}(w',α) - \xi \nabla^2_{α,w} \,  \mathcal{L}_{train}(w,α) \nabla_{w'}\mathcal{L}_{val}(w',α) \tag{4}
+$$
+
+公式4 推导过程如下（为避免和偏微分符号混淆，下面推导过程将β替换了α）
 
 ![](/assets/img/marsggbo/2020-01-23-论文笔记系列-DARTS-Differentiable-Architecture-Search/2e306e2d.jpg)
 
-上式中的第二项包含一个矩阵向量积，这是非常难计算的。但是我们知道微分可以通过如下公式进行近似：$$f'(x)=\frac{f(x+\epsilon)-f(x-\epsilon)}{2\epsilon}$$所以有:$$\nabla^2_{α,w} \,  \mathcal{L}_{train}(w,α) \nabla_{w'}\mathcal{L}_{val}(w',α) ≈ \frac{ \nabla_α \mathcal{L}_{train}(w^+,α) - \nabla_α \mathcal{L}_{train}(w^-,α)   }{2\epsilon} \tag{7}$$其中$w^{+}=w+\epsilon \nabla_{w'}\mathcal{L}_{val}(w',α),w^{-}=w-\epsilon \nabla_{w'}\mathcal{L}_{val}(w',α)$计算有限差分只需要两次权值前传和两次向后传递(α)，复杂度从$\mathcal{O}(|α||w|)$降低为$\mathcal{O}(|α|+|w|)$。
+上式中的第二项包含一个矩阵向量积，这是非常难计算的。但是我们知道微分可以通过如下公式进行近似：
+
+$$
+f'(x)=\frac{f(x+\epsilon)-f(x-\epsilon)}{2\epsilon} \\
+$$
+
+所以有:
+
+$$
+\nabla^2_{α,w} \,  \mathcal{L}_{train}(w,α) \nabla_{w'}\mathcal{L}_{val}(w',α) ≈ \frac{ \nabla_α \mathcal{L}_{train}(w^+,α) - \nabla_α \mathcal{L}_{train}(w^-,α)   }{2\epsilon} \tag{7}
+$$
+
+其中$w^{+}=w+\epsilon \nabla_{w'}\mathcal{L}_{val}(w',α),w^{-}=w-\epsilon \nabla_{w'}\mathcal{L}_{val}(w',α)$
+
+计算有限差分只需要两次权值前传和两次向后传递(α)，复杂度从$\mathcal{O}(|α||w|)$降低为$\mathcal{O}(|α|+|w|)$。
 
 公式7推导过程如下
 

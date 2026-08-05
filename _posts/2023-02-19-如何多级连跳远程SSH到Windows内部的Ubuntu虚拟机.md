@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/607538687>
+
 ## **1. 背景**
 
 我学校有一台Windows电脑 (`x@a.b.c.d`)，里面安装了一个Ubuntu虚拟机（用户名为`y`），虚拟机里连着VPN。并且虚拟机的22端口映射到了主机的22端口。通过这个VPN我可以访问另一个远程的服务器（`z@e.f.g.h`）用于炼丹。

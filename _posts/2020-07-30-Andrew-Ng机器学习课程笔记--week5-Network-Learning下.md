@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'Andrew Ng机器学习课程笔记--week5 Network: Learning(下)'
+title: Andrew Ng机器学习课程笔记--week5 Network: Learning(下)
 date: '2020-07-30'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/165331366>
 
 Neural Networks: Learning 内容较多，故分成上下两篇文章。
 

@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/67801020>
+
 之前对Pytorch 1.0 的Dataparallel的使用方法一直似懂非懂，总是会碰到各种莫名其妙的问题，今天就好好从源头梳理一下，更好地理解它的原理或者说说下步骤。
 
 > 源码地址: [https://github.com/pytorch/pytorch/blob/master/torch/nn/parallel/data\_parallel.py](https://link.zhihu.com/?target=https%3A//github.com/pytorch/pytorch/blob/master/torch/nn/parallel/data_parallel.py)
@@ -25,7 +27,7 @@ toc:
 * 第三个if判断语句：`output_device`表示输出到哪一个GPU上，默认是第一个GPU，注意这个**第一个**是**device\_ids**列表上的第一个，所以如果你有三个GPU，而你在将model复制到cuda上时写的代码是`model.cuda(1)`或者`model.cuda(2)`，则会报错,因为`device_ids`是[0,1,2].其第一个元素是0。这一点可以在后面的`forward`函数中看到。
 * emm，后面每行代码的作用很清楚，就不再一一解释了。
 
-```
+```python
 def __init__(self, module, device_ids=None, output_device=None, dim=0):
     super(DataParallel, self).__init__()
 
@@ -55,7 +57,7 @@ def __init__(self, module, device_ids=None, output_device=None, dim=0):
 
 下面进入到重头戏：Dataparallel的forward函数。
 
-```
+```python
 def forward(self, *inputs, **kwargs):
     if not self.device_ids:
         return self.module(*inputs, **kwargs)
@@ -78,7 +80,7 @@ def forward(self, *inputs, **kwargs):
 * for循环就是对应了前面提到的问题，用于检查model和input是不是放在第一个GPU上
 * 之后下一步就是将将input平均划分到每个GPU上,用到的是下面的`scatter`函数
 
-```
+```python
 def scatter(inputs, target_gpus, dim=0):
     r"""
     Slices tensors into approximately equal chunks and

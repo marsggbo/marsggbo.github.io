@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/306462348>
+
 > Vega已更新到1.2版本，所以本教程以1.2版本为准进行介绍。  
 > Vega框架链接：[https://github.com/huawei-noah/vega](https://link.zhihu.com/?target=https%3A//github.com/huawei-noah/vega)  
 > Vega论文：VEGA: Towards an End-to-End Configurable AutoML Pipeline[1]  
@@ -82,7 +84,7 @@ Zeus的代码结构如上图所示，每个模块的作用其实可以看名字�
 
 * `config.py`: 新建了`Config`类，该类继承自`dict`,能够灵活处理`yaml`、`json`、`py`等不同格式的配置文件，同样也可以直接传入一个字典。其代码大致示例如下：
 
-```
+```python
 class Config(dict):
     def __init__(self, *args, **kwargs):
         """Init config class with multiple config files or dictionary."""
@@ -101,7 +103,7 @@ class Config(dict):
 
 * `config_serializable.py`: 该文件提供了`ConfigSerializable`类，该类的作用是提供将类序列化为`Config`的作用，比如我们定义如下类
 
-```
+```python
 class MyDatasetConf(ConfigSerializable):
   data_dir = './data/cifar10'
   batch_size = 32
@@ -122,7 +124,7 @@ MyDatasetConf.to_json()
 
 + `ClassType`：该类预先定义好了可以注册的组件类别，部分代码示例如下：
 
-```
+```python
 class ClassType(object):
 	"""Const class saved defined class type."""
 
@@ -149,7 +151,7 @@ class ClassType(object):
 
 + `ClassFactory`可以通过装饰器的方式来注册你想要复用的模块。如下面的代码示例，你自定义了一个数据集`MyDataset`和模型`MyModel`,你只需要在上面加上一行`ClassFactory.register(<class type>)`即可完成注册。
 
-```
+```python
 @ClassFactory.register(ClassType.NETWORK)
 class MyModel(...):
     ...
@@ -190,7 +192,7 @@ Zeus分别为Pytorch、TensorFlow、MindSpore三个框架实现了trainer组件�
 
 `trainer_api.py`则是将三个框架的trainer做了整合，会自动根据设置的Backend选择合适的trainer，代码示例如下：
 
-```
+```python
 # trainer_api.py
 @ClassFactory.register(ClassType.TRAINER)
 class Trainer(TrainerBase):
@@ -242,7 +244,7 @@ Vega是基于Pipeline的设计思路，这和我们实验室写的AutoML综述�
 
 为了方便理解，我把`Pipeline`代码做了简化如下进行介绍
 
-```
+```python
 class Pipeline:
     def run(self):
      for step_name in PipelineConfig.steps: # 遍历['nas', 'fully_train']
@@ -273,7 +275,7 @@ class Pipeline:
 
 这是Vega框架的运行入口,代码如下所示。可以看到在对参数进行验证处理后就会通过`_run_pipeline()`函数开始运行指定的Pipeline。
 
-```
+```python
 # vega/run.py
 def run(cfg_path):
     """Run vega automl.

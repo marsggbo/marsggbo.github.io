@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/2032224464654578464>
+
 作为一个用 Markdown 写所有东西的牛马，最烦的事情不是写文章本身，而是写完之后的"排版搬运"——
 
 微信公众号编辑器不认 Markdown，公式渲染不了，代码块丑得没法看。知乎编辑器好一点但也有各种格式丢失。小红书更别提了，想发个技术笔记还得截图……
@@ -53,7 +55,7 @@ toc:
 
 **方式二：从源码安装**
 
-```
+```bash
 git clone https://github.com/marsggbo/md2wechat.git
 cd md2wechat
 npm install
@@ -73,7 +75,9 @@ npm install
 行内公式 `$E = mc^2$` 和独立公式块都支持：
 
 ```
-$$\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}$$
+$$
+\int_{-\infty}^{\infty} e^{-x^2} dx = \sqrt{\pi}
+$$
 ```
 
 对于我们这种写技术文章动不动就要插公式的人来说，这个功能是刚需。

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'AutoML: A Survey of the state-of-the-art'
+title: AutoML: A Survey of the state-of-the-art
 date: '2019-08-09'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/77417817>
 
 ## 论文（第一版）地址：
 

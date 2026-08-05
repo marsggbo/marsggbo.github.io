@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/145392844>
+
 > 常用链接  
 >    
 > GAMES 的主页 [http://games-cn.org](https://link.zhihu.com/?target=http%3A//games-cn.org) 【201相关链接在：导航栏/在线课程/GAMES201】  
@@ -33,7 +35,7 @@ Taichi还有如下特点：
 
 ## **1. 安装Taichi**
 
-```
+```bash
 python3 -m pip install taichi
 ```
 
@@ -41,7 +43,7 @@ python3 -m pip install taichi
 
 在执行任何Taichi操作之前都需要使用对Taichi做初始化操作,例如：
 
-```
+```python
 import taichi as ti
 ti.init(arch=ti.cuda)
 ```
@@ -74,7 +76,7 @@ Tensor也就是**张量**，它是Taichi里的第一公民（first-citizen）。
 
 举例子：
 
-```
+```python
 import taichi as ti
 ti.init()
 a = ti.var(dt=ti.f32, shape=(4,3))
@@ -112,7 +114,7 @@ loss[None] = 3.0
 
 你必须使用`@ti.kernel`对函数装饰后才能使用taichi的kernel功能。而且kernel的参数和返回值必须带有类型提示，例如
 
-```
+```python
 @ti.kernel
 def hello(i: ti.i32):
  a = 40
@@ -132,7 +134,7 @@ taichi里的functions可以被kernel或者其他的function调用，但是functi
 
 例子：
 
-```
+```python
 @ti.func
 def triple(x):
  return x * 3
@@ -164,7 +166,7 @@ Taichi里有两种loop：
 
 For循环里的最外层在taichi kernel里会自动并行化。例如下面第一个例子中的for循环会自动并行化，而第二个例子中由于有一个if判断语句，所以后面的for循环就不是并行化的了。
 
-```
+```python
 @ti.kernel
 def foo():
  for i in range(10): # Parallelized :-)
@@ -179,7 +181,7 @@ def bar(k: ti.i32):
 
 ## **8.2 Struct-for loops**
 
-```
+```python
 import taichi as ti
 
 ti.init(arch=ti.gpu)
@@ -203,7 +205,7 @@ Struct-for loops会遍历如下所有的tensor坐标：(0, 0), (0, 1), (0, 2), .
 
 看下面的例子：
 
-```
+```python
 @ti.kernel
 def sum():
  for i in x:
@@ -225,7 +227,7 @@ def sum():
 >    
 >  Python-scope： taichi-scope以外的就是python scope
 
-```
+```python
 import taichi as ti
 ti.init()
 a=ti.var(dt=ti.f32,shape=(42,63)) # A tensor of 42x63 scalars
@@ -258,7 +260,7 @@ foo()
 
 目前版本中一旦启动kernel或者访问python-scope下的某个tensor后，就不能再allocate tensor。
 
-```
+```python
 import taichi as ti
 ti.init()
 
@@ -295,22 +297,14 @@ for i in range(1000000):
 
 使用`ti.init(debug=True, arch=ti.cpu)`可以帮助检查诸如**访问越界**等问题。
 
-```
+```python
 import taichi as ti
 ti.init(debug=True, arch=ti.cpu)
 a = ti.var(ti.i32, shape=(10))
 b = ti.var(ti.i32, shape=(10))
 @ti.kernel
 def shift():
- for i in range(10):
-  a[i] = b[i + 1] # Runtime error in debug mode
-  shift()
+    for i in range(10):
+        a[i] = b[i + 1] # Runtime error in debug mode
+        shift()
 ```
-
-### **微信公众号：AutoML机器学习**
-
-![](/assets/img/marsggbo/2020-06-02-GAMES201高级物理引擎实战指南-Lecture-1-Taichi编程语言介绍/029a9211.jpeg)
-
-**MARSGGBO♥原创**  
-**如有意合作或学术讨论欢迎私戳联系~**  
-**邮箱:marsggbo@foxmail.com**  **2020-06-02 15:41:06**

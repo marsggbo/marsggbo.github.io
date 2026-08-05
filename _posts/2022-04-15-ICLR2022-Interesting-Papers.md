@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/499010769>
+
 * When Vision Transformers Outperform ResNets without Pre-training or Strong Data Augmentations
 * Self-supervised Learning is More Robust to Dataset Imbalance
 * Looking Back on Learned Experiences For Class/task Incremental Learning

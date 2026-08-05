@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【Math for ML】线性代数之——向量空间"
+title: 【Math for ML】线性代数之——向量空间
 date: '2018-12-23'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/53088633>
 
 **I. Groups**
 

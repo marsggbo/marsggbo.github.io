@@ -11,9 +11,11 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/372128920>
+
 ## **省流总结**
 
-> “ **Retiarii**意思是 **[网斗士](https://link.zhihu.com/?target=https%3A//zh.wikipedia.org/wiki/%25E7%25B6%25B2%25E9%25AC%25A5%25E5%25A3%25AB)**，是古罗马以仿渔夫装备——手抛网（rete）、三叉戟（fuscina 或 tridens）和匕首（pugio）进行搏斗的角斗士。官方的解释是因为神经网络可以看成是一个网，然后Retiarii就是去搜索网的斗士，哈哈哈，有点意思\~\~  
+> “ **Retiarii**意思是 **[网斗士](https://link.zhihu.com/?target=https%3A//zh.wikipedia.org/wiki/%25E7%25B6%25B2%25E9%25AC%25A5%25E5%25A3%25AB)**，是古罗马以仿渔夫装备——手抛网（rete）、三叉戟（fuscina 或 tridens）和匕首（pugio）进行搏斗的角斗士。官方的解释是因为神经网络可以看成是一个网，然后Retiarii就是去搜索网的斗士，哈哈哈，有点意思~~  
 >  OSDI 是计算机系统软件领域全球最顶级的会议之一，每两年举办一届，被誉为“操作系统原理领域的奥斯卡”，拥有极高的学术地位。OSDI2020 ​会议投稿398篇，共录用论文70篇，录用率不足18%，Retiarii是这70篇之一​。瑞思拜​！  
 >  ”
 
@@ -78,7 +80,7 @@ choose(candidates:list ,n_chosen:int=1,type:str="choice",ctx:dict=None)
 
 下面给出了Inception Cell的代码实现，可以看到其需要传入两个参数，`paths_range`表示边的数量范围，这是可搜索的，以及每条边上连接的节点的候选操作`candidates`。可以看到通过`mutate`函数实现了搜索和替换操作。
 
-```
+```python
 # define the graph mutation behavior
 class InceptionMutator(BaseMutator):
  def __init__(self , paths_range , candidate_ops):

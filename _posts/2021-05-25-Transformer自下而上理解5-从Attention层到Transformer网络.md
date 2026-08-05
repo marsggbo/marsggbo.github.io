@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/375073534>
+
 > “ 本文参考Wang Shusen老师的教学视频：[https://www.youtube.com/watch?v=aJRsr39F4dI&list=PLvOO0btloRntpSWSxFbwPIjIum3Ub4GSC&index=2](https://link.zhihu.com/?target=https%3A//www.youtube.com/watch%3Fv%3DaJRsr39F4dI%26list%3DPLvOO0btloRntpSWSxFbwPIjIum3Ub4GSC%26index%3D2)  
 >  ”
 
@@ -40,7 +42,7 @@ toc:
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/aa0a71b5.jpg)
 
-上图给出的是单个Multi-Head Self-Attention Layer，其实类似地我们可以把这$m$个$\{c_{:j},j\in[1,m]\}$看成是下一个Multi-Head的输入。不过这一般还会额外加一个全连接层对每一个$c$做一个映射，如下图示：
+上图给出的是单个Multi-Head Self-Attention Layer，其实类似地我们可以把这$m$个![\{c_{:j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bc_%7B%3Aj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)看成是下一个Multi-Head的输入。不过这一般还会额外加一个全连接层对每一个$c$做一个映射，如下图示：
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/8cabd4a1.jpg)
 
@@ -69,8 +71,8 @@ toc:
 
 而要建立Encoder和Decoder之间的联系，就需要加上一个Attention Layer，如下图所示。可以看到Multi-Head Attention-Layer的输入有两个：
 
-* Encoder最后一层的输出$\{u_{:j},j\in[1,m]\}$，总的维度是$\mathbb{R}^{512\times m}$
-* Decoder第一个Multi-Head Self-Attention的输出$\{c_{:j},j\in[1,t]\}$，总的维度是$\mathbb{R}^{512\times t}$
+* Encoder最后一层的输出![\{u_{:j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bu_%7B%3Aj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)，总的维度是$\mathbb{R}^{512\times m}$
+* Decoder第一个Multi-Head Self-Attention的输出![\{c_{:j},j\in[1,t]\}](https://www.zhihu.com/equation?tex=%5C%7Bc_%7B%3Aj%7D%2Cj%5Cin%5B1%2Ct%5D%5C%7D)，总的维度是$\mathbb{R}^{512\times t}$
 
 它的输出是$t$个$z$向量，总的维度和Decoder的输入一样，都是$\mathbb{R}^{512\times t}$
 

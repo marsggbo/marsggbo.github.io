@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/180465704>
+
 > 目前AutoML技术非常火，尤其是NAS领域，之前有一篇文章已经对现有的AutoML技术做了总结，可阅读**[【AutoML：Survey of the State-of-the-Art】](https://zhuanlan.zhihu.com/p/158162306)**。  
 >  论文：**[AM-LFS：AutoML for Loss Function Search](https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/1905.07375v1.pdf)**
 
@@ -27,23 +29,31 @@ toc:
 
 * Softmax Loss
 
-$$L=\frac{1}{N} \sum_{i} L_{i}=\frac{1}{N} \sum_{i}-\log \left(\frac{e^{f_{y_{i}{\sum_{j} e^{f_{j}\right) \tag{1}$$
+$$
+L=\frac{1}{N} \sum_{i} L_{i}=\frac{1}{N} \sum_{i}-\log \left(\frac{e^{f_{y_{i}}}}{\sum_{j} e^{f_{j}}}\right) \tag{1}
+$$
 
 $N$表示数据集大小，$f$是最后全连接层输出的预测向量（还没有做softmax运算），$f_j$表示向量$f$的第$j$位置上的值，因为真实值是one-hot的向量（即只有一个1，其余全是0），$f_{y_i}$中的$y_i$表示1的索引值。
 
 因为$f$是最后全连接层的输出，所以我们可以将它表示成
 
-$$f_{j}=\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right) \tag{2}$$
+$$
+f_{j}=\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right) \tag{2}
+$$
 
 其中$\theta_{j}\left(0 \leq \theta_{j} \leq \pi\right)$是矢量$\|\boldsymbol{W}_{j}\|$和$x_i$之间的夹角，所以上面公式(1)中的损失函数可以转换成
 
-$$L_{i}=-\log \left(\frac{e^{ \| \boldsymbol{W}_{y_{i}\| \| \boldsymbol{x}_{i} \| \cos \left(\theta_{y_{i}\right)}{\sum_{j} e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}\right) \tag{3}$$
+$$
+L_{i}=-\log \left(\frac{e^{ \| \boldsymbol{W}_{y_{i}}\| \| \boldsymbol{x}_{i} \| \cos \left(\theta_{y_{i}}\right)}}{\sum_{j} e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}}\right) \tag{3}
+$$
 
 * Margin-based Softmax Loss
 
-看到公式(3)可以很自然地想到能在$\left\|\boldsymbol{W}_{y_{i}\right\|\left\|\boldsymbol{x}_{i}\right\|$ 和 $\cos \left(\theta_{y_{i}\right)$之间能够插入一个可微变换函数$t( \cdot )$来调节角度，进而得到margin可变的softmax loss：
+看到公式(3)可以很自然地想到能在$\left\|\boldsymbol{W}_{y_{i}}\right\|\left\|\boldsymbol{x}_{i}\right\|$ 和 $\cos \left(\theta_{y_{i}}\right)$之间能够插入一个可微变换函数$t( \cdot )$来调节角度，进而得到margin可变的softmax loss：
 
-$$L_{i}^{t}=-\log \left(\frac{e^{\left\|\boldsymbol{W}_{y_{i}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}\right)\right)}{e^{\left\|\boldsymbol{W}_{y_{i}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}\right)\right)}+\sum_{j \neq y_{i} e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}\right)\tag{4}$$
+$$
+L_{i}^{t}=-\log \left(\frac{e^{\left\|\boldsymbol{W}_{y_{i}}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}}\right)\right)}}{e^{\left\|\boldsymbol{W}_{y_{i}}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}}\right)\right)}+\sum_{j \neq y_{i}} e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}}\right)\tag{4}
+$$
 
 不同的$t(\cdot)$可以得到不同的损失函数，原文中总结了如下几种：
 
@@ -53,13 +63,15 @@ $$L_{i}^{t}=-\log \left(\frac{e^{\left\|\boldsymbol{W}_{y_{i}\right\|\left\|\bol
 
 除了在概率上做变化外，Focal Loss对softmax loss做了如下变化：
 
-$$\begin{array}{l} L_{i}^{t}=-\tau\left(\log \left(p_{y_{i}\right)\right) \\ \tau(x)=x\left(1-e^{x}\right)^{\alpha} \tag{5} \end{array}$$
+$$
+\begin{array}{l} L_{i}^{t}=-\tau\left(\log \left(p_{y_{i}}\right)\right) \\ \tau(x)=x\left(1-e^{x}\right)^{\alpha} \tag{5} \end{array}
+$$
 
 ## **3. Loss函数分析**
 
 ## **3.1 Focal Loss**
 
-focal loss的提出主要是为了解决imbalanced的问题。相对于原始的softmax loss，focal loss在求导之后等于原始的softmax loss求导结果再乘以$\tau^{\prime}\left(\log \left(p_{y_{i}\right)\right.$，换言之$\tau^{\prime}$用来缓解imbalance的问题。
+focal loss的提出主要是为了解决imbalanced的问题。相对于原始的softmax loss，focal loss在求导之后等于原始的softmax loss求导结果再乘以$\tau^{\prime}\left(\log \left(p_{y_{i}}\right)\right.$，换言之$\tau^{\prime}$用来缓解imbalance的问题。
 
 ## **3.2 margin-based softmax loss**
 
@@ -67,23 +79,29 @@ focal loss的提出主要是为了解决imbalanced的问题。相对于原始的
 
 我们使用公式(4)中的损失函数来分别对$f_{y_i}$（类内，intra-class）和$f_j$（类间，inter-class）求导，得到：
 
-$\left\|\frac{\partial L_{i}^{t}{\partial f_{y_{i}\right\|=\left(1-p_{y_{i}^{t}\right) t^{\prime}\left(f_{y_{i}\right) \tag{6}$$\left\|\frac{\partial L_{i}^{t}{\partial f_{j}\right\|=p_{j}^{t} \tag{7}$
+$\left\|\frac{\partial L_{i}^{t}}{\partial f_{y_{i}}}\right\|=\left(1-p_{y_{i}}^{t}\right) t^{\prime}\left(f_{y_{i}}\right) \tag{6}$$\left\|\frac{\partial L_{i}^{t}}{\partial f_{j}}\right\|=p_{j}^{t} \tag{7}$
 
 其中
 
-$p_{y_{i}^{t}=\frac{e^{\left\|\boldsymbol{W}_{y_{i}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}\right)\right)}{e\left\|\boldsymbol{W}_{y_{i}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}\right)\right)+\sum_{j \neq y_{i} e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}$$p_{j}^{t}=\frac{e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}{e\left\|\boldsymbol{W}_{y_{i}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}\right)\right)+\sum_{j \neq y_{i} e^{\left\|W_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}$
+$p_{y_{i}}^{t}=\frac{e^{\left\|\boldsymbol{W}_{y_{i}}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}}\right)\right)}}{e\left\|\boldsymbol{W}_{y_{i}}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}}\right)\right)+\sum_{j \neq y_{i}} e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}} \\$$p_{j}^{t}=\frac{e^{\left\|\boldsymbol{W}_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}}{e\left\|\boldsymbol{W}_{y_{i}}\right\|\left\|\boldsymbol{x}_{i}\right\| t\left(\cos \left(\theta_{y_{i}}\right)\right)+\sum_{j \neq y_{i}} e^{\left\|W_{j}\right\|\left\|\boldsymbol{x}_{i}\right\| \cos \left(\theta_{j}\right)}} \\$
 
 文中进一步将**类内距离**与**类间距离**的**相对重要性**定义为$f_{y_i}$和$f_j$的梯度范数相对于margin-based softmax loss的**比率** （$r_{i}^{t}$中的$t$就是表示前面提到的t函数）:
 
-$$r_{i}^{t}=\frac{\left\|\frac{\partial L_{i}^{t}{\partial f_{y_{i}\right\|}{\left\|\frac{\partial L_{i}^{t}{\partial f_{j}\right\|}=\frac{\left(1-p_{y_{i}^{t}\right)}{p_{j}^{t} t^{\prime}\left(f_{y_{i}\right) \tag{8}$$
+$$
+r_{i}^{t}=\frac{\left\|\frac{\partial L_{i}^{t}}{\partial f_{y_{i}}}\right\|}{\left\|\frac{\partial L_{i}^{t}}{\partial f_{j}}\right\|}=\frac{\left(1-p_{y_{i}}^{t}\right)}{p_{j}^{t}} t^{\prime}\left(f_{y_{i}}\right) \tag{8}
+$$
 
 同理相对于原始的softmax loss（公式1）的重要性比率是：
 
-$$r_{i}^{o}=\frac{\left\|\frac{\partial L_{i}^{o}{\partial f_{y_{i}\right\|}{\left\|\frac{\partial L_{i}^{o}{\partial f_{j}\right\|}=\frac{\left(1-p_{y_{i}^{o}\right)}{p_{j}^{o}\tag{9}$$
+$$
+r_{i}^{o}=\frac{\left\|\frac{\partial L_{i}^{o}}{\partial f_{y_{i}}}\right\|}{\left\|\frac{\partial L_{i}^{o}}{\partial f_{j}}\right\|}=\frac{\left(1-p_{y_{i}}^{o}\right)}{p_{j}^{o}}\tag{9}
+$$
 
 进一步可以求得：
 
-$$\begin{array} \frac{r_{i}^{t}{r_{i}^{o}&=\frac{\frac{\left(1-p_{y_{i}^{t}\right)}{p_{j}^{t}{\frac{\left(1-p_{y_{i}^{o}\right)}{p_{j}^{o} t^{\prime}\left(f_{y_{i}\right) = \frac{ \frac{\sum_{t \neq y_{i} e^{\left\|\boldsymbol{W}_{t}\right\|\left\|x_{i}\right\| \cos \left(\theta_{t}\right)}{e^{\left\|\boldsymbol{W}_{j}\right\|\left\|x_{i}\right\| \cos \left(\theta_{j}\right)}{\frac{\sum_{t \neq y_{i} e^{\left\|W_{t}\right\|\left\|x_{i}\right\| \cos \left(\theta_{t}\right)}{e^{\left\|W_{j}\right\|\left\|x_{i}\right\| \cos \left(\theta_{j}\right)}t^{\prime}\left(f_{y_{i}\right)\\ &=t^{\prime}\left(f_{y_{i}\right) \tag{10} \end{array}$$
+$$
+\begin{array} \frac{r_{i}^{t}}{r_{i}^{o}}&=\frac{\frac{\left(1-p_{y_{i}}^{t}\right)}{p_{j}^{t}}}{\frac{\left(1-p_{y_{i}}^{o}\right)}{p_{j}^{o}}} t^{\prime}\left(f_{y_{i}}\right) = \frac{ \frac{\sum_{t \neq y_{i}} e^{\left\|\boldsymbol{W}_{t}\right\|\left\|x_{i}\right\| \cos \left(\theta_{t}\right)}}{e^{\left\|\boldsymbol{W}_{j}\right\|\left\|x_{i}\right\| \cos \left(\theta_{j}\right)}}}{\frac{\sum_{t \neq y_{i}} e^{\left\|W_{t}\right\|\left\|x_{i}\right\| \cos \left(\theta_{t}\right)}}{e^{\left\|W_{j}\right\|\left\|x_{i}\right\| \cos \left(\theta_{j}\right)}}}t^{\prime}\left(f_{y_{i}}\right)\\ &=t^{\prime}\left(f_{y_{i}}\right) \tag{10} \end{array}
+$$
 
 由公式10可以知道定义的**损失函数表达式（公式4）中的$t(\cdot)$的导函数实际上是具有控制类内距离对于类间距离显著性的作用**
 
@@ -91,17 +109,21 @@ $$\begin{array} \frac{r_{i}^{t}{r_{i}^{o}&=\frac{\frac{\left(1-p_{y_{i}^{t}\righ
 
 基于第3节的分析，我们可以知道可以在公式（3）作如下两处的变换：
 
-$$L_{i}^{\tau, t}=-\tau\left(\log \left(p_{y_{i}^{t}\right)\right) \tag{11}$$
+$$
+L_{i}^{\tau, t}=-\tau\left(\log \left(p_{y_{i}}^{t}\right)\right) \tag{11}
+$$
 
-其中$\tau$和$t$是需要我们进行搜索的任意函数。另外上式中的$\tau$的定义域在$[-\infty，0]$，为了使得其定义域在$[0,1]$进而简化搜索空间，将公式(11)作如下变化 （令公式(12)中的$\tau_{2}(x)=e^{\tau_{1}(\log (x))}$可以使得公式(11)和公式(12)等价）：
+其中$\tau$和$t$是需要我们进行搜索的任意函数。另外上式中的$\tau$的定义域在![[-\infty，0]](https://www.zhihu.com/equation?tex=%5B-%5Cinfty%EF%BC%8C0%5D)，为了使得其定义域在![[0,1]](https://www.zhihu.com/equation?tex=%5B0%2C1%5D)进而简化搜索空间，将公式(11)作如下变化 （令公式(12)中的$\tau_{2}(x)=e^{\tau_{1}(\log (x))}$可以使得公式(11)和公式(12)等价）：
 
-$$L_{i}^{\tau, t}=-\log \left(\tau\left(p_{y_{i}^{t}\right)\right) \tag{12}$$
+$$
+L_{i}^{\tau, t}=-\log \left(\tau\left(p_{y_{i}}^{t}\right)\right) \tag{12}
+$$
 
 其中（注意看清楚$t$和$\tau$）
 
-* $t(\cdot)=a_{i}^{t} x+b_{i}^{t}, x \in\left[\zeta_{i}^{t}, \zeta_{i+1}^{t}\right]$
+* ![t(\cdot)=a_{i}^{t} x+b_{i}^{t}, x \in\left[\zeta_{i}^{t}, \zeta_{i+1}^{t}\right]](https://www.zhihu.com/equation?tex=t%28%5Ccdot%29%3Da_%7Bi%7D%5E%7Bt%7D+x%2Bb_%7Bi%7D%5E%7Bt%7D%2C+x+%5Cin%5Cleft%5B%5Czeta_%7Bi%7D%5E%7Bt%7D%2C+%5Czeta_%7Bi%2B1%7D%5E%7Bt%7D%5Cright%5D)
 
-+ $\zeta^{t}=\left[\zeta_{0}, \ldots \zeta_{M}\right]$
++ ![\zeta^{t}=\left[\zeta_{0}, \ldots \zeta_{M}\right]](https://www.zhihu.com/equation?tex=%5Czeta%5E%7Bt%7D%3D%5Cleft%5B%5Czeta_%7B0%7D%2C+%5Cldots+%5Czeta_%7BM%7D%5Cright%5D)
 + $M$表示间隔数，即$\zeta_{i+1}^{t}-\zeta_{i}^{t}=\left(\zeta_{M}^{t}-\zeta_{0}^{t}\right) / M$
 + 所以$t(\cdot)$函数由三个超参数组成$a_{i}^{t}, b_{i}^{t}$ and $\zeta_{i}^{t}$
 
@@ -111,7 +133,7 @@ $$L_{i}^{\tau, t}=-\log \left(\tau\left(p_{y_{i}^{t}\right)\right) \tag{12}$$
 
 ## \boldsymbol{\theta}=\left[\boldsymbol{a}^{t^{T}}, \boldsymbol{b}^{t^{T}}, \boldsymbol{a}^{\tau T}, \boldsymbol{b}^{\tau T}\right]^{T} \tag{13} 5. 优化
 
-双层（Bilevel）优化定义如下： $\begin{array}{l} \max _{\boldsymbol{\theta} R(\boldsymbol{\theta})=r\left(M_{\boldsymbol{\omega}^{*}(\boldsymbol{\theta}), \mathcal{D}_{v}\right) \\ \text { s.t. } \boldsymbol{\omega}^{*}(\boldsymbol{\theta})=\arg \min _{\boldsymbol{\omega} \sum_{(x, y) \in \mathcal{D}_{t} L^{\boldsymbol{\theta}\left(M_{\boldsymbol{\omega}(x), y\right) \tag{14} \end{array}$
+双层（Bilevel）优化定义如下： $\begin{array}{l} \max _{\boldsymbol{\theta}} R(\boldsymbol{\theta})=r\left(M_{\boldsymbol{\omega}^{*}}(\boldsymbol{\theta}), \mathcal{D}_{v}\right) \\ \text { s.t. } \boldsymbol{\omega}^{*}(\boldsymbol{\theta})=\arg \min _{\boldsymbol{\omega}} \sum_{(x, y) \in \mathcal{D}_{t}} L^{\boldsymbol{\theta}}\left(M_{\boldsymbol{\omega}}(x), y\right) \tag{14} \end{array}$
 
 可以看到
 

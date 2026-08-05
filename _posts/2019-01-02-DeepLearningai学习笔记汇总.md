@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/53826429>
+
 **第一章 神经网络与深度学习(Neural Network & Deeplearning)**
 
 * [DeepLearning.ai学习笔记（一）神经网络和深度学习--Week3浅层神经网络](https://link.zhihu.com/?target=http%3A//www.cnblogs.com/marsggbo/p/7453646.html)

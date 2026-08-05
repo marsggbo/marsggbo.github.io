@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'NAS-Bench-101: Towards Reproducible Neural Architecture Search'
+title: NAS-Bench-101: Towards Reproducible Neural Architecture Search
 date: '2021-06-30'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/385532786>
 
 ## **1. 模型整体结构**
 

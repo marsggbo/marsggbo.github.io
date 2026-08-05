@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/53088201>
+
 > 参考文献:[Hyperband: Bandit-Based Configuration Evaluation for Hyperparameter Optimization](https://link.zhihu.com/?target=https%3A//openreview.net/pdf%3Fid%3Dry18Ww5ee)
 
 ## **I. 传统优化算法**

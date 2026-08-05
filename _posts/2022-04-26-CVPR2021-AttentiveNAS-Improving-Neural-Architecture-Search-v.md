@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "[CVPR2021] AttentiveNAS： Improving Neural Architecture Search via Attentive Sampling"
+title: [CVPR2021] AttentiveNAS： Improving Neural Architecture Search via Attentive Sampling
 date: '2022-04-26'
 tags: [techniques]
 category: techniques
@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/505556494>
+
 ## **1. 背景（Two-stage NAS）**
 
 该篇论文（AttentiveNAS）聚焦的是Two-stage NAS，比较出名的算法有 BigNAS，Once-for-all NAS (OFA)， SPOS等等，不过他们都采用的uniform的采样去训练Supernet，即把所有的子网一视同仁，尽可能分配相等的采样机会。Two-stage NAS算法通常包含如下两个步骤：
@@ -19,7 +21,7 @@ toc:
 
 第一步是训练Supernet，数学化公式如下：
 
-$$\min _{W} \mathbb{E}_{\alpha \in \mathcal{A}\left[\mathcal{L}\left(W_{\alpha} ; \mathcal{D}^{t r n}\right)\right]+\gamma \mathcal{R}(W)$$
+![\min _{W} \mathbb{E}_{\alpha \in \mathcal{A}}\left[\mathcal{L}\left(W_{\alpha} ; \mathcal{D}^{t r n}\right)\right]+\gamma \mathcal{R}(W) \\](https://www.zhihu.com/equation?tex=%5Cmin+_%7BW%7D+%5Cmathbb%7BE%7D_%7B%5Calpha+%5Cin+%5Cmathcal%7BA%7D%7D%5Cleft%5B%5Cmathcal%7BL%7D%5Cleft%28W_%7B%5Calpha%7D+%3B+%5Cmathcal%7BD%7D%5E%7Bt+r+n%7D%5Cright%29%5Cright%5D%2B%5Cgamma+%5Cmathcal%7BR%7D%28W%29+%5C%5C)
 
 * 第一项是所有子网loss的期望，这些子网共享权重
 * 第二项是对共享权重的约束
@@ -28,7 +30,9 @@ $$\min _{W} \mathbb{E}_{\alpha \in \mathcal{A}\left[\mathcal{L}\left(W_{\alpha} 
 
 第二步是基于训练好的Supernet去评估子网络，然后选出Pareto-front模型。数学公式可表示成如下形式：
 
-$$\begin{aligned} &\left\{\alpha_{i}^{*}\right\}=\underset{\alpha_{i} \in \mathcal{A}{\arg \min } \mathcal{L}\left(W_{\alpha_{i}^{*} ; \mathcal{D}^{v a l}\right), \\ &\text { s.t. } \operatorname{FLOPS}\left(\alpha_{i}\right)<\tau_{i}, \quad \forall i \end{aligned}$$
+$$
+\begin{aligned} &\left\{\alpha_{i}^{*}\right\}=\underset{\alpha_{i} \in \mathcal{A}}{\arg \min } \mathcal{L}\left(W_{\alpha_{i}}^{*} ; \mathcal{D}^{v a l}\right), \\ &\text { s.t. } \operatorname{FLOPS}\left(\alpha_{i}\right)<\tau_{i}, \quad \forall i \end{aligned} \\
+$$
 
 一般常用的搜索算法是进化算法或者Monte Carlo tree search算法。
 
@@ -38,7 +42,7 @@ $$\begin{aligned} &\left\{\alpha_{i}^{*}\right\}=\underset{\alpha_{i} \in \mathc
 
 AttentiveNAS想做的是把两个步骤融合成一步，可表示成如下数学公式：
 
-$$\begin{align} &\min _{W} \mathbb{E}_{\pi(\tau)} \mathbb{E}_{\pi(\alpha \mid \tau)}\left[\mathcal{L}\left(W_{\alpha} ; \mathcal{D}^{t r n}\right)\right], \\ =&\min _{W} \mathbb{E}_{\pi(\tau)} \sum_{\pi(\alpha \mid \tau)}\left[\gamma(\alpha) \mathcal{L}\left(W_{\alpha} ; \mathcal{D}^{t r n}\right)\right], \\ =&\min _{W} \frac{1}{n} \sum_{\tau_{o} \sim \pi(\tau)}^{n}\left[\sum_{\alpha_{i} \sim \pi\left(\alpha \mid \tau_{o}\right)}^{k} \gamma\left(\alpha_{i}\right) \mathcal{L}\left(W_{\alpha_{i} ; \mathcal{D}^{t r n}\right)\right] \end{align}$$
+![\begin{align} &\min _{W} \mathbb{E}_{\pi(\tau)} \mathbb{E}_{\pi(\alpha \mid \tau)}\left[\mathcal{L}\left(W_{\alpha} ; \mathcal{D}^{t r n}\right)\right], \\ =&\min _{W} \mathbb{E}_{\pi(\tau)} \sum_{\pi(\alpha \mid \tau)}\left[\gamma(\alpha) \mathcal{L}\left(W_{\alpha} ; \mathcal{D}^{t r n}\right)\right], \\ =&\min _{W} \frac{1}{n} \sum_{\tau_{o} \sim \pi(\tau)}^{n}\left[\sum_{\alpha_{i} \sim \pi\left(\alpha \mid \tau_{o}\right)}^{k} \gamma\left(\alpha_{i}\right) \mathcal{L}\left(W_{\alpha_{i}} ; \mathcal{D}^{t r n}\right)\right] \end{align} \\](https://www.zhihu.com/equation?tex=%5Cbegin%7Balign%7D+%26%5Cmin+_%7BW%7D+%5Cmathbb%7BE%7D_%7B%5Cpi%28%5Ctau%29%7D+%5Cmathbb%7BE%7D_%7B%5Cpi%28%5Calpha+%5Cmid+%5Ctau%29%7D%5Cleft%5B%5Cmathcal%7BL%7D%5Cleft%28W_%7B%5Calpha%7D+%3B+%5Cmathcal%7BD%7D%5E%7Bt+r+n%7D%5Cright%29%5Cright%5D%2C+%5C%5C+%3D%26%5Cmin+_%7BW%7D+%5Cmathbb%7BE%7D_%7B%5Cpi%28%5Ctau%29%7D+%5Csum_%7B%5Cpi%28%5Calpha+%5Cmid+%5Ctau%29%7D%5Cleft%5B%5Cgamma%28%5Calpha%29+%5Cmathcal%7BL%7D%5Cleft%28W_%7B%5Calpha%7D+%3B+%5Cmathcal%7BD%7D%5E%7Bt+r+n%7D%5Cright%29%5Cright%5D%2C+%5C%5C+%3D%26%5Cmin+_%7BW%7D+%5Cfrac%7B1%7D%7Bn%7D+%5Csum_%7B%5Ctau_%7Bo%7D+%5Csim+%5Cpi%28%5Ctau%29%7D%5E%7Bn%7D%5Cleft%5B%5Csum_%7B%5Calpha_%7Bi%7D+%5Csim+%5Cpi%5Cleft%28%5Calpha+%5Cmid+%5Ctau_%7Bo%7D%5Cright%29%7D%5E%7Bk%7D+%5Cgamma%5Cleft%28%5Calpha_%7Bi%7D%5Cright%29+%5Cmathcal%7BL%7D%5Cleft%28W_%7B%5Calpha_%7Bi%7D%7D+%3B+%5Cmathcal%7BD%7D%5E%7Bt+r+n%7D%5Cright%29%5Cright%5D+%5Cend%7Balign%7D+%5C%5C)
 
 * 公式(1)中的$\tau$表示候选网络的FLOPs，最优的$W^*$简单理解就是 使得 不同FLOPs下($\mathbb{E}_{\pi(\tau)}$) 所有子模型的loss期望 ($\mathbb{E}_{\pi(\alpha \mid \tau)}$) 最小的解。
 * 公式(2)和(3)都是分别使用Monte Carlo采样做近似计算。比如 $n$表示将整个搜索空间划分成$n$个FLOPs区间，$k$表示每个FLOPs区间内每次采样更新的模型数量,$\gamma(\alpha)$是indicator函数，即如果模型结构$\alpha$满足指定条件，则$\gamma(\alpha)$等于1，反之为0。

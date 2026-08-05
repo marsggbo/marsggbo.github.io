@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '搜索一次就完事 Once for all: Train One Network and Specialize it for Efficient Deployment'
+title: 搜索一次就完事 Once for all: Train One Network and Specialize it for Efficient Deployment
 date: '2021-07-19'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/391042698>
 
 ## **1. 介绍**
 
@@ -40,7 +42,9 @@ OFA中的Supernet由5个block组成，而每个block的搜索空间大小是 $S_
 
 形式化的数学表达如下：
 
-$$\min _{W_{o} \sum_{a r c h_{i} \mathcal{L}_{\text {val }\left(C\left(W_{o}, \operatorname{arch}_{i}\right)\right)$$
+$$
+\min _{W_{o}} \sum_{a r c h_{i}} \mathcal{L}_{\text {val }}\left(C\left(W_{o}, \operatorname{arch}_{i}\right)\right) \\
+$$
 
 说人话就是 让所有候选架构在验证集上的结果都尽可能的好，即最小化所有架构的期望损失函数之和。
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'ICCV 2021 | BossNAS: Exploring Hybrid CNN-transformers with Block-wisely Self-supervised
+title: ICCV 2021 | BossNAS: Exploring Hybrid CNN-transformers with Block-wisely Self-supervised NAS
   NAS'
 date: '2021-12-21'
 tags: [techniques]
@@ -11,6 +11,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/448262248>
 
 ## **1. 主要创新点**
 
@@ -38,27 +40,37 @@ BossNAS整体的的训练方式和**[DNA](https://link.zhihu.com/?target=https%3
 
 假设某个搜索阶段，我们采样了 p 个不同的子网，因为使用自监督训练方式，所以对于同一个样本会有 p 组不同的增强样本 （上图中 p=2），所谓 Ensemble Bootstrapping其实就是教师网络的第 k个block的输出是这 p 个网络输出的平均值，记为
 
-$$\widehat{\mathcal{T}_{k}\left(\left\{\boldsymbol{\alpha}_{p}\right\} ;\left\{\boldsymbol{x}_{p}^{\prime}\right\}\right)=\frac{1}{|p|} \sum_{p=1}^{|p|} \mathcal{T}_{k}\left(\mathcal{W}^{\bullet}, \boldsymbol{\alpha}_{p} ; \boldsymbol{x}_{p}^{\prime}\right) \tag{1}$$
+$$
+\widehat{\mathcal{T}_{k}}\left(\left\{\boldsymbol{\alpha}_{p}\right\} ;\left\{\boldsymbol{x}_{p}^{\prime}\right\}\right)=\frac{1}{|p|} \sum_{p=1}^{|p|} \mathcal{T}_{k}\left(\mathcal{W}^{\bullet}, \boldsymbol{\alpha}_{p} ; \boldsymbol{x}_{p}^{\prime}\right) \tag{1}
+$$
 
 上面公式中的 $\mathcal{W}^{\bullet}$ 表示教师网络的权重，是使用EMA更新的，即 $\mathcal{W}_{t}^{\bullet}=\tau \mathcal{W}_{t-1}^{\bullet}+(1-\tau) \mathcal{W}_{t}$, 其中 $\mathcal{W}_t$是online Supernet（学生网络）的权重。
 
 因为每个block彼此之间训练独立，所以每个block优化方式是一样的，这里给出学生网络第k个block的优化函数。简单理解就是子网的输出要和ensemble的结果接近，损失函数使用的也是MSE。
 
-$$\begin{aligned} &\mathcal{W}_{k}^{*}=\underset{\mathcal{W}_{k}{\arg \min } \sum_{p=1}^{|P|} \mathcal{L}_{\text {train }\left(\left\{\mathcal{W}_{k}, \mathcal{W}_{k}^{\bullet}\right\},\left\{\boldsymbol{\alpha}_{p}\right\} ; \boldsymbol{x}\right) \\ &\text { where } \quad \mathcal{L}_{\text {train }\left(\left\{\mathcal{W}_{k}, \mathcal{W}_{k}^{\bullet}\right\},\left\{\boldsymbol{\alpha}_{p}\right\} ; \boldsymbol{x}\right) \\ &=\left\|\mathcal{S}_{k}\left(\mathcal{W}_{k}, \boldsymbol{\alpha}_{p} ; \boldsymbol{x}_{p}\right)-\widehat{\mathcal{T}_{k}\left(\mathcal{W}_{k}^{\bullet},\left\{\boldsymbol{\alpha}_{p}\right\} ;\left\{\boldsymbol{x}_{p}^{\prime}\right\}\right)\right\|_{2}^{2} \end{aligned} \tag{2}$$
+$$
+\begin{aligned} &\mathcal{W}_{k}^{*}=\underset{\mathcal{W}_{k}}{\arg \min } \sum_{p=1}^{|P|} \mathcal{L}_{\text {train }}\left(\left\{\mathcal{W}_{k}, \mathcal{W}_{k}^{\bullet}\right\},\left\{\boldsymbol{\alpha}_{p}\right\} ; \boldsymbol{x}\right) \\ &\text { where } \quad \mathcal{L}_{\text {train }}\left(\left\{\mathcal{W}_{k}, \mathcal{W}_{k}^{\bullet}\right\},\left\{\boldsymbol{\alpha}_{p}\right\} ; \boldsymbol{x}\right) \\ &=\left\|\mathcal{S}_{k}\left(\mathcal{W}_{k}, \boldsymbol{\alpha}_{p} ; \boldsymbol{x}_{p}\right)-\widehat{\mathcal{T}_{k}}\left(\mathcal{W}_{k}^{\bullet},\left\{\boldsymbol{\alpha}_{p}\right\} ;\left\{\boldsymbol{x}_{p}^{\prime}\right\}\right)\right\|_{2}^{2} \end{aligned} \tag{2}
+$$
 
 那一个完整的优化函数表示如下：
 
-$$\begin{aligned}&\boldsymbol{\alpha}^{*}=\left\{\boldsymbol{\alpha}_{k}\right\}^{*}=\underset{\forall\left\{\boldsymbol{\alpha}_{k}\right\} \subset \mathcal{A}{\arg \min } \sum_{k=1}^{| k \mid} \lambda_{k} \mathcal{L}_{\text {val }\left(\mathcal{W}_{k}^{*}, \boldsymbol{\alpha}_{k} ; \boldsymbol{x}_{k}, \boldsymbol{y}_{k}\right) \\&\text { s.t. } \mathcal{W}_{k}^{*}=\underset{\mathcal{W}_{k}{\arg \min } \mathcal{L}_{\text {train }\left(\mathcal{W}_{k}, \mathcal{A}_{k} ; \boldsymbol{x}_{k}, \boldsymbol{y}_{k}\right)\end{aligned} \tag{3}$$
+$$
+\begin{aligned}&\boldsymbol{\alpha}^{*}=\left\{\boldsymbol{\alpha}_{k}\right\}^{*}=\underset{\forall\left\{\boldsymbol{\alpha}_{k}\right\} \subset \mathcal{A}}{\arg \min } \sum_{k=1}^{| k \mid} \lambda_{k} \mathcal{L}_{\text {val }}\left(\mathcal{W}_{k}^{*}, \boldsymbol{\alpha}_{k} ; \boldsymbol{x}_{k}, \boldsymbol{y}_{k}\right) \\&\text { s.t. } \mathcal{W}_{k}^{*}=\underset{\mathcal{W}_{k}}{\arg \min } \mathcal{L}_{\text {train }}\left(\mathcal{W}_{k}, \mathcal{A}_{k} ; \boldsymbol{x}_{k}, \boldsymbol{y}_{k}\right)\end{aligned} \tag{3}
+$$
 
 ## **2.2 Search subnets**
 
 2.1节介绍了如何训练Supernet。在训练结束后，BossNAS使用进化算法基于训练好的权重选择模型结构。类似于公式(1)中对教师网络不同路径做ensemble，在搜索的时候也会对学生网络不同路径做ensemble，第 **k** 个block输出的ensemble结果表示如下：
 
-$$\widehat{\mathcal{S}_{k}\left(\left\{\boldsymbol{\alpha}_{p}\right\} ; \boldsymbol{x}_{2}\right)=\frac{1}{|p|} \sum_{p=1}^{|p|} \mathcal{S}_{k}\left(\boldsymbol{\alpha}_{p} ; \boldsymbol{x}_{2}\right) \tag{4}$$
+$$
+\widehat{\mathcal{S}_{k}}\left(\left\{\boldsymbol{\alpha}_{p}\right\} ; \boldsymbol{x}_{2}\right)=\frac{1}{|p|} \sum_{p=1}^{|p|} \mathcal{S}_{k}\left(\boldsymbol{\alpha}_{p} ; \boldsymbol{x}_{2}\right) \tag{4}
+$$
 
 最后最优的网络则是每个block的输出最接近ensemble的输出，优化函数表示如下：
 
-$$\begin{gathered}\boldsymbol{\alpha}^{*}=\underset{\forall \boldsymbol{\alpha} \in \mathcal{A}{\arg \min } \sum_{k=1}^{|k|} \lambda_{k} \mathcal{L}_{\text {val }\left(\boldsymbol{\alpha} ; \boldsymbol{x}_{k}\right) \text { where } \quad \mathcal{L}_{\text {val }(\boldsymbol{\alpha} ; \boldsymbol{x})=\left\|\mathcal{S}_{k}\left(\boldsymbol{\alpha} ; \boldsymbol{x}_{1}\right)-\widehat{\mathcal{S}_{k}\left(\mathcal{A}_{k} ; \boldsymbol{x}_{2}\right)\right\|_{2}^{2}\end{gathered} \tag{5}$$
+$$
+\begin{gathered}\boldsymbol{\alpha}^{*}=\underset{\forall \boldsymbol{\alpha} \in \mathcal{A}}{\arg \min } \sum_{k=1}^{|k|} \lambda_{k} \mathcal{L}_{\text {val }}\left(\boldsymbol{\alpha} ; \boldsymbol{x}_{k}\right) \\\text { where } \quad \mathcal{L}_{\text {val }}(\boldsymbol{\alpha} ; \boldsymbol{x})=\left\|\mathcal{S}_{k}\left(\boldsymbol{\alpha} ; \boldsymbol{x}_{1}\right)-\widehat{\mathcal{S}}_{k}\left(\mathcal{A}_{k} ; \boldsymbol{x}_{2}\right)\right\|_{2}^{2}\end{gathered} \tag{5}
+$$
 
 ## **3. CNN-Transformer混合搜索空间**
 

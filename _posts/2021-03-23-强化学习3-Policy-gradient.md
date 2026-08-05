@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/359282662>
+
 ## **1. Policy function**
 
 策略函数 $\pi(a|s)$是一个概率密度函数(probability density function, PDF)，状态$s$作为输入，输出是不同动作的概率。比如前面文章里的马里奥游戏中，一共有三个可选动作，left,right,up，这三个动作的概率之和为1，即 $\sum_{a\in A}\pi(a|s), A=\{left,right,up\}$。
@@ -25,7 +27,7 @@ toc:
 
 在介绍Policy Network之前，我们先回顾一下状态价值函数的定义，如上图示。可以知道状态价值函数只与状态$s_t$有关，因为它是所有动作价值的的加权求和，权重就是每个动作的概率$\pi(a|s_t)$。
 
-$$V_{\pi}\left(s_{t}\right)=\mathbb{E}_{A}\left[Q_{\pi}\left(s_{t}, A\right)\right]=\sum_{a} \pi\left(a \mid s_{t}\right) \cdot Q_{\pi}\left(s_{t}, a\right)$$
+![V_{\pi}\left(s_{t}\right)=\mathbb{E}_{A}\left[Q_{\pi}\left(s_{t}, A\right)\right]=\sum_{a} \pi\left(a \mid s_{t}\right) \cdot Q_{\pi}\left(s_{t}, a\right) \\](https://www.zhihu.com/equation?tex=V_%7B%5Cpi%7D%5Cleft%28s_%7Bt%7D%5Cright%29%3D%5Cmathbb%7BE%7D_%7BA%7D%5Cleft%5BQ_%7B%5Cpi%7D%5Cleft%28s_%7Bt%7D%2C+A%5Cright%29%5Cright%5D%3D%5Csum_%7Ba%7D+%5Cpi%5Cleft%28a+%5Cmid+s_%7Bt%7D%5Cright%29+%5Ccdot+Q_%7B%5Cpi%7D%5Cleft%28s_%7Bt%7D%2C+a%5Cright%29+%5C%5C)
 
 ## **2.2 Policy Gradient**
 
@@ -33,19 +35,23 @@ $$V_{\pi}\left(s_{t}\right)=\mathbb{E}_{A}\left[Q_{\pi}\left(s_{t}, A\right)\rig
 
 很显然我们知道最终的目的是想要最大化所有状态的价值，即最大化$J(\theta)$
 
-$$J(\boldsymbol{\theta})=\mathbb{E}_{S}[V(S ; \boldsymbol{\theta})]$$
+![J(\boldsymbol{\theta})=\mathbb{E}_{S}[V(S ; \boldsymbol{\theta})] \\](https://www.zhihu.com/equation?tex=J%28%5Cboldsymbol%7B%5Ctheta%7D%29%3D%5Cmathbb%7BE%7D_%7BS%7D%5BV%28S+%3B+%5Cboldsymbol%7B%5Ctheta%7D%29%5D+%5C%5C)
 
 所以只要求出$J(\theta)$对$\theta$的梯度后，用**梯度上升**对$\theta$进行更新,即
 
-$$\boldsymbol{\theta} \leftarrow \boldsymbol{\theta}+\beta \cdot \frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}$$
+$$
+\boldsymbol{\theta} \leftarrow \boldsymbol{\theta}+\beta \cdot \frac{\partial J(\boldsymbol{\theta})}{\partial \boldsymbol{\theta}} \\
+$$
 
 但是通常我们是无法知道所有时刻的状态价值的，所以一种近似的更新方法就是用每一个时刻的状态价值进行更新，即
 
-$$\boldsymbol{\theta} \leftarrow \boldsymbol{\theta}+\beta \cdot \frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}$$
+$$
+\boldsymbol{\theta} \leftarrow \boldsymbol{\theta}+\beta \cdot \frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}} \\
+$$
 
-$\frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}$的推导如下
+$\frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}}$的推导如下
 
-$$\begin{aligned} \frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta} &=\frac{\partial \sum_{a} \pi(a \mid s ; \boldsymbol{\theta}) \cdot Q_{\pi}(s, a)}{\partial \boldsymbol{\theta}  \\ &=\sum_{a} \frac{\partial \pi(a \mid s ; \boldsymbol{\theta}) \cdot Q_{\pi}(s, a)}{\partial \boldsymbol{\theta} \\ &=\sum_{a} \frac{\partial \pi(a \mid s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta} \cdot Q_{\pi}(s, a) \\ &=\sum_{a} \pi\left(\left.a\right|_{S} ; \boldsymbol{\theta}\right) \cdot \frac{\partial \log \pi(a \mid s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta} \cdot Q_{\pi}(s, a)\\ &=\mathbb{E}_{A}\left[\left(\frac{\partial \log \pi(A \mid s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta} \cdot Q_{\pi}(s, A)\right)\right] \end{aligned}\tag{1}$$
+![\begin{aligned} \frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}} &=\frac{\partial \sum_{a} \pi(a \mid s ; \boldsymbol{\theta}) \cdot Q_{\pi}(s, a)}{\partial \boldsymbol{\theta}}  \\ &=\sum_{a} \frac{\partial \pi(a \mid s ; \boldsymbol{\theta}) \cdot Q_{\pi}(s, a)}{\partial \boldsymbol{\theta}} \\ &=\sum_{a} \frac{\partial \pi(a \mid s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}} \cdot Q_{\pi}(s, a) \\ &=\sum_{a} \pi\left(\left.a\right|_{S} ; \boldsymbol{\theta}\right) \cdot \frac{\partial \log \pi(a \mid s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}} \cdot Q_{\pi}(s, a)\\ &=\mathbb{E}_{A}\left[\left(\frac{\partial \log \pi(A \mid s ; \boldsymbol{\theta})}{\partial \boldsymbol{\theta}} \cdot Q_{\pi}(s, A)\right)\right] \end{aligned}\tag{1} ](https://www.zhihu.com/equation?tex=%5Cbegin%7Baligned%7D+%5Cfrac%7B%5Cpartial+V%28s+%3B+%5Cboldsymbol%7B%5Ctheta%7D%29%7D%7B%5Cpartial+%5Cboldsymbol%7B%5Ctheta%7D%7D+%26%3D%5Cfrac%7B%5Cpartial+%5Csum_%7Ba%7D+%5Cpi%28a+%5Cmid+s+%3B+%5Cboldsymbol%7B%5Ctheta%7D%29+%5Ccdot+Q_%7B%5Cpi%7D%28s%2C+a%29%7D%7B%5Cpartial+%5Cboldsymbol%7B%5Ctheta%7D%7D++%5C%5C+%26%3D%5Csum_%7Ba%7D+%5Cfrac%7B%5Cpartial+%5Cpi%28a+%5Cmid+s+%3B+%5Cboldsymbol%7B%5Ctheta%7D%29+%5Ccdot+Q_%7B%5Cpi%7D%28s%2C+a%29%7D%7B%5Cpartial+%5Cboldsymbol%7B%5Ctheta%7D%7D+%5C%5C+%26%3D%5Csum_%7Ba%7D+%5Cfrac%7B%5Cpartial+%5Cpi%28a+%5Cmid+s+%3B+%5Cboldsymbol%7B%5Ctheta%7D%29%7D%7B%5Cpartial+%5Cboldsymbol%7B%5Ctheta%7D%7D+%5Ccdot+Q_%7B%5Cpi%7D%28s%2C+a%29+%5C%5C+%26%3D%5Csum_%7Ba%7D+%5Cpi%5Cleft%28%5Cleft.a%5Cright%7C_%7BS%7D+%3B+%5Cboldsymbol%7B%5Ctheta%7D%5Cright%29+%5Ccdot+%5Cfrac%7B%5Cpartial+%5Clog+%5Cpi%28a+%5Cmid+s+%3B+%5Cboldsymbol%7B%5Ctheta%7D%29%7D%7B%5Cpartial+%5Cboldsymbol%7B%5Ctheta%7D%7D+%5Ccdot+Q_%7B%5Cpi%7D%28s%2C+a%29%5C%5C+%26%3D%5Cmathbb%7BE%7D_%7BA%7D%5Cleft%5B%5Cleft%28%5Cfrac%7B%5Cpartial+%5Clog+%5Cpi%28A+%5Cmid+s+%3B+%5Cboldsymbol%7B%5Ctheta%7D%29%7D%7B%5Cpartial+%5Cboldsymbol%7B%5Ctheta%7D%7D+%5Ccdot+Q_%7B%5Cpi%7D%28s%2C+A%29%5Cright%29%5Cright%5D+%5Cend%7Baligned%7D%5Ctag%7B1%7D+)
 
 > “ 注意：为了方便理解和简化推导，我们假设公式(1)中$Q_{\pi}$与网络权重$\theta$无关。但是这个假设是不对的，因为$Q$与$\pi(\theta)$有关。不过这个假设不影响最终的结论。  
 >  ”
@@ -54,7 +60,7 @@ $$\begin{aligned} \frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbo
 
 * 第一行到第二行就是把偏微分移到了求和符号内
 * 第三行：因为我们假设了$Q_{\pi}$与网络权重$\theta$无关，所以$Q_{\pi}$可以单独提出来
-* 第四行：我们把$\pi(a|s;\theta)$看成几个整体，记为$z$，另外需要用到这个推导技巧，即$z\cdot  \frac{\partial{log z}{\partial{x}=z \cdot \frac{1}{z} \frac{\partial{z}{\partial{x}=\frac{\partial{z}{\partial{x}$
+* 第四行：我们把$\pi(a|s;\theta)$看成几个整体，记为$z$，另外需要用到这个推导技巧，即$z\cdot  \frac{\partial{log z}}{\partial{x}}=z \cdot \frac{1}{z} \frac{\partial{z}}{\partial{x}}=\frac{\partial{z}}{\partial{x}}$
 * 第五行：因为$\pi(a|s;\theta)$是动作的概率分布，简单理解就是每个动作的概率，那么第四行就等价于求期望
 
 总结起来，policy gradient的计算有两种形式，如下：
@@ -91,11 +97,13 @@ $$\begin{aligned} \frac{\partial V(s ; \boldsymbol{\theta})}{\partial \boldsymbo
 
 以马里奥游戏为例，我们把每一局最开始到结束（即马里奥撕掉，比如碰到怪兽，或者掉进陷阱里）的状态，动作和奖励都记录下来，这样就得到了每一局的trajectory，即
 
-$$trajectory=\{s_{1}, a_{1}, r_{1}, s_{2}, a_{2}, r_{2}, \cdots, s_{T}, a_{T}, r_{T}\}$$
+$$
+trajectory=\{s_{1}, a_{1}, r_{1}, s_{2}, a_{2}, r_{2}, \cdots, s_{T}, a_{T}, r_{T}\} \\
+$$
 
 有了这个之后我们就可以求出这一局的$u_t=\sum_{k=t}^T\gamma^{k-t}r_k$
 
-另外由于$Q_{\pi}\left(s_{t}, a_{t}\right)=\mathbb{E}\left[U_{t}\right]$，所以我们用$u_t$来近似$Q_{\pi}\left(s_{t}, a_{t}\right)$，即$q_t=u_t$
+另外由于![Q_{\pi}\left(s_{t}, a_{t}\right)=\mathbb{E}\left[U_{t}\right]](https://www.zhihu.com/equation?tex=Q_%7B%5Cpi%7D%5Cleft%28s_%7Bt%7D%2C+a_%7Bt%7D%5Cright%29%3D%5Cmathbb%7BE%7D%5Cleft%5BU_%7Bt%7D%5Cright%5D)，所以我们用$u_t$来近似$Q_{\pi}\left(s_{t}, a_{t}\right)$，即$q_t=u_t$
 
 * **Actor-Critic**
 

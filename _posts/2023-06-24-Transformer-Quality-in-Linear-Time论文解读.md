@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "《Transformer Quality in Linear Time》论文解读"
+title: 《Transformer Quality in Linear Time》论文解读
 date: '2023-06-24'
 tags: [techniques]
 category: techniques
@@ -11,13 +11,17 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/639135451>
+
 会议/期刊: ICML 年份: 2022
 
 ## **1. Vanilla Transformer Block（MHSA+FFN）**
 
 原本的Transformer的Block遵循如下的设计范式：MHSA（多头自注意力）+ 一层或者两层的FFN（全连接层），如下图所示。我们只考虑FFN的话，其数学表达式如下：T表示句子长度，d表示词向量维度（也表示模型隐藏层维度），e表示expanded intermediate 特征大小。
 
-$${\cal O}=\phi(X W_{u})W_{o}\mathrm{Where}\,\, X\in\mathbb{R}^{T\times d}, W _{u}\in\mathbb{R}^{d\times e},W_{o}\in\mathbb{R}^{e\times d}$$
+$$
+{\cal O}=\phi(X W_{u})W_{o}\mathrm{~Where~}\,\, X\in\mathbb{R}^{T\times d}, W _{u}\in\mathbb{R}^{d\times e},W_{o}\in\mathbb{R}^{e\times d} \\
+$$
 
 ![](/assets/img/marsggbo/2023-06-24-Transformer-Quality-in-Linear-Time论文解读/ed1c599d.jpg)
 
@@ -33,7 +37,11 @@ $${\cal O}=\phi(X W_{u})W_{o}\mathrm{Where}\,\, X\in\mathbb{R}^{T\times d}, W _{
 
 上图左边的GLU结构的数学表达式如下：
 
-$$\begin{array}{l l}{U=\phi_{u}(X W_{u}),}&{V=\phi_{v}(X W_{v})}\\ {O}=\left(U \odot V\right)W_{o}\tag{1}\end{array}$$
+{% raw %}
+$$
+\begin{array}{l l}{{U=\phi_{u}(X W_{u}),}}&{{V=\phi_{v}(X W_{v})}}\\ {{{O}=\left(U \odot V\right)W_{o}}}\tag{1}\end{array}
+$$
+{% endraw %}
 
 其中$U,V\in\mathbb{R}^{T\times e}，O\in\mathbb{R}^{T\times d}$
 
@@ -49,9 +57,17 @@ GAU的数学表达式如下：
 
 $${O}=(U\odot\hat{V})W_{o}\quad\mathrm{where}\quad\hat{V}=A V \tag{2}$$
 
+$$
+{O}=(U\odot\hat{V})W_{o}\quad\mathrm{where}\quad\hat{V}=A V \tag{2}
+$$
+
 其中
 
-$$\begin{array}{l l}{Z=\phi_{z}(X W_{z})}&{\qquad\in\mathbb{R}^{T\times s} }\\ {A=\operatorname{relu}^{2}\left(\mathcal{Q}(Z)\mathcal{K}(Z)^{\top}+b\right)}&{\qquad\in\mathbb{R}^{T\times T} }\tag{3}\end{array}$$
+{% raw %}
+$$
+\begin{array}{l l}{{Z=\phi_{z}(X W_{z})}}&{{\qquad\in\mathbb{R}^{T\times s} }}\\ {{A=\operatorname{relu}^{2}\left(\mathcal{Q}(Z)\mathcal{K}(Z)^{\top}+b\right)}}&{{\qquad\in\mathbb{R}^{T\times T} }}\tag{3}\end{array}
+$$
+{% endraw %}
 
 可以看到在计算注意力矩阵A用到的Q和K是基于共享的矩阵Z计算得到的，$\mathcal{Q}(Z), \mathcal{K}(Z)$都是对矩阵Z做per-dim的归一化，类似于LayerNorm。得到注意力A后，还要经过ReLU激活函数，然后取二次方，即$relu^2$，这个是在《[Primer: Searching for Efficient Transformers for Language Modeling](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2109.08668)》论文中用NAS搜索出来的。
 
@@ -80,13 +96,17 @@ $$\begin{array}{l l}{Z=\phi_{z}(X W_{z})}&{\qquad\in\mathbb{R}^{T\times s} }\\ {
 
 下面我们分析一下二次复杂度的来源，GAU和原始的自注意力机制的计算都可以用如下的数学公式表示：
 
-$$A=\phi(QK^T)V$$
+$$
+A=\phi(QK^T)V \\
+$$
 
 在原始的自注意力机制中，激活函数$\phi$是softmax，而在GAU中是$ReLU^2$。矩阵$Q, K\in\mathbb{R}^{T\times d}$，二者矩阵乘法的复杂度为$O(T\times d \times T)$,如果只考虑句子长度，我们可以将d忽视，所以复杂度为$O(T^2)$.
 
 后续的一些尝试将复杂度降低至线性复杂度的方法的思路如下所示：
 
-$$\phi(QK^T)V\rightarrow(\phi_q(Q)\phi_k(K)^T)V=\phi_q(Q)(\phi_k(K)^TV)$$
+$$
+\phi(QK^T)V\rightarrow(\phi_q(Q)\phi_k(K)^T)V=\phi_q(Q)(\phi_k(K)^TV) \\
+$$
 
 简而言之就是尝试将矩阵$K^T$和$V$先做矩阵乘法，这样一来它们的复杂度则为$O(d\times T \times d)$，得到大小为$\mathbb{R}^{d\times d}$的矩阵，该矩阵再和$Q$相乘，计算复杂度同样是$O(d\times T \times d)$。
 
@@ -100,7 +120,9 @@ $$\phi(QK^T)V\rightarrow(\phi_q(Q)\phi_k(K)^T)V=\phi_q(Q)(\phi_k(K)^TV)$$
 
 这里其实有一个计算上的技巧，即我们需要先存储上一次的结果$M_{t-1}$。当到t时刻的时候，我们计算出新词的$K_t,V_t\in\mathbb{R}^{1\times d}$向量，然后计算$K_t^TV_t\in\mathbb{R}^{d\times d}$，最后将这个值和$M_{t-1}$累加即可得到$M_t$，即
 
-$$M_t=M_{t-1}+K_t^TV_t \tag{4}$$
+$$
+M_t=M_{t-1}+K_t^TV_t \tag{4}
+$$
 
 简而言之，每个时刻（即有新的词输入的时候），只需要计算新词的$K_t^TV_t$即可，因此空间复杂度是$O(d^2)$，计算复杂度始终保持为$O(d^2)$，相比于原来的$O(Td^2)$计算复杂度有了明显改进。
 
@@ -130,17 +152,33 @@ $$M_t=M_{t-1}+K_t^TV_t \tag{4}$$
 
 * 一套用于计算local Attention的复杂度为二次方的$Q_g^{quad},K_g^{quad}\in\mathbb{R}^{C\times s}$。如图5（bottom）最下面那一行圆圈所示，每两个圆圈之间会计算彼此之间的注意力矩阵，这其实可以理解成一种稀疏的注意力，其计算公式如下
 
-$$\hat{V}_g^{quad}=relu^2(Q_g^{quad}K_g^{quad}+B)V_g \tag{5}$$
+$$
+\hat{V}_g^{quad}=relu^2(Q_g^{quad}K_g^{quad}+B)V_g \tag{5}
+$$
 
 单个chunk的local Attention的计算中的$Q_g^{quad}K_g^{quad}$计算复杂度为$O(C^2s)$，计算得到的结果与矩阵$V_g$相乘的计算复杂度为$O(C^2e)$，因为$s<
 
 * 另一套是用于计算global Attention的复杂度为线性的$Q_g^{lin},K_g^{lin}\in\mathbb{R}^{C\times s}$。我们其实可以将图5（bottom）最下面每两个圆圈视为一个圆圈，就像图5（middle）一样。此时计算global Attention可以分成两种情况：训练和推理，或者也可以称作Non-Causal和Causal。Causal表示因果，即下一个单词的预测依赖前面的输入，这就对应推理。两种情况的具体计算公式如下：
 
-1. Non-Causal (适用于非自回归任务，比如完形填空、情感分类等):$$\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^G{K_h^{lin}^TV_h) \tag{6}$$训练阶段其实可以不用像公式(6)那样分chunk的去计算，我们其实可以直接用完整的矩阵$Q^{lin},K^{lin}\in\mathbb{R}^{T\times s}$直接计算得到公式(6)右边的累加项。
+1. Non-Causal (适用于非自回归任务，比如完形填空、情感分类等):
 
-我们再看看计算复杂度，${K_h^{lin}^TV_h$的计算复杂度为$O(Cse)$，累加G个chunk，那么复杂度就是$O(GCse)=O(Tse)=O(Tsd)$。矩阵Q与KV计算的到矩阵相乘的复杂度为$O(Cse)=O(Csd)$。所以公式(6)的计算复杂度近似为$O(Tsd)$。
+$$
+\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^G{K_h^{lin}}^TV_h) \tag{6}
+$$
 
-2. Causal (适用于自回归任务，如语言翻译、语言模型、文本生产等)：$$\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^{g-1}{K_h^{lin}^TV_h) \tag{7}$$根据两套Q，K矩阵，我们可以分别求得$\hat{V}_g^{quad},\hat{V}_g^{lin}$，最后我们将二者相加得到混合注意力，最终第$g$个chunk的输出计算公式如下$$O_g=[U_g\odot(\hat{V}_g^{quad}+\hat{V}_g^{lin})]W_o \tag{8}$$
+训练阶段其实可以不用像公式(6)那样分chunk的去计算，我们其实可以直接用完整的矩阵$Q^{lin},K^{lin}\in\mathbb{R}^{T\times s}$直接计算得到公式(6)右边的累加项。
+
+我们再看看计算复杂度，${K_h^{lin}}^TV_h$的计算复杂度为$O(Cse)$，累加G个chunk，那么复杂度就是$O(GCse)=O(Tse)=O(Tsd)$。矩阵Q与KV计算的到矩阵相乘的复杂度为$O(Cse)=O(Csd)$。所以公式(6)的计算复杂度近似为$O(Tsd)$。
+
+2. Causal (适用于自回归任务，如语言翻译、语言模型、文本生产等)：
+
+$$
+\hat{V}_g^{lin}=Q_g^{lin}(\sum_{h=1}^{g-1}{K_h^{lin}}^TV_h) \tag{7}
+$$
+
+根据两套Q，K矩阵，我们可以分别求得$\hat{V}_g^{quad},\hat{V}_g^{lin}$，最后我们将二者相加得到混合注意力，最终第$g$个chunk的输出计算公式如下
+
+![O_g=[U_g\odot(\hat{V}_g^{quad}+\hat{V}_g^{lin})]W_o \tag{8} ](https://www.zhihu.com/equation?tex=O_g%3D%5BU_g%5Codot%28%5Chat%7BV%7D_g%5E%7Bquad%7D%2B%5Chat%7BV%7D_g%5E%7Blin%7D%29%5DW_o+%5Ctag%7B8%7D+)
 
 Mixed Chunk Attention伪代码如下：
 

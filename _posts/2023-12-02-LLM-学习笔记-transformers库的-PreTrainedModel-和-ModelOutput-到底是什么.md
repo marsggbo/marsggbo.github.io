@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/670008015>
+
 > **闲言碎语**  
 >  我在刚开始接触 huggingface （后简称 hf） 的 transformers 库时候感觉很冗杂，比如就模型而言，有 PretrainedModel, AutoModel，还有各种 ModelForClassification, ModelForCausalLM, AutoModelForPreTraining, AutoModelForCausalLM等等；不仅如此，还设计了多到让人头皮发麻的各种 ModelOutput，比如BaseModelOutput, BaseModelOutputWithPast, CausalLMOutput等等。拥有选择困难症的我选择退出，所以之前一直没怎么用过这个大名鼎鼎的库。今天咬着牙还是决定看看源码，把这些东西搞清楚。
 
@@ -29,7 +31,7 @@ toc:
 
 可以看到 `ModelOutput` 其实就是一个有序的字典（`OrderedDict`）。
 
-```
+```python
 class ModelOutput(OrderedDict):
     def __init_subclass__(cls) -> None:
         """
@@ -52,7 +54,7 @@ class ModelOutput(OrderedDict):
 
 基于 `ModelOutput`，hf 预先定义了 40 多种不同的 sub-class，这些类是 Hugging Face Transformers 库中用于表示不同类型模型输出的基础类，每个类都提供了特定类型模型输出的结构和信息，以便于在实际任务中对模型输出进行处理和使用。每个 sub-class 都需要用装饰器 `@dataclass`。我们以`CausalLMOutputWithPast`为例看一下源码是什么样的：
 
-```
+```python
 @dataclass
 class CausalLMOutputWithPast(ModelOutput):
     loss: Optional[torch.FloatTensor] = None
@@ -64,7 +66,7 @@ class CausalLMOutputWithPast(ModelOutput):
 
 为了保持代码规范，我们需要在模型的`forward`函数中对输出结果进行封装，示例如下：
 
-```
+```python
 class MyModel(PretrainedModel):
     def __init__(self):
         self.model = ...
@@ -101,7 +103,7 @@ class MyModel(PretrainedModel):
 
 以下是 `PreTrainedModel` 中的部分代码：
 
-```
+```python
 class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMixin, PeftAdapterMixin):
     config_class = None
     base_model_prefix = ""
@@ -126,7 +128,7 @@ class PreTrainedModel(nn.Module, ModuleUtilsMixin, GenerationMixin, PushToHubMix
 
 在这个基类中，大多数属性都被定义为 None 或空字符串，这些属性在具体的预训练模型类中会被重写或填充。接下来我们将看到如何使用 PretrainedModel 类定义 llama 模型。
 
-```
+```python
 class LlamaPreTrainedModel(PreTrainedModel):
     config_class = LlamaConfig
     base_model_prefix = "model"
@@ -155,7 +157,7 @@ class LlamaPreTrainedModel(PreTrainedModel):
 
 * `LlamaModel`是 llama 模型的主体定义类，也就是我们最常见的普pytorch 定义模型的方法、默认的输出格式为`BaseModelOutputWithPast`；
 
-```
+```python
 class LlamaModel(LlamaPreTrainedModel):
 
     def __init__(self, config: LlamaConfig):
@@ -175,7 +177,7 @@ class LlamaModel(LlamaPreTrainedModel):
 
 * `LlamaForCausalLM` 适用于生成式语言模型的 llama 模型，可以看到 backbone 就是 `LlamaModel`，增加了`lm_head`作为分类器，输出长度为词汇表达大小，用来预测下一个单词。输出格式为`CausalLMOutputWithPast`；
 
-```
+```python
 class LlamaForCausalLM(LlamaPreTrainedModel):
     # 适用于生成式语言模型的 Llama 模型定义
 
@@ -194,7 +196,7 @@ class LlamaForCausalLM(LlamaPreTrainedModel):
 
 * `LlamaForSequenceClassification` 适用于序列分类任务的 llama 模型，同样把 `LlamaModel`作为 backbone， 不过增加了`score`作为分类器，输出长度为 label 的数量，用来预测类别。输出格式为`SequenceClassifierOutputWithPast`
 
-```
+```python
 class LlamaForSequenceClassification(LlamaPreTrainedModel):
     # 适用于序列分类任务的 Llama 模型定义
 
@@ -226,7 +228,7 @@ config = BertConfig.from_pretrained("bert-base-uncased", output_attentions=True,
 
 hf 为了造福懒人，提供了更加简便的 API，即 Auto 系列 API。至于有多简便，看看下面的 demo 就知道了：
 
-```
+```python
 from transformers import AutoConfig, AutoModel
 
 # Download configuration from huggingface.co and cache.

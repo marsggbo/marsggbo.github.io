@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/100360301>
+
 > 本文不会介绍LSTM的原理，具体可看如下两篇文章
 
 * **[Understanding LSTM Networks](https://link.zhihu.com/?target=https%3A//colah.github.io/posts/2015-08-Understanding-LSTMs/)**
@@ -76,7 +78,7 @@ mlp然后CNN也好理解，跟MLP无差若干，只是权重运算由$*$变为$\
 
 * **step5, mapping token to an embeddings**:
 
-+ sentence1:$\left[\begin{array}{cccc}{0.341} & {0.133} & {0.011} & {\cdots} \\ {0.435} & {0.081} & {0.501} & {\cdots} \\ {0.013} & {0.958} & {0.121} & {\ldots} \\ {\cdots} & {\cdots} & {\cdots} & {\cdots}\end{array}\right]$,每一列代表一个词向量，词向量维度自行确定(假设一个单词由长度为100的向量表示)；矩阵列数固定为time\_step length。
++ sentence1:![\left[\begin{array}{cccc}{0.341} & {0.133} & {0.011} & {\cdots} \\ {0.435} & {0.081} & {0.501} & {\cdots} \\ {0.013} & {0.958} & {0.121} & {\ldots} \\ {\cdots} & {\cdots} & {\cdots} & {\cdots}\end{array}\right]](https://www.zhihu.com/equation?tex=%5Cleft%5B%5Cbegin%7Barray%7D%7Bcccc%7D%7B0.341%7D+%26+%7B0.133%7D+%26+%7B0.011%7D+%26+%7B%5Ccdots%7D+%5C%5C+%7B0.435%7D+%26+%7B0.081%7D+%26+%7B0.501%7D+%26+%7B%5Ccdots%7D+%5C%5C+%7B0.013%7D+%26+%7B0.958%7D+%26+%7B0.121%7D+%26+%7B%5Cldots%7D+%5C%5C+%7B%5Ccdots%7D+%26+%7B%5Ccdots%7D+%26+%7B%5Ccdots%7D+%26+%7B%5Ccdots%7D%5Cend%7Barray%7D%5Cright%5D),每一列代表一个词向量，词向量维度自行确定(假设一个单词由长度为100的向量表示)；矩阵列数固定为time\_step length。
 + sentence2: ...
 + ……
 
@@ -90,7 +92,7 @@ mlp然后CNN也好理解，跟MLP无差若干，只是权重运算由$*$变为$\
 
 通过**[源代码](https://link.zhihu.com/?target=https%3A//pytorch.org/docs/stable/_modules/torch/nn/modules/rnn.html%23LSTM)**中可以看到`nn.LSTM`继承自`nn.RNNBase`,其初始化函数定义如下
 
-```
+```python
 class RNNBase(Module):
 	...
     def __init__(self, mode, input_size, hidden_size,
@@ -134,7 +136,7 @@ class RNNBase(Module):
 
 * **output**： 维度和输入数据类似，只不过最后的feature部分会有点不同，即 **(seq\_len, batch, num\_directions \* hidden\_size)**
 
-+ 这个输出tensor包含了LSTM模型最后一层每个time step的输出特征，比如说LSTM有两层，那么最后输出的是$[h^1_0,h^1_1,...,h^1_l]$,表示第二层LSTM每个time step对应的输出。
++ 这个输出tensor包含了LSTM模型最后一层每个time step的输出特征，比如说LSTM有两层，那么最后输出的是![[h^1_0,h^1_1,...,h^1_l]](https://www.zhihu.com/equation?tex=%5Bh%5E1_0%2Ch%5E1_1%2C...%2Ch%5E1_l%5D),表示第二层LSTM每个time step对应的输出。
 + 另外如果前面你对输入数据使用了`torch.nn.utils.rnn.PackedSequence`,那么输出也会做同样的操作编程packed sequence。
 + 对于unpacked情况，我们可以对输出做如下处理来对方向作分离`output.view(seq_len, batch, num_directions, hidden_size)`, 其中前向和后向分别用0和1表示Similarly, the directions can be separated in the packed case.
 
@@ -149,7 +151,7 @@ class RNNBase(Module):
 
 ## **3、 代码示例**
 
-```
+```python
 rnn = nn.LSTM(10, 20, 2) # 一个单词向量长度为10，隐藏层节点数为20，LSTM有2层
 input = torch.randn(5, 3, 10) # 输入数据由3个句子组成，每个句子由5个单词组成，单词向量长度为10
 h0 = torch.randn(2, 3, 20) # 2：LSTM层数*方向 3：batch 20： 隐藏层节点数

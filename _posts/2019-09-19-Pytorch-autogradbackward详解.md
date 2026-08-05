@@ -11,13 +11,15 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/83172023>
+
 平常都是无脑使用backward，每次看到别人的代码里使用诸如autograd.grad这种方法的时候就有点抵触，今天花了点时间了解了一下原理，写下笔记以供以后参考。**以下笔记基于Pytorch1.0**
 
 ## **Tensor**
 
 Pytorch中所有的计算其实都可以回归到Tensor上，所以有必要重新认识一下Tensor。如果我们需要计算某个Tensor的导数，那么我们需要设置其`.requires_grad`属性为`True`。为方便说明，在本文中对于这种我们自己定义的变量，我们称之为**叶子节点(leaf nodes)**，而基于叶子节点得到的中间或最终变量则可称之为**结果节点**。例如下面例子中的`x`则是叶子节点，`y`则是结果节点。
 
-```
+```python
 x = torch.rand(3, requires_grad=True)
 y = x**2
 z = x + x
@@ -41,7 +43,7 @@ z = x + x
 
 有如下代码：
 
-```
+```python
 x = torch.tensor(1.0, requires_grad=True)
 y = torch.tensor(2.0, requires_grad=True)
 z = x**2+y
@@ -55,7 +57,7 @@ print(z, x.grad, y.grad)
 
 但是如果遇到z是一个向量或者是一个矩阵的情况，这个时候又该怎么计算梯度呢？这种情况我们需要定义`grad_tensor`来计算矩阵的梯度。在介绍为什么使用之前我们先看一下源代码中backward的接口是如何定义的：
 
-```
+```python
 torch.autograd.backward(
 		tensors, 
 		grad_tensors=None, 
@@ -74,7 +76,7 @@ torch.autograd.backward(
 
 还是用代码做个示例
 
-```
+```python
 x = torch.ones(2,requires_grad=True)
 z = x + 2
 z.backward()
@@ -87,15 +89,17 @@ RuntimeError: grad can be implicitly created only for scalar outputs
 
 上面的报错信息意思是只有对标量输出它才会计算梯度，而求一个矩阵对另一矩阵的导数束手无策。
 
-$$X = \left[\begin{array}{cc} x_0 & x_1 \ \end{array}\right] \,\,\,\,\,\,\,\,\,\ Z=X+2=\left[\begin{array}{cc} x_0+2 & x_1+2 \ \end{array}\right] \Rightarrow \frac{\partial{Z}{\partial{X}=?$$
+![X = \left[\begin{array}{cc} x_0 & x_1 \ \end{array}\right] \,\,\,\,\,\,\,\,\,\ Z=X+2=\left[\begin{array}{cc} x_0+2 & x_1+2 \ \end{array}\right] \Rightarrow \frac{\partial{Z}}{\partial{X}}=?](https://www.zhihu.com/equation?tex=X+%3D+%5Cleft%5B%5Cbegin%7Barray%7D%7Bcc%7D+x_0+%26+x_1+%5C+%5Cend%7Barray%7D%5Cright%5D+%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C%2C%5C+Z%3DX%2B2%3D%5Cleft%5B%5Cbegin%7Barray%7D%7Bcc%7D+x_0%2B2+%26+x_1%2B2+%5C+%5Cend%7Barray%7D%5Cright%5D+%5CRightarrow+%5Cfrac%7B%5Cpartial%7BZ%7D%7D%7B%5Cpartial%7BX%7D%7D%3D%3F)
 
 那么我们只要想办法把矩阵转变成一个标量不就好了？比如我们可以对z求和，然后用求和得到的标量在对x求导，这样不会对结果有影响，例如：
 
-$$\begin{align} &Z_{sum}=\sum{z_i}=x_0+x_1+4 \notag \ &\text{then} \,\,\,\,\,  \frac{\partial{Z{sum}{\partial{x_0}=\frac{\partial{Z{sum}{\partial{x_1}=1 \notag \end{align}$$
+$$
+\begin{align} &Z_{sum}=\sum{z_i}=x_0+x_1+4 \notag \ &\text{then} \,\,\,\,\,  \frac{\partial{Z{sum}}}{\partial{x_0}}=\frac{\partial{Z{sum}}}{\partial{x_1}}=1 \notag \end{align}
+$$
 
 我们可以看到对z求和后再计算梯度没有报错，结果也与预期一样：
 
-```
+```python
 x = torch.ones(2,requires_grad=True)
 z = x + 2
 z.sum().backward()
@@ -108,7 +112,7 @@ print(x.grad)
 
 代码如下：
 
-```
+```python
 x = torch.ones(2,requires_grad=True)
 z = x + 2
 z.backward(torch.ones_like(z)) # grad_tensors需要与输入tensor大小一致
@@ -119,7 +123,7 @@ print(x.grad)
 
 弄个再复杂一点的：
 
-```
+```python
 x = torch.tensor([2., 1.], requires_grad=True)
 y = torch.tensor([[1., 2.], [3., 4.]], requires_grad=True)
 
@@ -145,7 +149,7 @@ y.grad: tensor([[2., 0.],
 
 ## **torch.autograd.grad**
 
-```
+```python
 torch.autograd.grad(
 		outputs, 
 		inputs, 

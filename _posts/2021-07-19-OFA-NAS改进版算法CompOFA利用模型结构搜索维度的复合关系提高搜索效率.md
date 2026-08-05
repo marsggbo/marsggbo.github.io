@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/391052412>
+
 ## **1. 长话短说**
 
 这篇论文（简称CompOFA）主要是基于 [Once for all: Train One Network and Specialize it for Efficient Deployment](https://zhuanlan.zhihu.com/p/391042698) 论文的改进，其主要就是把原来OFA的搜索空间简化，带来的好处有

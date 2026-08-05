@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/99080287>
+
 之前一篇文章介绍了AutoML论文聚合平台
 
 [AutoML论文聚合平台](https://zhuanlan.zhihu.com/p/97961636)
@@ -27,8 +29,7 @@ toc:
 
 action代码设置如下：
 
-{% raw %}
-```
+```yaml
 name: Python application
 
 on: [push]
@@ -64,7 +65,6 @@ jobs:
       with:
         github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
-{% endraw %}
 
 代码解释：
 

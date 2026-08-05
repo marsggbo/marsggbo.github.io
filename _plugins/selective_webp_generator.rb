@@ -127,8 +127,8 @@ module SelectiveWebp
     end
 
     def converter_binary
-      return 'magick' if system('command', '-v', 'magick', out: File::NULL, err: File::NULL)
-      return 'convert' if system('command', '-v', 'convert', out: File::NULL, err: File::NULL)
+      return 'magick' if system('which', 'magick', out: File::NULL, err: File::NULL)
+      return 'convert' if system('which', 'convert', out: File::NULL, err: File::NULL)
 
       raise 'ImageMagick binary not found. Expected `magick` or `convert` in PATH.'
     end

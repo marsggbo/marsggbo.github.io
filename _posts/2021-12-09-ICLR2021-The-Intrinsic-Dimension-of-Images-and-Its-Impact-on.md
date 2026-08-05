@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/443219643>
+
 ## **1. 长话短说**
 
 这篇论文主要是通过设计一系列实验得到不同实验集的ID（Intrinsic Dimension），然后给出观察到的现象。这些现象也是比较符合直觉的，总结起来有这么几点：
@@ -38,11 +40,11 @@ toc:
 
 一个常见的ID估计方法是找出每个样本点的 top-k 最近邻居，然后对邻居之间的距离进行建模。文献[3]中基于泊松过程使用了最大似然估计 (MLE) ，公式如下：
 
-$$\hat{m}_{k}(x)=\left[\frac{1}{k-1} \sum_{j=1}^{k-1} \log \frac{T_{k}(x)}{T_{j}(x)}\right]^{-1} \tag{1}$$
+![\hat{m}_{k}(x)=\left[\frac{1}{k-1} \sum_{j=1}^{k-1} \log \frac{T_{k}(x)}{T_{j}(x)}\right]^{-1} \tag{1} ](https://www.zhihu.com/equation?tex=%5Chat%7Bm%7D_%7Bk%7D%28x%29%3D%5Cleft%5B%5Cfrac%7B1%7D%7Bk-1%7D+%5Csum_%7Bj%3D1%7D%5E%7Bk-1%7D+%5Clog+%5Cfrac%7BT_%7Bk%7D%28x%29%7D%7BT_%7Bj%7D%28x%29%7D%5Cright%5D%5E%7B-1%7D+%5Ctag%7B1%7D+)
 
 其中$T_j(x)$表示 采样点 $x$ 到 它第j个最近邻居的欧氏距离 (norm2)。不过公式(1)是某一个样本点的结果，所有后面有算法[4]做出了修正，即取多个 (n) 样本点ID估计值的均值
 
-$$\bar{m}_{k}=\left[\frac{1}{n} \sum_{i=1}^{n} \hat{m}_{k}\left(x_{i}\right)^{-1}\right]^{-1}=\left[\frac{1}{n(k-1)} \sum_{i=1}^{n} \sum_{j=1}^{k-1} \log \frac{T_{k}\left(x_{i}\right)}{T_{j}\left(x_{i}\right)}\right]^{-1} \tag{2}$$
+![\bar{m}_{k}=\left[\frac{1}{n} \sum_{i=1}^{n} \hat{m}_{k}\left(x_{i}\right)^{-1}\right]^{-1}=\left[\frac{1}{n(k-1)} \sum_{i=1}^{n} \sum_{j=1}^{k-1} \log \frac{T_{k}\left(x_{i}\right)}{T_{j}\left(x_{i}\right)}\right]^{-1} \tag{2} ](https://www.zhihu.com/equation?tex=%5Cbar%7Bm%7D_%7Bk%7D%3D%5Cleft%5B%5Cfrac%7B1%7D%7Bn%7D+%5Csum_%7Bi%3D1%7D%5E%7Bn%7D+%5Chat%7Bm%7D_%7Bk%7D%5Cleft%28x_%7Bi%7D%5Cright%29%5E%7B-1%7D%5Cright%5D%5E%7B-1%7D%3D%5Cleft%5B%5Cfrac%7B1%7D%7Bn%28k-1%29%7D+%5Csum_%7Bi%3D1%7D%5E%7Bn%7D+%5Csum_%7Bj%3D1%7D%5E%7Bk-1%7D+%5Clog+%5Cfrac%7BT_%7Bk%7D%5Cleft%28x_%7Bi%7D%5Cright%29%7D%7BT_%7Bj%7D%5Cleft%28x_%7Bi%7D%5Cright%29%7D%5Cright%5D%5E%7B-1%7D+%5Ctag%7B2%7D+)
 
 基于MLE估计得到ID值有两个需要注意的问题：
 

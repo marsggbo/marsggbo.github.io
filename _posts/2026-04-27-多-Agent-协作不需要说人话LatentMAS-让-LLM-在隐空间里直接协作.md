@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/2032219144121209209>
+
 > 原文：[Latent Collaboration in Multi-Agent Systems](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2511.20639)
 
 ## 1. 前言
@@ -66,7 +68,9 @@ LatentMAS 把中间的"解码-重编码"去掉了：**直接把最后一层的 h
 
 论文提出了一个很巧妙的 **Input-Output Alignment**：构造一个对齐矩阵 $W_a$，把 $h_t$ 映射回输入 embedding 空间：
 
-$$\e = h \cdot W_a, \quad \text{其中} \quad W_a \approx W_{out}^{-1} \cdot W_{in}$$
+$$
+\\e = h \cdot W_a, \quad \text{其中} \quad W_a \approx W_{out}^{-1} \cdot W_{in}
+$$
 
 这里 $W_{out}$ 是 LM head，$W_{in}$ 是 token embedding 层。$W_a$ 只需要算一次，后面所有 latent step 复用。实际实现用的是 ridge regression 的闭式解来保证数值稳定性。
 
@@ -78,7 +82,9 @@ $$\e = h \cdot W_a, \quad \text{其中} \quad W_a \approx W_{out}^{-1} \cdot W_{
 
 agent $A_1$ 完成 $m$ 步 latent thoughts 生成后，它的所有 transformer 层都积累了一整套 KV cache。这些 KV cache 不仅包含了原始输入的信息，还包含了 $m$ 步 latent reasoning 产生的新信息。论文把这整套 KV cache 定义为 agent $A_1$ 的 **latent working memory**：
 
-$$\mathcal{M}_{A_1} = \{(K^{(l)}_{A_1,cache}, V^{(l)}_{A_1,cache}) \mid l = 1, 2, \ldots, L\}$$
+$$
+\\\mathcal{M}_{A_1} = \{(K^{(l)}_{A_1,cache}, V^{(l)}_{A_1,cache}) \mid l = 1, 2, \ldots, L\}
+$$
 
 下一个 agent $A_2$ 接手时，做一步简单操作：**把 $A_1$ 的 KV cache 拼接到自己对应层的 KV cache 前面**。就这样，$A_2$ 就"看到"了 $A_1$ 所有的思考过程——包括它对原始 prompt 的处理和 $m$ 步 latent reasoning 的结果。
 

@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【论文笔记系列】AutoML：A Survey of State-of-the-art （上）"
+title: 【论文笔记系列】AutoML：A Survey of State-of-the-art （上）
 date: '2020-02-11'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/106205363>
 
 > 之前已经发过一篇文章来介绍我写的**[AutoML综述](https://zhuanlan.zhihu.com/p/77417817)**，最近把文章内容做了更新，所以这篇稍微细致地介绍一下。由于篇幅有限，下面介绍的方法中涉及到的细节感兴趣的可以移步到论文中查看。 论文地址：[https://arxiv.org/abs/1908.00709](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1908.00709)  
 >    

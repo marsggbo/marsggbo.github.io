@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/688660090>
+
 [大模型推理框架 vLLM 源码解析（一）：框架概览](https://zhuanlan.zhihu.com/p/681402162)
 
 ## 1. Block 概览
@@ -31,7 +33,7 @@ block 的大小可以自定义，上面定义为 4，简单理解就是每个 bl
 
 所以，我们只需要计算出单个 token 的 kv cache 对应的大小即可。block 大小的计算方法由`vllm/vllm/worker/cache_engine.py`文件里`CacheEngine`类的`get_cache_block_size`函数实现，代码也很简单，简化后如下：
 
-```
+```python
 # vllm/vllm/worker/cache_engine.py
 class CacheEngine:
     @staticmethod
@@ -70,7 +72,7 @@ class CacheEngine:
 
 block 数量计算由`vllm/vllm/worker/worker.py`文件中`Worker`类的`profile_num_available_blocks`函数实现，该函数很简单，简化代码如下：
 
-```
+```python
 class Worker
     @torch.inference_mode()
     def profile_num_available_blocks(
@@ -118,7 +120,7 @@ class Worker
 
 逻辑 Block（`LogicalTokenBlock`）定义如下：
 
-```
+```python
 # vllm/vllm/block.py
 class LogicalTokenBlock:
     def __init__(
@@ -168,7 +170,7 @@ class LogicalTokenBlock:
 
 我们结合代码来看会更好理解，如下：
 
-```
+```python
 # vllm/vllm/sequence.py
 class Sequence:
 	def __init__(self, ...):
@@ -211,7 +213,7 @@ class Sequence:
 * device: Device: 是一个 enum.Enum 实例对象，要么是 CPU 要么是 GPU。
 * self.ref\_count 变量用来指示这个 block 被使用的次数，默认为 0，代表没有使用。可以大于等于 1，表示这个 block 内 token 的 cache 被重复利用，使用场景比如可以是 beam search，这样可以重复利用 cache，减少内存开销。
 
-```
+```python
 # vllm/vllm/block.py
 class PhysicalTokenBlock:
     def __init__(
@@ -240,7 +242,7 @@ class PhysicalTokenBlock:
 * `allocate`: 通过 list 的 pop() 函数返回一个可用的 block，并将该 block 的`ref_count`设置为 1
 * `free`：回收一个指定的 `PhysicalBlock`，但是回收的前提是这个 block 的`ref_count`变量值为 0，表示这个 block 内的 token kv cache 数据不再需要了。
 
-```
+```python
 # vllm/vllm/core/block_manager.py
 class BlockAllocator:
     def __init__(
@@ -283,7 +285,7 @@ class BlockAllocator:
 
 在介绍这个 Block 管理模块之前，我们先了解 vLLM 中设置的用来判断句子是否能够被分配物理 Block 的三种状态，代码如下：
 
-```
+```python
 # vllm/vllm/core/block_manager.py
 class AllocStatus(enum.Enum):
     """Result for BlockSpaceManager.can_allocate
@@ -305,7 +307,7 @@ class AllocStatus(enum.Enum):
 
 * 初始化函数`__init__`: - `watermark`: 一种阈值机制，用来决定何时停止在 GPU 上分配新的块，以避免内存不足 - `watermark_blocks`: 计算出在达到内存不足前，还能在 GPU 上分配多少个块。 - `sliding_window`: 可选参数，用来限制在任意给定时间内活跃的逻辑块的数量，有助于控制内存使用。 - 创建了 cpu 和 gpu 两种 `BlockAllocator`,不过需要注意这里都是物理层面的 Block - 创建了一个字典 `block_tables`，用于存储每个 sequence id 和它所使用的物理块之间的映射。通过这个 sequence id ，我们就能找到对应的前面介绍的`Sequence`实例化对象，通过这个字典，就建立了逻辑 block 和物理 block 的映射关系。
 
-```
+```python
 # vllm/vllm/core/block_manager.py
 class BlockSpaceManager:
     def __init__(
@@ -340,7 +342,7 @@ class BlockSpaceManager:
 
 * `can_allocate`
 
-```
+```python
 class BlockSpaceManager:
     def can_allocate(self, seq_group: SequenceGroup) -> AllocStatus:
         seq = seq_group.get_seqs(status=SequenceStatus.WAITING)[0]
@@ -376,7 +378,7 @@ class BlockSpaceManager:
 
 * `allocate` 代码有简化，但是不影响理解
 
-```
+```python
 class BlockSpaceManager:
    def allocate(self, seq_group: SequenceGroup) -> None:
         seq = seq_group.get_seqs(status=SequenceStatus.WAITING)[0]

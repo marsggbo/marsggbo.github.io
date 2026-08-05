@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/97244535>
+
 > torchline地址：[https://github.com/marsggbo/torchline](https://link.zhihu.com/?target=https%3A//github.com/marsggbo/torchline)
 
 相信大家平时在使用Pytorch搭建网络时，多少还是会觉得繁琐，因为我们需要搭建数据读取，模型，训练，checkpoints保存等等一系列模块。每当切换到新的任务后很多情况下之前的代码不能复用，或者说要复用就需要做很多地方的修改，到最后还不如重新写一遍。所幸，pytorch\_lightning让这一过程简化了很多，相信如果你用过这个库你也会体验到它的方便性。但是torchline的存在是让你使用Pytorch更加的顺滑舒畅。

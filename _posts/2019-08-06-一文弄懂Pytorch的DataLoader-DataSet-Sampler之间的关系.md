@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/76893455>
+
 > 以下内容都是针对Pytorch 1.0-1.1介绍。  
 > 很多文章都是从Dataset等对象自下往上进行介绍，但是对于初学者而言，其实这并不好理解，因为有的时候会不自觉地陷入到一些细枝末节中去，而不能把握重点，所以本文将会**自上而下**地对Pytorch数据读取方法进行介绍。
 
@@ -18,7 +20,7 @@ toc:
 
 首先我们看一下[DataLoader.\_\_next\_\_](https://link.zhihu.com/?target=https%3A//github.com/pytorch/pytorch/blob/0b868b19063645afed59d6d49aff1e43d1665b88/torch/utils/data/dataloader.py%23L557-L563)的源代码长什么样,为方便理解我只选取了num\_works为0的情况（num\_works简单理解就是能够并行化地读取数据）。
 
-```
+```python
 class DataLoader(object):
     ...
     
@@ -49,7 +51,7 @@ class DataLoader(object):
 
 要更加细致地理解Sampler原理，我们需要先阅读一下DataLoader 的源代码，如下：
 
-```
+```python
 class DataLoader(object):
     def __init__(self, dataset, batch_size=1, shuffle=False, sampler=None,
                  batch_sampler=None, num_workers=0, collate_fn=default_collate,
@@ -84,7 +86,7 @@ Pytorch中已经实现的`Sampler`有如下几种：
 
 仔细查看源代码其实可以发现，所有采样器其实都继承自同一个父类，即`Sampler`,其代码定义如下：
 
-```
+```python
 class Sampler(object):
     r"""Base class for all Samplers.
     Every Sampler subclass has to provide an :meth:`__iter__` method, providing a
@@ -113,7 +115,7 @@ class Sampler(object):
 
 Dataset定义方式如下：
 
-```
+```python
 class Dataset(object):
     def __init__(self):
         ...
@@ -127,7 +129,7 @@ class Dataset(object):
 
 上面三个方法是最基本的，其中`__getitem__`是最主要的方法，它规定了如何读取数据。但是它又不同于一般的方法，因为它是python built-in方法，其主要作用是能让该类可以像list一样通过索引值对数据进行访问。假如你定义好了一个dataset，那么你可以直接通过`dataset[0]`来访问第一个数据。在此之前我一直没弄清楚`__getitem__`是什么作用，所以一直不知道该怎么进入到这个函数进行调试。现在如果你想对`__getitem__`方法进行调试，你可以写一个for循环遍历dataset来进行调试了，而不用构建dataloader等一大堆东西了，建议学会使用`ipdb`这个库，非常实用！！！以后有时间再写一篇ipdb的使用教程。另外，其实我们通过最前面的Dataloader的`__next__`函数可以看到DataLoader对数据的读取其实就是用了for循环来遍历数据,不用往上翻了，我直接复制了一遍，如下：
 
-```
+```python
 class DataLoader(object): 
     ... 
      

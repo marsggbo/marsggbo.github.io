@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/452668798>
+
 > Decoupling representation and classifier for long-tailed recognition  
 > 代码链接：[https://github.com/facebookresearch/classifier-balancing](https://link.zhihu.com/?target=https%3A//github.com/facebookresearch/classifier-balancing)
 
@@ -34,13 +36,17 @@ toc:
 
 每个样本被采样的概率可以表示成如下：$C$表示类别数量, $n_j$表示第 j 类的样本数，$q\in\{0,1,0.5\}$分别表示不同的采样策略。
 
-$$p_{j}=\frac{n_{j}^{q}{\sum_{i=1}^{C} n_{i}^{q} \tag{1}$$
+$$
+p_{j}=\frac{n_{j}^{q}}{\sum_{i=1}^{C} n_{i}^{q}} \tag{1}
+$$
 
 1. Instance-balanced (IB) sampling：这个就是最普通也是最常用的采样策略，即每个样本被采样的概率均等，对应公式(1)中的 $q=1$。
 2. Class-balanced (CB) sampling: 这个就是说每个类别被采样的概率相等，比如我们总共有4类，每次采样的batch包含64个样本，那么每个batch中一定包含4个类别，每个类别的数量都是16，只不过类别里的样本被采样的概率就是相等的。具体的实现可以参考`catalyst.data.sampler.BatchBalanceClassSampler` [[代码](https://link.zhihu.com/?target=https%3A//github.com/catalyst-team/catalyst/blob/678dc06eda1848242df010b7f34adb572def2598/catalyst/data/sampler.py%3F_pjax%3D%2523js-repo-pjax-container%252C%2520div%255Bitemtype%253D%2522http%253A%252F%252Fschema.org%252FSoftwareSourceCode%2522%255D%2520main%252C%2520%255Bdata-pjax-container%255D%23L111)]。公式(1)中$q=0$时表示每个类别被采样的概率相等
 3. Progressively-balanced sampling：这个其实就是将上面 Instance-和Class- balanced做了结合，即下式， $t,T$分别表示当前的epoch和总的epoch数。
 
-$$p_{j}^{\mathrm{PB}(t)=\left(1-\frac{t}{T}\right) p_{j}^{\mathrm{IB}+\frac{t}{T} p_{j}^{\mathrm{CB} \tag{2}$$
+$$
+p_{j}^{\mathrm{PB}}(t)=\left(1-\frac{t}{T}\right) p_{j}^{\mathrm{IB}}+\frac{t}{T} p_{j}^{\mathrm{CB}} \tag{2}
+$$
 
 1. Square-root sampling: 对应公式(1)中$q=0.5$
 
@@ -56,11 +62,15 @@ $$p_{j}^{\mathrm{PB}(t)=\left(1-\frac{t}{T}\right) p_{j}^{\mathrm{IB}+\frac{t}{T
 2. **Nearest Class Mean classifier (NCM)**： 这个是非参数方法，即先使用训练集计算出 $C$ 个类别的中心 feature tensor，然后每次做预测的时候使用 cosine similarity或者 MSE loss计算出每个样本离这些中心feature的距离，离谁更近就预测属于哪一类，这类似于KNN算法
 3. **$\tau$-normalized classifier** ：我们知道在 TL 数据集上，模型在预测的时候会倾向于把样本都预测成类别多的那一类，极端情况甚至全都预测成同一类。假设这一类是第 $i$ 类，这个时候很有可能是因为最后预测器（即全连接层）的第 $i$ 类的权重值远大于其他类别的权重，所以一种解决办法就是给分类器的权重加上正则项，公式如下，$\tau$ 是一个超参数，当$\tau=1$时，下式就等价于普通的 L2正则。一般取值是在0到1之间。
 
-$$\widetilde{w_{i}=\frac{w_{i}{\left\|w_{i}\right\|^{\tau} \tag{3}$$
+$$
+\widetilde{w_{i}}=\frac{w_{i}}{\left\|w_{i}\right\|^{\tau}} \tag{3}
+$$
 
 1. **Learnable weight scaling (LWS)**：公式3中的分母是依赖于权重值，当然我们也可以让分母设置成一个可学习的参数 $f_i$，它的初始值和公式3一致（如下式）。在优化 $f_i$的过程中，representations和classifier的参数都是固定住的。
 
-$$\widetilde{w_{i}=f_{i} * w_{i}, \text { where } f_{i}=\frac{1}{\left\|w_{i}\right\|^{\tau} \tag{4}$$
+$$
+\widetilde{w_{i}}=f_{i} * w_{i}, \text { where } f_{i}=\frac{1}{\left\|w_{i}\right\|^{\tau}} \tag{4}
+$$
 
 ## **4. 实验**
 

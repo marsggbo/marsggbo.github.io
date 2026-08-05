@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【GAMES101-现代计算机图形学课程笔记】Lecture 08 Shading 2 （着色管线）"
+title: 【GAMES101-现代计算机图形学课程笔记】Lecture 08 Shading 2 （着色管线）
 date: '2020-05-26'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/143658280>
 
 本节内容概要：
 
@@ -30,7 +32,9 @@ toc:
 
 上一节主要介绍了漫反射，由下图我们知道着色点（shading point）的明暗程度与相机（观测）角度无关。具体的光线强度计算公式：
 
-$$L_{d}=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot 1)$$
+$$
+L_{d}=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot 1) \\
+$$
 
 上面公式中的$k_d$表示漫反射系数，中间$I/r^2$表示理论上每个着色点对应的光强度，最后一项$\max (0, \mathbf{n} \cdot 1)$表示吸收的能量比例，可以看到只与法向和光的方向夹角有关。
 
@@ -50,13 +54,17 @@ $$L_{d}=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot 1)$$
 
 可以看到首先需要定义一个新的矢量，叫做**半程矢量(bisector)**,其实表示的就是光入射方向$l$和观测方向$v$的中间矢量。
 
-$$\begin{aligned} \mathbf{h} &=\operatorname{bisector}(\mathbf{v}, \mathbf{l}) \\ &=\frac{\mathbf{v}+\mathbf{l}{\|\mathbf{v}+\mathbf{l}\|} \end{aligned}$$
+$$
+\begin{aligned} \mathbf{h} &=\operatorname{bisector}(\mathbf{v}, \mathbf{l}) \\ &=\frac{\mathbf{v}+\mathbf{l}}{\|\mathbf{v}+\mathbf{l}\|} \end{aligned}\\
+$$
 
 很显然，当$v$越接近$R$,那么$h$也就会越接近$n$，所以前面判断$v$和$R$的相似问题就转化成了$n$和$h$的相似问题，很显然$h$的计算要简单很多，只需要把两个矢量相加即可求得。
 
 另外，类似于前面介绍的漫反射计算公式，镜面反射公式如下：
 
-$$\begin{aligned} L_{s} &=k_{s}\left(I / r^{2}\right) \max (0, \cos \alpha)^{p} \\ &=k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}$$
+$$
+\begin{aligned} L_{s} &=k_{s}\left(I / r^{2}\right) \max (0, \cos \alpha)^{p} \\ &=k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}\\
+$$
 
 * $k_s$表示镜面反射系数，一般默认高光就是白色的，也就是说该系数通常设置为1。
 * $I/r^2$: 同最上
@@ -78,7 +86,9 @@ $$\begin{aligned} L_{s} &=k_{s}\left(I / r^{2}\right) \max (0, \cos \alpha)^{p} 
 
 那么某个点的环境光计算公式为：
 
-$$L_{a}=k_{a} I_{a}$$
+$$
+L_{a}=k_{a} I_{a} \\
+$$
 
 可以看到环境光其实就是一个常数，其与法向、观测方向和光的入射方向都没有关系。（当然，以上都是很强假设和简化）
 
@@ -88,7 +98,9 @@ $$L_{a}=k_{a} I_{a}$$
 
 ![](/assets/img/marsggbo/2020-05-26-GAMES101-现代计算机图形学课程笔记Lecture-08-Shading-2-着色管线/50e91c4d.jpg)
 
-$$\begin{aligned} L &=L_{a}+L_{d}+L_{s} \\ &=k_{a} I_{a}+k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l})+k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}$$
+$$
+\begin{aligned} L &=L_{a}+L_{d}+L_{s} \\ &=k_{a} I_{a}+k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l})+k_{s}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{h})^{p} \end{aligned}\\
+$$
 
 ## **2. Shading frequencies**
 
@@ -128,7 +140,9 @@ Phone shading的大致思路是首先计算出每个三角形顶点的法向方�
 
 下图中的中间那个顶点被四个三角形共用，那么该顶点的法向计算公式很简单其实就是四个三角形平面法向相加求平均，这种计算方法在实践中也被证明是有效的。
 
-$$N_{v}=\frac{\sum_{i} N_{i}{\left\|\sum_{i} N_{i}\right\|}$$
+$$
+N_{v}=\frac{\sum_{i} N_{i}}{\left\|\sum_{i} N_{i}\right\|} \\
+$$
 
 当然这样计算会有一定误差，所以一种改进的计算方式是加权平均，权重即为每个三角形的面积。
 
@@ -181,7 +195,9 @@ $$N_{v}=\frac{\sum_{i} N_{i}{\left\|\sum_{i} N_{i}\right\|}$$
 
 由前面提到的漫反射计算公式
 
-$$L_d=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l})$$
+$$
+L_d=k_{d}\left(I / r^{2}\right) \max (0, \mathbf{n} \cdot \mathbf{l}) \\
+$$
 
 可以知道物体表面纹理是由漫反射系数$k_d$控制的,换言之每个像素的漫反射系数应该都可以设置成不同的值从而显示出不同的效果，那么这个怎么做呢？
 

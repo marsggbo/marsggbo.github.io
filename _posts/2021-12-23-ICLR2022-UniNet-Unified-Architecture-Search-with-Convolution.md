@@ -1,6 +1,6 @@
 ---
 layout: post
-title: 'ICLR2022 | UniNet: Unified Architecture Search with Convolution, Transformer,
+title: ICLR2022 | UniNet: Unified Architecture Search with Convolution, Transformer, and MLP
   and MLP'
 date: '2021-12-23'
 tags: [techniques]
@@ -11,6 +11,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/449177989>
 
 ## **1. 主要创新**
 
@@ -52,9 +54,9 @@ toc:
 
 * GOP （General Operations）：包含 Convolution, transformer,和 MLP。三种操作都之采用了类似inverted residual的设计方式，即先把原来的通道数c 通过映射扩大ec，然后在通过映射还原为 c，各操作公式如下：
 
-+ conv: $y=x+op(x),$ 其中 $op(x) = Proj_{ec\rightarrow{c}(Conv(Proj_{c\rightarrow{ec}(x)))$
-+ transformer: $y=y'+FFN(y')$，其中 $y'=x+SelfAttention(x)$, $FFN(y')=Proj_{ec\rightarrow{c}(Conv(Proj_{c\rightarrow{ec}(y')))$
-+ MLP: $y=y'+FFN(y')$，其中 $y'=x+MLP(x)$, $FFN(y')=Proj_{ec\rightarrow{c}(Conv(Proj_{c\rightarrow{ec}(y')))$
++ conv: $y=x+op(x),$ 其中 $op(x) = Proj_{ec\rightarrow{c}}(Conv(Proj_{c\rightarrow{ec}}(x)))$
++ transformer: $y=y'+FFN(y')$，其中 $y'=x+SelfAttention(x)$, $FFN(y')=Proj_{ec\rightarrow{c}}(Conv(Proj_{c\rightarrow{ec}}(y')))$
++ MLP: $y=y'+FFN(y')$，其中 $y'=x+MLP(x)$, $FFN(y')=Proj_{ec\rightarrow{c}}(Conv(Proj_{c\rightarrow{ec}}(y')))$
 
 * DSM （Down-sampling Modules）
 

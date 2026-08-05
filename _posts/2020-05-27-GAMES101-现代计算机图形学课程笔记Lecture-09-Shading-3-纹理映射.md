@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【GAMES101-现代计算机图形学课程笔记】Lecture 09 Shading 3 （纹理映射）"
+title: 【GAMES101-现代计算机图形学课程笔记】Lecture 09 Shading 3 （纹理映射）
 date: '2020-05-27'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/143921237>
 
 前面已经介绍了着色的大部分内容：
 
@@ -46,7 +48,9 @@ toc:
 
 说起来有点绕，直接看下图，下图给出了重心坐标的示意图。下图中三角形三个顶点分别是A,B,C(假设是2D空间), 其中红点可以是三角形内任意的点，该点的真实坐标为$(x,y)$，重心坐标为$(\alpha,\beta,\gamma)$，真实坐标和重心坐标满足如下关系：即该点的直角坐标是三个顶点直角坐标的线性组合，且系数之和为1，且每个系数是非负的。
 
-$$\begin{aligned} (x, y)=& \alpha A+\beta B+\gamma C \\ =& \alpha(x_A,y_A) + \beta(x_B,y_B) + \gamma (x_C,y_C)\\ \Rightarrow  s.t. \,\, & \alpha+\beta+\gamma=1 \\ & \alpha\ge 0,\beta\ge 0,\gamma\ge 0 \end{aligned}$$
+$$
+\begin{aligned} (x, y)=& \alpha A+\beta B+\gamma C \\ =& \alpha(x_A,y_A) + \beta(x_B,y_B) + \gamma (x_C,y_C)\\ \Rightarrow  s.t. \,\, & \alpha+\beta+\gamma=1 \\ & \alpha\ge 0,\beta\ge 0,\gamma\ge 0 \end{aligned}\\
+$$
 
 举例来说，A点的重心坐标为(1,0,0)
 
@@ -54,7 +58,9 @@ $$\begin{aligned} (x, y)=& \alpha A+\beta B+\gamma C \\ =& \alpha(x_A,y_A) + \be
 
 上面重心坐标的三个系数是从坐标的角度计算得到的，其实也可以从几何角度来计算。具体来说就是计算三角形面积占比。以下图为例，我们随便选取一个三角形内的点，然后将三个顶点和该点连接后可以得到三个子三角形，那么三个系数计算公式如下：
 
-$$\begin{aligned} \alpha &=\frac{A_{A}{A_{A}+A_{B}+A_{C} \\ \beta &=\frac{A_{B}{A_{A}+A_{B}+A_{C} \\ \gamma &=\frac{A_{C}{A_{A}+A_{B}+A_{C} \end{aligned}$$
+$$
+\begin{aligned} \alpha &=\frac{A_{A}}{A_{A}+A_{B}+A_{C}} \\ \beta &=\frac{A_{B}}{A_{A}+A_{B}+A_{C}} \\ \gamma &=\frac{A_{C}}{A_{A}+A_{B}+A_{C}} \end{aligned}\\
+$$
 
 $A_A$表示$Area_A$
 
@@ -64,7 +70,9 @@ $A_A$表示$Area_A$
 
 基于上面的介绍，这里给出任意点的重心坐标计算公式：
 
-$$\begin{array}{l} \alpha=\frac{-\left(x-x_{B}\right)\left(y_{C}-y_{B}\right)+\left(y-y_{B}\right)\left(x_{C}-x_{B}\right)}{-\left(x_{A}-x_{B}\right)\left(y_{C}-y_{B}\right)+\left(y_{A}-y_{B}\right)\left(x_{C}-x_{B}\right)} \\ \beta=\frac{-\left(x-x_{C}\right)\left(y_{A}-y_{C}\right)+\left(y-y_{C}\right)\left(x_{A}-x_{C}\right)}{-\left(x_{B}-x_{C}\right)\left(y_{A}-y_{C}\right)+\left(y_{B}-y_{C}\right)\left(x_{A}-x_{C}\right)} \\ \gamma=1-\alpha-\beta \end{array}$$
+$$
+\begin{array}{l} \alpha=\frac{-\left(x-x_{B}\right)\left(y_{C}-y_{B}\right)+\left(y-y_{B}\right)\left(x_{C}-x_{B}\right)}{-\left(x_{A}-x_{B}\right)\left(y_{C}-y_{B}\right)+\left(y_{A}-y_{B}\right)\left(x_{C}-x_{B}\right)} \\ \beta=\frac{-\left(x-x_{C}\right)\left(y_{A}-y_{C}\right)+\left(y-y_{C}\right)\left(x_{A}-x_{C}\right)}{-\left(x_{B}-x_{C}\right)\left(y_{A}-y_{C}\right)+\left(y_{B}-y_{C}\right)\left(x_{A}-x_{C}\right)} \\ \gamma=1-\alpha-\beta \end{array}\\
+$$
 
 ## **1.2 重心坐标插值**
 
@@ -135,7 +143,9 @@ Pixel和Texel的区别可以参考如下两个图：
 
 1. 线性插值(linear interpolation, **lerp**)的计算公式为：
 
-$$lerp(x,v_0 ,v_1 ) = v_0 + x(v_1 - v_0 )$$
+$$
+lerp(x,v_0 ,v_1 ) = v_0 + x(v_1 - v_0 ) \\
+$$
 
 那么很自然，这里红点对应到$u_{00}$和$u_{10}$之间的点$u_0$的值就等 $u_{0}=lerp\left(s, u_{00}, u_{10}\right)$；同理红点对应到$u_{01}$和$u_{11}$之间的点$u_1$的值就等 $u_{1}=lerp\left(s, u_{01}, u_{11}\right)$
 
@@ -199,7 +209,9 @@ MipMap方法如下：首先它会将原始的纹理图不断下采样，有点�
 
 对于每个像素点我们都可以找到它的邻居像素点所对应的UV坐标，如下图示，其实我们也可以得到右边那样的不规则图形，然后用那个图形内部纹理的平均值作为该像素的纹理。投影后纹素点之间的距离($L$)计算公式为：
 
-$$L=\max (\sqrt{\left(\frac{d u}{d x}\right)^{2}+\left(\frac{d v}{d x}\right)^{2}, \sqrt{\left(\frac{d u}{d y}\right)^{2}+\left(\frac{d v}{d y}\right)^{2})$$
+$$
+L=\max (\sqrt{\left(\frac{d u}{d x}\right)^{2}+\left(\frac{d v}{d x}\right)^{2}}, \sqrt{\left(\frac{d u}{d y}\right)^{2}+\left(\frac{d v}{d y}\right)^{2}}) \\
+$$
 
 上面为什么要用微分还没有太理解，这里把GAMES微信群里其他大佬的解释放上来仅供参考：
 

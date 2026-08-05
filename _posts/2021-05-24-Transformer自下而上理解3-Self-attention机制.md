@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/374868669>
+
 > “ 本文笔记参考Wang Shusen老师的课程：[https://www.youtube.com/watch?v=Vr4UNt7X6Gw&list=PLvOO0btloRnuTUGN4XqO85eKPeFSZsEqK&index=9](https://link.zhihu.com/?target=https%3A//www.youtube.com/watch%3Fv%3DVr4UNt7X6Gw%26list%3DPLvOO0btloRnuTUGN4XqO85eKPeFSZsEqK%26index%3D9)  
 >  ”
 
@@ -48,7 +50,7 @@ toc:
 
 计算$h$的方法千篇一律，都是那当前的输入$x_i$和前一时刻的context vector $c_{i-1}$拼接成一个向量后参与计算，即
 
-$$\mathbf{h}_{i}=\tanh \left(\mathbf{A} \cdot\left[\begin{array}{l} \mathbf{x}_{i} \\ \mathrm{c}_{i-1} \end{array}\right]+\mathbf{b}\right)$$
+![\mathbf{h}_{i}=\tanh \left(\mathbf{A} \cdot\left[\begin{array}{l} \mathbf{x}_{i} \\ \mathrm{c}_{i-1} \end{array}\right]+\mathbf{b}\right) \\](https://www.zhihu.com/equation?tex=%5Cmathbf%7Bh%7D_%7Bi%7D%3D%5Ctanh+%5Cleft%28%5Cmathbf%7BA%7D+%5Ccdot%5Cleft%5B%5Cbegin%7Barray%7D%7Bl%7D+%5Cmathbf%7Bx%7D_%7Bi%7D+%5C%5C+%5Cmathrm%7Bc%7D_%7Bi-1%7D+%5Cend%7Barray%7D%5Cright%5D%2B%5Cmathbf%7Bb%7D%5Cright%29+%5C%5C)
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解3-Self-attention机制/3399dc42.jpg)
 
@@ -56,7 +58,9 @@ $$\mathbf{h}_{i}=\tanh \left(\mathbf{A} \cdot\left[\begin{array}{l} \mathbf{x}_{
 
 权重$\alpha_i$的计算公式为
 
-$$\alpha_{i}=\operatorname{align}\left(\mathbf{h}_{i}, \mathbf{h}_{2}\right)$$
+$$
+\alpha_{i}=\operatorname{align}\left(\mathbf{h}_{i}, \mathbf{h}_{2}\right) \\
+$$
 
 上面的$align$可以有不同的实现方法([3])，你只需要知道$\alpha_i$表示$h_i$和$h_2$之间的权重（或者是相似度），计算出所有的$\alpha_i$之后我们就能计算出$c_i$了，这里$c_2=\alpha_1h_1+\alpha_2h_2$
 

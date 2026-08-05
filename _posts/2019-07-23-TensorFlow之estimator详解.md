@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/74857888>
+
 ## Estimator初识
 
 ## 框架结构
@@ -40,7 +42,7 @@ toc:
 
 * 创建一个或多个输入函数，即`input_fn`：
 
-```
+```python
 def train_input_fn(features, labels, batch_size):
     """An input function for training"""
     # Convert the inputs to a Dataset.
@@ -54,7 +56,7 @@ def train_input_fn(features, labels, batch_size):
 
 * 定义模型的特征列,即`feature_columns`
 
-```
+```python
 # Feature columns describe how to use the input.
 my_feature_columns = []
 for key in train_x.keys():          
@@ -63,7 +65,7 @@ for key in train_x.keys():
 
 * 实例化 Estimator，指定特征列和各种超参数。
 
-```
+```python
 # Build a DNN with 2 hidden layers and 10 nodes in each hidden layer.
 classifier = tf.estimator.DNNClassifier(
     feature_columns=my_feature_columns,
@@ -79,14 +81,14 @@ classifier = tf.estimator.DNNClassifier(
 
 + train(训练)
 
-```
+```python
  #Train the Model.
  classifier.train(     input_fn=lambda:iris_data.train_input_fn(train_x, train_y, args.batch_size),     steps=args.train_steps)
 ```
 
 * evaluate（评估）
 
-```
+```python
 # Evaluate the model.
  eval_result = classifier.evaluate(     input_fn=lambda:iris_data.eval_input_fn(test_x, test_y, args.batch_size))
  print('\nTest set accuracy: {accuracy:0.3f}\n'.format(**eval_result))
@@ -94,7 +96,7 @@ classifier = tf.estimator.DNNClassifier(
 
 * predicte预测
 
-```
+```python
  #Generate predictions from the model
  expected = ['Setosa', 'Versicolor', 'Virginica'] 
 predict_x = {     
@@ -118,7 +120,7 @@ predict_x = {
 
 Estimator的[源代码](https://link.zhihu.com/?target=https%3A//github.com/tensorflow/estimator/blob/master/tensorflow_estimator/python/estimator/estimator.py)如下（为方便说明，已经掐头去尾）：
 
-```
+```python
 class Estimator(object):
   def __init__(self, model_fn, model_dir=None, config=None, params=None, warm_start_from=None):
   ...
@@ -140,7 +142,7 @@ class Estimator(object):
 
 模型函数一般定义如下：
 
-```
+```python
 def my_model_fn(
    features,    # This is batch_features from input_fn,`Tensor` or dict of `Tensor` (depends on data passed to `fit`).
    labels,     # This is batch_labels from input_fn
@@ -165,7 +167,7 @@ model\_fn需要对于不同的模式提供不同的处理方式，并且都需�
 
 此处的config需要传入`tf.estimator.RunConfig`,其源代码如下：
 
-```
+```python
 class RunConfig(object):
   """This class specifies the configurations for an `Estimator` run."""
 
@@ -211,7 +213,7 @@ class RunConfig(object):
 
 它是一个class(类)，是定义在model\_fn中的，并且model\_fn返回的也是它的一个实例，这个实例是用来初始化Estimator类的。其源代码如下:
 
-```
+```python
 class EstimatorSpec():
   def __new__(cls,
               mode,
@@ -254,7 +256,7 @@ class EstimatorSpec():
 
 只需要传入`mode`和`predictions`
 
-```
+```python
 # Compute predictions.
 predicted_classes = tf.argmax(logits, 1)
 if mode == tf.estimator.ModeKeys.PREDICT:
@@ -274,14 +276,14 @@ if mode == tf.estimator.ModeKeys.PREDICT:
 
 loss示例如下：
 
-```
+```python
 # Compute loss.
 loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
 ```
 
 TensorFlow提供了一个指标模块`tf.metrics`来计算常用的指标，这里以accuracy为例：
 
-```
+```python
 # Compute evaluation metrics.
 accuracy = tf.metrics.accuracy(labels=labels,
                                predictions=predicted_classes,
@@ -290,7 +292,7 @@ accuracy = tf.metrics.accuracy(labels=labels,
 
 返回方式如下：
 
-```
+```python
 metrics = {'accuracy': accuracy}
 
 if mode == tf.estimator.ModeKeys.EVAL:
@@ -304,21 +306,21 @@ if mode == tf.estimator.ModeKeys.EVAL:
 
 loss同eval模式：
 
-```
+```python
 # Compute loss.
 loss = tf.losses.sparse_softmax_cross_entropy(labels=labels, logits=logits)
 ```
 
 train\_op示例：
 
-```
+```python
 optimizer = tf.train.AdagradOptimizer(learning_rate=0.1)
 train_op = optimizer.minimize(loss,global_step=tf.train.get_global_step())
 ```
 
 返回值：
 
-```
+```python
 return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
 ```
 
@@ -326,7 +328,7 @@ return tf.estimator.EstimatorSpec(mode, loss=loss, train_op=train_op)
 
 model\_fn可以填充独立于模式的所有参数.在这种情况下,Estimator将忽略某些参数.在eval和infer模式中,train\_op将被忽略.例子如下：
 
-```
+```python
 def my_model_fn(mode, features, labels):
   predictions = ...
   loss = ...

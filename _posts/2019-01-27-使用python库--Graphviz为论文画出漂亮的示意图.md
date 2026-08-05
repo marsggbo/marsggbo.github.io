@@ -11,18 +11,20 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/55836821>
+
 > 原文： [Drawing Graphs using Dot and Graphviz](https://link.zhihu.com/?target=http%3A//www.tonyballantyne.com/graphs.html)
 
 先看看示例
 
-```
+```python
 from graphviz import Source
 Source.from_file('guan_shui.gv')
 ```
 
 `guan_shui.gv` 文件里面的代码是
 
-```
+```dot
 // The Round Table
 digraph {
 	A [label="apple"]
@@ -73,7 +75,7 @@ You will need to have the Graphviz suite of programs installed on your computer 
 
 ## 4.1 Simple Graph
 
-```
+```dot
 graph graphname { 
         a -- b; 
         b -- c;
@@ -86,7 +88,7 @@ graph graphname {
 
 ## 4.2 Same Graph, Different Layout
 
-```
+```dot
 graph graphname {
         rankdir=LR;  //Rank Direction Left to Right
         a -- b; 
@@ -100,7 +102,7 @@ graph graphname {
 
 ## 4.3 Simple Digraph (Directional Graph)
 
-```
+```dot
 digraph graphname{
         a -> b;
         b -> c;
@@ -112,7 +114,7 @@ digraph graphname{
 
 ## 4.4 Simple Digraph with Labels
 
-```
+```dot
 digraph graphname{
 
         T [label="Teacher"]      // node T
@@ -126,7 +128,7 @@ digraph graphname{
 
 ## 4.5 Same Graph, Different Shape and Colour
 
-```
+```dot
 digraph graphname {
         T [label="Teacher" color=Blue, fontcolor=Red, fontsize=24, shape=box]      // node T
         P [label="Pupil" color=Blue, fontcolor=Red, fontsize=24, shape=box]  // node P
@@ -143,7 +145,7 @@ There are lots more available here… [http://www.graphviz.org/content/node-shap
 
 ## 4.6 Summary
 
-```
+```dot
 digraph summary{
         start [label="Start with a Node"]
         next [label="Choose your shape", shape=box]
@@ -165,7 +167,7 @@ digraph summary{
 
 It takes time defining each node individually. The following way is quicker
 
-```
+```dot
 digraph hierarchy {
 
         nodesep=1.0 // increases the separation between nodes
@@ -186,7 +188,7 @@ digraph hierarchy {
 
 You can now use HTML to define these sort of blocks. Find out more at [http://www.graphviz.org/doc/info/shapes.html](https://link.zhihu.com/?target=http%3A//www.graphviz.org/doc/info/shapes.html)
 
-```
+```dot
 digraph structs {
     node[shape=record]
     struct1 [label="<f0> left|<f1> mid\ dle|<f2> right"];
@@ -203,7 +205,7 @@ digraph structs {
 
 ## 6.1 Finite State Machine
 
-```
+```dot
 digraph finite_state_machine {
     rankdir=LR;
     size="8,5"
@@ -221,7 +223,7 @@ digraph finite_state_machine {
 
 ## 6.2 Data Flow Diagrams
 
-```
+```dot
 digraph dfd{    
     node[shape=record]
     store1 [label="<f0> left|<f1> Some data store"];
@@ -238,7 +240,7 @@ digraph dfd{
 
 The following uses subgraphs to display different levels. Note that subgraphs must start with the prefix cluster\_ or they won't work. It will only work with dot layout.
 
-```
+```dot
 digraph dfd2{
         node[shape=record]
         subgraph level0{
@@ -267,7 +269,7 @@ digraph dfd2{
 
 ## 6.4 Object Inheritance
 
-```
+```dot
 digraph obj{
     node[shape=record];
     rankdir="BT";
@@ -298,7 +300,7 @@ digraph obj{
 
 ## 6.5 Entity Relationship
 
-```
+```dot
 digraph ER{
         node[shape=box];
         Book;
@@ -382,7 +384,7 @@ Org mode can interpret different languages by using the Library Of Babel. To do 
 
 A shortcut to make a begin\_ src block is to type <s [TAB]
 
-```
+```dot
 #+begin_src dot :file ./img/example1.png :cmdline -Kdot -Tpng
 graph graphname { 
         a -- b; 

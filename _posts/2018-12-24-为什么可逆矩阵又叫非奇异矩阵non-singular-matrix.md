@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/53137965>
+
 最近在捡回之前的线性代数知识，在复习可逆矩阵的时候，发现有的书上把可逆矩阵又称为非奇异矩阵，乍一看名字完全不知所云，仔细一分析，还是不明白。要想弄明白，还是得从英文入手，下面的解释主要从这里得来的[Why are invertible matrices called 'non-singular'?](https://link.zhihu.com/?target=https%3A//math.stackexchange.com/questions/42649/why-are-invertible-matrices-called-non-singular)。
 
 先把原回答搬过来:

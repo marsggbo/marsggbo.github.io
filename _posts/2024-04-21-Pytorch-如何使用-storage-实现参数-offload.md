@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/693734466>
+
 在深入探讨 PyTorch 中的 `Storage` 类以及其在参数 offload 场景中的应用之前，让我们首先了解一下 PyTorch 和它的基础组件。PyTorch 是一个广泛使用的开源机器学习库，它不仅提供了强大的计算图功能和自动梯度计算，还允许开发者直接操作底层数据结构，这其中就包括 `Storage`。
 
 ## 1. 什么是 `torch.Storage`?
@@ -29,7 +31,7 @@ toc:
 
 ## 2.1 简单例子
 
-```
+```python
 import torch
 
 x = torch.arange(3, dtype=torch.float32).cuda()
@@ -38,7 +40,7 @@ print(x.storage())
 
 输出结果如下，可以看到打印出来的结果符合预期，有三个浮点数，storage 的类型是 `torch.storage.TypedStorage`
 
-```
+```python
  0.0
  1.0
  2.0
@@ -47,14 +49,14 @@ print(x.storage())
 
 更一般地，我们还能打印看看无类型的 storage 是什么样的
 
-```
+```python
 x_storage = x.storage()._untyped_storage
 print(x_storage)
 ```
 
 输出结果如下，可以看到总共有 12 个整数，这是因为前面我们使用的数据类型是 float32，也就是说每个数由 4 个字节（bytes）表示。因为 变量 x 总共有 3 个数，所有它的 storage 总共有 12 个字节。
 
-```
+```python
  0
  0
  0
@@ -117,7 +119,7 @@ print(x_storage)
 
 前面例子中的变量`x`在 cuda上，为了实现 offload，我们需要在 cpu 上创建一个 storage，如下：
 
-```
+```python
 offload_storage = torch.UntypedStorage(x.nbytes).pin_memory(x.device)
 print(offload_storage.device)
 print(offload_storage)
@@ -125,7 +127,7 @@ print(offload_storage)
 
 输出结果如下,可以看到`offload_storage`是在 cpu 上，目前其上面的值都是一些随机值。
 
-```
+```python
 cpu
  208
  238
@@ -144,7 +146,7 @@ cpu
 
 接下来我们需要把 `x` offload 到 cpu 上，只需要对 storage 做 copy 操作即可，代码如下：
 
-```
+```python
 offload_storage.copy_(x_storage)
 print(offload_storage.device)
 print(offload_storage)
@@ -152,7 +154,7 @@ print(offload_storage)
 
 输出结果如下：
 
-```
+```python
 cpu
  0
  0
@@ -184,7 +186,7 @@ cpu
 
 首先，我们定义一个在 CUDA 上的 Tensor 和多个在 CPU 上的 Storage，准备用于数据交换：
 
-```
+```python
 import torch
 
 # 定义 CUDA Tensors (用于当前计算)
@@ -220,7 +222,7 @@ Extra Data 3: [6.0, 7.0]
 
 接下来，我们将根据需要将 CPU 上的数据加载到 CUDA `Tensor` 中，同时将当前 CUDA `Tensor` 的数据存储回某个 CPU `Storage`，这可以申请一个 buffer 来作为中间变量，反正数据丢失。
 
-```
+```python
 # 缓冲区定义
 cpu_buffer = torch.FloatTensor(current_data.size()).storage().pin_memory()  # CPU buffer storage
 

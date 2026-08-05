@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【GAMES101-现代计算机图形学课程笔记】Lecture 10 Geometry 1 （介绍）"
+title: 【GAMES101-现代计算机图形学课程笔记】Lecture 10 Geometry 1 （介绍）
 date: '2020-06-10'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/147354628>
 
 * Shading 1 & 2
 
@@ -77,7 +79,7 @@ toc:
 首先看一下在一维情况（flatland case）下如何计算，假设下图中的点为P点。
 
 * P点原始的法线方向是朝上的，即$n(p)=(0,1)$。
-* 下图中的蓝色曲线表示法线贴图，那么P点横向移动一个单位后，向上则会移动$\mathrm{dp}$,(假设P点会朝着切线方向运动)。切线方向即为该点的梯度，由梯度计算公式可知$\mathrm{dp}=\mathrm{c}^{\star}[\mathrm{h}(\mathrm{p}+1)-\mathrm{h}(\mathrm{p})]$,其中$c$为一个常量，所以切线可表示为$(1,\mathrm{dp})$。
+* 下图中的蓝色曲线表示法线贴图，那么P点横向移动一个单位后，向上则会移动$\mathrm{dp}$,(假设P点会朝着切线方向运动)。切线方向即为该点的梯度，由梯度计算公式可知![\mathrm{dp}=\mathrm{c}^{\star}[\mathrm{h}(\mathrm{p}+1)-\mathrm{h}(\mathrm{p})]](https://www.zhihu.com/equation?tex=%5Cmathrm%7Bdp%7D%3D%5Cmathrm%7Bc%7D%5E%7B%5Cstar%7D%5B%5Cmathrm%7Bh%7D%28%5Cmathrm%7Bp%7D%2B1%29-%5Cmathrm%7Bh%7D%28%5Cmathrm%7Bp%7D%29%5D),其中$c$为一个常量，所以切线可表示为$(1,\mathrm{dp})$。
 * 既然知道了切线方向，那么法线方向就很容易计算出来了，即切线方向逆时针旋转90°即可,所以扰动后的法线方向为$n(p)=(-dp,1).\text{normalized()}$
 
 ![](/assets/img/marsggbo/2020-06-10-GAMES101-现代计算机图形学课程笔记Lecture-10-Geometry-1-介绍/84bb37ff.jpg)
@@ -149,7 +151,7 @@ toc:
 
 * 符号距离函数(Signed Distance Function, SDF)
 
-还有一种隐式表示的方式是符号距离函数，这部分内容看视频看了三遍，查了资料才明白什么意思，主要是感觉老师举的例子并不好帮助理解，泪奔\~\~o(>\_<)o \~\~。。。
+还有一种隐式表示的方式是符号距离函数，这部分内容看视频看了三遍，查了资料才明白什么意思，主要是感觉老师举的例子并不好帮助理解，泪奔~~o(>\_<)o ~~。。。
 
 首先介绍一下这个**距离函数的“距离”是什么意思**，我就是被这个搞的云里雾里的。
 
@@ -189,7 +191,9 @@ toc:
 
 还是用上面的例子来解释显式表示，可以看到这里的映射函数是
 
-$$f(u, v)=((2+\cos u) \cos v,(2+\cos u) \sin v, \sin u)$$
+$$
+f(u, v)=((2+\cos u) \cos v,(2+\cos u) \sin v, \sin u) \\
+$$
 
 这里和上面的$f(x,y,z)=0$不一样，因为这里我们是直接将二维uv坐边上的某个点的左边通过某种映射关系直接映射到三维某个具体的坐标点了，所以这是显示的。我们只需要对二维平面上所有点遍历一遍即可得到映射后的几何形状，而前面介绍的隐式方法则需要我们根据等式来判断而为上的某个点是否在映射后的几何物体表面。这个区别需要区分开来。
 

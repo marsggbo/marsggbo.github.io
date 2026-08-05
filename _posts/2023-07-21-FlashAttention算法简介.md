@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/645028049>
+
 [https://arxiv.org/pdf/2205.14135.pdf](https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/2205.14135.pdf)
 
 ![](/assets/img/marsggbo/2023-07-21-FlashAttention算法简介/d7876ce6.jpg)
@@ -39,13 +41,13 @@ FlashAttention的主要动机就是希望把SRAM利用起来，但是难点就�
 
 2. 分块计算Softmax
 
-因为Softmax都是按行计算的，所以我们考虑一行切分成两部分的情况，即原本的一行数据$x\in\mathbb{R}^{2B}=[x^{(1)},x^{(2)}]$。
+因为Softmax都是按行计算的，所以我们考虑一行切分成两部分的情况，即原本的一行数据![x\in\mathbb{R}^{2B}=[x^{(1)},x^{(2)}]](https://www.zhihu.com/equation?tex=x%5Cin%5Cmathbb%7BR%7D%5E%7B2B%7D%3D%5Bx%5E%7B%281%29%7D%2Cx%5E%7B%282%29%7D%5D)。
 
 ![](/assets/img/marsggbo/2023-07-21-FlashAttention算法简介/97419e5d.jpg)
 
 可以看到计算不同块的f(x)值时，乘上的系数是不同的，但是最后化简后的结果都是指数函数减去了整行的最大值。以$x^{(1)}$为例，
 
-$$\begin{align} e^{m(x^{(1)})-m(x)}f(x^{(1)})&=e^{m(x^{(1)})-m(x)}[e^{x^{(1)}_1-m(x^{(1)})},...,e^{x^{(1)}_B-m(x^{(1)})}] \notag \\ &=[e^{x^{(1)}_1-m(x)},...,e^{x^{(1)}_B-m(x)}]  \end{align}$$
+![\begin{align} e^{m(x^{(1)})-m(x)}f(x^{(1)})&=e^{m(x^{(1)})-m(x)}[e^{x^{(1)}_1-m(x^{(1)})},...,e^{x^{(1)}_B-m(x^{(1)})}] \notag \\ &=[e^{x^{(1)}_1-m(x)},...,e^{x^{(1)}_B-m(x)}]  \end{align}\\](https://www.zhihu.com/equation?tex=%5Cbegin%7Balign%7D+e%5E%7Bm%28x%5E%7B%281%29%7D%29-m%28x%29%7Df%28x%5E%7B%281%29%7D%29%26%3De%5E%7Bm%28x%5E%7B%281%29%7D%29-m%28x%29%7D%5Be%5E%7Bx%5E%7B%281%29%7D_1-m%28x%5E%7B%281%29%7D%29%7D%2C...%2Ce%5E%7Bx%5E%7B%281%29%7D_B-m%28x%5E%7B%281%29%7D%29%7D%5D+%5Cnotag+%5C%5C+%26%3D%5Be%5E%7Bx%5E%7B%281%29%7D_1-m%28x%29%7D%2C...%2Ce%5E%7Bx%5E%7B%281%29%7D_B-m%28x%29%7D%5D++%5Cend%7Balign%7D%5C%5C)
 
 ## **3. FlashAttention算法流程**
 
@@ -59,7 +61,7 @@ FlashAttention算法流程如下图所示
 
 下面是FlashAttention的代码实现，参考自[https://github.com/shreyansh26/FlashAttention-PyTorch/tree/master](https://link.zhihu.com/?target=https%3A//github.com/shreyansh26/FlashAttention-PyTorch/tree/master)
 
-```
+```python
 import torch
 import torch.nn as nn
 import numpy as np

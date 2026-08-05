@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/258362976>
+
 > 本文主要简单地介绍Vega的特点以及它与其他AutoML框架的区别，让你对Vega有一个直观的理解。  
 >  文章太长不看可以直接降落至最后的总结部分。
 

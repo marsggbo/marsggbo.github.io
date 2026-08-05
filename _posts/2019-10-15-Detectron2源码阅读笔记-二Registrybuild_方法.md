@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/86808911>
+
 ## Trainer解析
 
 我们继续[Detectron2代码阅读笔记-(一)](https://link.zhihu.com/?target=https%3A//www.cnblogs.com/marsggbo/p/11677086.html)中的内容。
@@ -19,7 +21,7 @@ toc:
 
 上图画出了`detectron2`文件夹中的三个子文件夹(**tools,config,engine**)之间的关系。那么剩下的文件夹又是如何起作用的呢？
 
-```
+```python
 def main(args):
     cfg = setup(args)
 
@@ -40,7 +42,7 @@ def main(args):
 
 [Detectron2代码阅读笔记-(一)](https://link.zhihu.com/?target=https%3A//www.cnblogs.com/marsggbo/p/11677086.html)中已经提到过一连串的Trainer的继承关系如下： `tools.train_net.Trainer->detectron2.engine.default.DefaultTrainer->detectron2.engine.train_loop.SimpleTrainer->detectron2.engine.train_loop.TrainerBase`，而`detectron2.engine.default.DefaultTrainer`在其`__init__(self, cfg)`函数中定义了解析cfg。如下面代码所示，cfg会作为参数倍若干个`build_*`方法解析，得到解析后的model,optimizer,data\_loader等。
 
-```
+```python
 from detectron2.modeling import build_model
 class DefaultTrainer(SimpleTrainer):
     def __init__(self, cfg):
@@ -71,7 +73,7 @@ class DefaultTrainer(SimpleTrainer):
 
 下面我们以`DefaultTrainer.build_model`为例来介绍注册机制,该方法调用了`detectron2/modeling/meta_arch/build_model.py`的`build_model`函数,其源代码如下：
 
-```
+```python
 from detectron2.utils.registry import Registry
 
 META_ARCH_REGISTRY = Registry("META_ARCH")
@@ -105,7 +107,7 @@ BACKBONE_REGISTRY = Registry('BACKBONE')
 
 之后在你创建的新的文件下按如下方式创建你的backbone
 
-```
+```python
 # detectron2/modeling/backbone/your_backbone.py
 from .build import BACKBONE_REGISTRY
 
@@ -122,7 +124,7 @@ BACKBONE_REGISTRY.register(MyBackbone)
 
 `Registry`源代码如下（有删减）：
 
-```
+```python
 class Registry(object):
     def __init__(self, name):
         self._name = name

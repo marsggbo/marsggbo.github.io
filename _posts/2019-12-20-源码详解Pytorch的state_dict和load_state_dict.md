@@ -11,9 +11,11 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/98563721>
+
 在 Pytorch 中一种模型保存和加载的方式如下:
 
-```
+```python
 # save
 torch.save(model.state_dict(), PATH)
 
@@ -27,7 +29,7 @@ model.eval()
 
 ## state\_dict
 
-```
+```python
 # torch.nn.modules.module.py
 class Module(object):
     def state_dict(self, destination=None, prefix='', keep_vars=False):
@@ -53,7 +55,7 @@ class Module(object):
 
 可以看到state\_dict函数中遍历了4中元素，分别是`_paramters`,`_buffers`,`_modules`和`_state_dict_hooks`,前面三者在之前的[文章](https://link.zhihu.com/?target=https%3A//www.cnblogs.com/marsggbo/p/12075244.html)已经介绍区别，最后一种就是在读取`state_dict`时希望执行的操作，一般为空，所以不做考虑。另外有一点需要注意的是，在读取`Module`时采用的递归的读取方式，并且名字间使用`.`做分割，以方便后面`load_state_dict`读取参数。
 
-```
+```python
 class MyModel(nn.Module):
     def __init__(self):
         super(MyModel, self).__init__()
@@ -95,7 +97,7 @@ print(model.state_dict())
 
 这个部分的作用是判断上面参数拷贝过程中是否有`unexpected_keys`或者`missing_keys`,如果有就报错，代码不能继续执行。当然，如果`strict=False`，则会忽略这些细节。
 
-```
+```python
 def load_state_dict(self, state_dict, strict=True):
     missing_keys = []
     unexpected_keys = []
@@ -135,7 +137,7 @@ def load_state_dict(self, state_dict, strict=True):
 
 * `_load_from_state_dict`
 
-```
+```python
 def _load_from_state_dict(self, state_dict, prefix, local_metadata, strict,
                           missing_keys, unexpected_keys, error_msgs):
     for hook in self._load_state_dict_pre_hooks.values():

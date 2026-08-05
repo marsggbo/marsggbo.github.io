@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/670968683>
+
 论文 [DeepSpeed-MoE: Advancing Mixture-of-Experts Inference and Training to Power Next-Generation AI Scale](https://link.zhihu.com/?target=https%3A//arxiv.org/pdf/2201.05596.pdf)
 
 ## **1. Introduction**

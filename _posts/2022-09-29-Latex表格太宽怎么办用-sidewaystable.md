@@ -11,7 +11,9 @@ toc:
   sidebar: left
 ---
 
-```
+> 原文: <http://zhuanlan.zhihu.com/p/569475129>
+
+```latex
 \begin{sidewaystable}[!tbp]
     \caption{Example of SideWaysTable}
     \centering

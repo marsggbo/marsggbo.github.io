@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/98740359>
+
 ## 一、方法总结
 
 * Network Pruning
@@ -86,11 +88,15 @@ BUT！！！后面有一篇文章[Rethinking the value of network pruning](https
 
 那Student Net到底如何学习呢？首先回顾一下在多类别分类任务中，我们用到的是softmax来计算最终的概率，即
 
-$$y_{i}=\frac{\exp \left(x_{i}\right)}{\sum_{j} \exp \left(x_{j}\right)}$$
+$$
+y_{i}=\frac{\exp \left(x_{i}\right)}{\sum_{j} \exp \left(x_{j}\right)}
+$$
 
 但是这样有一个缺点，因为使用了指数函数，如果在使用softmax之前的预测值是x1=100,x2=10,x3=1,那么使用softmax之后三者对应的概率接近于y1=1,y2=0,y3=0，那这和常规的label无异了，所以为了解决这个问题就引入了一个新的参数T,称之为**Temperature**,即有:
 
-$$y_{i}=\frac{\exp \left(x_{i} / T\right)}{\sum_{j} \exp \left(x_{j} / T\right)}$$
+$$
+y_{i}=\frac{\exp \left(x_{i} / T\right)}{\sum_{j} \exp \left(x_{j} / T\right)}
+$$
 
 此时，如果我们令T=100,那么最后的预测概率是y1=0.56,y2=0.23,y3=0.21。（不过李宏毅老师在视频里提到说这个方法在实际使用时貌似用处不大hhhh，感觉这个方法可以回答知乎上的 **什么东西看起来很厉害但是没什么用?** 哈哈哈哈哈哈哈哈哈哈或或）
 

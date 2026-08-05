@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【GAMES101-现代计算机图形学课程笔记】Lecture 01 Overview"
+title: 【GAMES101-现代计算机图形学课程笔记】Lecture 01 Overview
 date: '2020-04-25'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/136291925>
 
 课程内容大纲：
 

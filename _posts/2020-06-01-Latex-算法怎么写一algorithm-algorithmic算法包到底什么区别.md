@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/145195565>
+
 > 原文： [https://tex.stackexchange.com/questions/229355/algorithm-algorithmic-algorithmicx-algorithm2e-algpseudocode-confused](https://link.zhihu.com/?target=https%3A//tex.stackexchange.com/questions/229355/algorithm-algorithmic-algorithmicx-algorithm2e-algpseudocode-confused)
 
 ## **概括版本**
@@ -33,7 +35,7 @@ toc:
 
 例子
 
-```
+```latex
 \begin{algorithm}
     \caption{Algorithm caption}
     \label{alg:algorithm-label}
@@ -55,7 +57,7 @@ toc:
 
 > The package `algorithmicx` itself doesn’t define any algorithmic commands, but gives a set of macros to define such a command set. You may use only algorithmicx, and define the commands yourself, or you may use one of the predefined command sets
 
-```
+```latex
 \begin{algorithm}
     \caption{Euclid’s algorithm}
     \label{euclid}
@@ -95,7 +97,7 @@ toc:
 
 例子
 
-```
+```latex
 \begin{algorithm}[H]
     \SetAlgoLined
     \KwData{this text}

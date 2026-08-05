@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/54361495>
+
 ## **摘要**
 
 神经网络在多个领域都取得了不错的成绩，但是神经网络的合理设计却是比较困难的。在本篇论文中，作者使用 **递归网络**去省城神经网络的模型描述，并且使用 **增强学习**训练RNN，以使得生成得到的模型在验证集上取得最大的准确率。
@@ -59,15 +61,17 @@ RNN的参数用$θ_c$表示。controller所预测的一系列tokens记为一系�
 
 通过求解最大化reward找到最优的结构，reward表达式如下：
 
-$$J(θ_c)=E_{P(a_{1:T;θ_c})}[R]$$
+![J(θ_c)=E_{P(a_{1:T;θ_c})}[R] \\](https://www.zhihu.com/equation?tex=J%28%CE%B8_c%29%3DE_%7BP%28a_%7B1%3AT%3B%CE%B8_c%7D%29%7D%5BR%5D+%5C%5C)
 
 因为奖励信号$R$是不可微分的，所以我们需要一个策略梯度方法来迭代更新$θ_c$。在本文中，使用到来自 **Williams (1992)** 的增强学习规则：
 
-$$\nabla_{θ_c}J(θ_c)=\sum_{t=1}^{T}E_{P(a_{1:T;θ_c})}[\nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R]$$
+![\nabla_{θ_c}J(θ_c)=\sum_{t=1}^{T}E_{P(a_{1:T;θ_c})}[\nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R] \\](https://www.zhihu.com/equation?tex=%5Cnabla_%7B%CE%B8_c%7DJ%28%CE%B8_c%29%3D%5Csum_%7Bt%3D1%7D%5E%7BT%7DE_%7BP%28a_%7B1%3AT%3B%CE%B8_c%7D%29%7D%5B%5Cnabla_%7B%CE%B8_c%7DlogP%28a_t%7Ca_%7B%28t-1%29%3A1%7D%3B%CE%B8_c%29R%5D+%5C%5C)
 
 根据经验上式约等于：
 
-$$\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R_k$$
+$$
+\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)R_k \\
+$$
 
 其中$m$是controller在一个batch中采样得到的结构的数量，$T$是controller用于预测和设计神经网络结构的超参数的数量。
 
@@ -75,7 +79,9 @@ $R_k$表示第k个网络结构在验证集上的准确度。
 
 上述的更新算法是对梯度的无偏估计，但是有很高的方差。为了降低方差，文中使用如下基线函数：
 
-$$\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)(R_k-b)$$
+$$
+\frac{1}{m} \sum_{k=1}^{m} \sum_{t=1}^{T} \nabla_{θ_c}logP(a_t|a_{(t-1):1};θ_c)(R_k-b) \\
+$$
 
 只要$b$不依懒于当前的action，那么其仍是无偏梯度估计，且$b$是前面的结构准确率的 **指数平均数指标(Exponential Moving Average, EMA)**
 
@@ -103,7 +109,9 @@ controller会根据$m$个子网络结构在收敛时得到的结果收集得到�
 
 在$N$层，根据sigmoid函数判断与其前面的$N-1$个层是否相连。sigmoid函数如下：
 
-$$P(Layer\,j\,is\,an\,input\,to\,layer\,i)=sigmoid(v^T tanh(W_{prev}*h_j+W_{curr}*h_i))$$
+$$
+P(Layer\,j\,is\,an\,input\,to\,layer\,i)=sigmoid(v^T tanh(W_{prev}*h_j+W_{curr}*h_i)) \\
+$$
 
 上式中$h_j$表示controller在第$j$层的隐藏状态($j$的大小是从0到$N-1$)。
 
@@ -139,7 +147,7 @@ NAS在生成网络的时候之前需要固定网络的结构，或者是说需�
 
 伪代码：
 
-```
+```python
 state = np.array([[10.0, 128.0, 1.0, 1.0]*max_layers], dtype=np.float32) # 初始化state
 for episode in range(MAX_EPISODES):
 	action = RLnet.get_action(state)  # 增强学习网络根据当前状态获取下一步的动作，其中是使用原论文所给的NAScell来对动作进行预测的。

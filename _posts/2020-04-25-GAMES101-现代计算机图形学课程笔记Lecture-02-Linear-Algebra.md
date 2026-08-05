@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【GAMES101-现代计算机图形学课程笔记】Lecture 02 Linear Algebra"
+title: 【GAMES101-现代计算机图形学课程笔记】Lecture 02 Linear Algebra
 date: '2020-04-25'
 tags: [techniques]
 category: techniques
@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/136293369>
+
 ## **1. Vector （向量 / 矢量）**
 
 ## **1.1 基础回顾**
@@ -20,7 +22,9 @@ toc:
 * 单位向量表示方式为：$\hat{a}=\vec{a} /\|\vec{a}\|$
 * 向量表示采用**笛卡尔坐标(Cartesian Coordinates)**，例如
 
-$$\mathbf{A}=\left(\begin{array}{l}x \\ y\end{array}\right) \quad \mathbf{A}^{T}=(x, y) \quad\|\mathbf{A}\|=\sqrt{x^{2}+y^{2}$$
+$$
+\mathbf{A}=\left(\begin{array}{l}x \\ y\end{array}\right) \quad \mathbf{A}^{T}=(x, y) \quad\|\mathbf{A}\|=\sqrt{x^{2}+y^{2}}
+$$
 
 > 注意，一般默认向量为列向量。
 
@@ -30,7 +34,7 @@ $$\mathbf{A}=\left(\begin{array}{l}x \\ y\end{array}\right) \quad \mathbf{A}^{T}
 
 * 定义：
 
-$\vec{a} \cdot \vec{b}=\|\vec{a}\|\|\vec{b}\| \cos \theta$ $\cos \theta=\frac{\vec{a} \cdot \vec{b}{\|\vec{a}\|\|\vec{b}\|}$
+$\vec{a} \cdot \vec{b}=\|\vec{a}\|\|\vec{b}\| \cos \theta$ $\cos \theta=\frac{\vec{a} \cdot \vec{b}}{\|\vec{a}\|\|\vec{b}\|}$
 
 * 性质
 
@@ -38,7 +42,9 @@ $\vec{a} \cdot \vec{b}=\vec{b} \cdot \vec{a}$ $\vec{a} \cdot(\vec{b}+\vec{c})=\v
 
 * 计算示例
 
-$$\vec{a} \cdot \vec{b}=\left(\begin{array}{l}x_{a} \\ y_{a}\end{array}\right) \cdot\left(\begin{array}{l}x_{b} \\ y_{b}\end{array}\right)=x_{a} x_{b}+y_{a} y_{b}$$
+$$
+\vec{a} \cdot \vec{b}=\left(\begin{array}{l}x_{a} \\ y_{a}\end{array}\right) \cdot\left(\begin{array}{l}x_{b} \\ y_{b}\end{array}\right)=x_{a} x_{b}+y_{a} y_{b}
+$$
 
 * 用途
 
@@ -66,17 +72,29 @@ $a \times b=-b \times a$ $\|a \times b\|=\|a\|\|b\| \sin \phi$
 
 1）生成坐标轴
 
-$$\vec{x} \times \vec{y}=+\vec{z}$$
+$$
+\vec{x} \times \vec{y}=+\vec{z}
+$$
 
-$$\vec{y} \times \vec{x}=-\vec{z}$$
+$$
+\vec{y} \times \vec{x}=-\vec{z}
+$$
 
-$$\vec{y} \times \vec{z}=+\vec{x}$$
+$$
+\vec{y} \times \vec{z}=+\vec{x}
+$$
 
-$$\vec{z} \times \vec{y}=-\vec{x}$$
+$$
+\vec{z} \times \vec{y}=-\vec{x}
+$$
 
-$$\vec{z} \times \vec{x}=+\vec{y}$$
+$$
+\vec{z} \times \vec{x}=+\vec{y}
+$$
 
-$$\vec{x} \times \vec{z}=-\vec{y}$$
+$$
+\vec{x} \times \vec{z}=-\vec{y}
+$$
 
 2）判定左 / 右 或者 内 / 外
 
@@ -94,9 +112,11 @@ $\vec{AP}$始终在三条有向边$\vec{AB},\vec{BC},\vec{CA}$的同一侧(左�
 
 矩阵相乘运算
 
-$$\left(\begin{array}{ll}1 & 3 \\ 5 & 2 \\ 0 & 4\end{array}\right)\left(\begin{array}{llll}3 & 6 & 9 & 4 \\ 2 & 7 & 8 & 3\end{array}\right)=\left(\begin{array}{cccc}9 & ? & 33 & 13 \\ 19 & 44 & 61 & 26 \\ 8 & 28 & 32 & ?\end{array}\right)$$
+$$
+\left(\begin{array}{ll}1 & 3 \\ 5 & 2 \\ 0 & 4\end{array}\right)\left(\begin{array}{llll}3 & 6 & 9 & 4 \\ 2 & 7 & 8 & 3\end{array}\right)=\left(\begin{array}{cccc}9 & ? & 33 & 13 \\ 19 & 44 & 61 & 26 \\ 8 & 28 & 32 & ?\end{array}\right)
+$$
 
-以右边那个8为例，可以看到它是第三行第一列，所以直接找到左边矩阵的第三行，即 $[0\,\,4]$，和右边矩阵第一列 $[3\,\,2]^T$,然后做点积即可求得为8.
+以右边那个8为例，可以看到它是第三行第一列，所以直接找到左边矩阵的第三行，即 ![[0\,\,4]](https://www.zhihu.com/equation?tex=%5B0%5C%2C%5C%2C4%5D)，和右边矩阵第一列 ![[3\,\,2]^T](https://www.zhihu.com/equation?tex=%5B3%5C%2C%5C%2C2%5D%5ET),然后做点积即可求得为8.
 
 * 性质
 * $(\mathrm{AB}) \mathrm{C}=\mathrm{A}(\mathrm{BC})$
@@ -114,11 +134,15 @@ $$\left(\begin{array}{ll}1 & 3 \\ 5 & 2 \\ 0 & 4\end{array}\right)\left(\begin{a
 
 * 点积
 
-$$\begin{aligned} & \vec{a} \cdot \vec{b}=\vec{a}^{T} \vec{b} \\=\left(\begin{array}{lll}x_{a} & y_{a} & z_{a}\end{array}\right)\left(\begin{array}{l}x_{b} \\ y_{b} \\ z_{b}\end{array}\right)=\left(x_{a} x_{b}+y_{a} y_{b}+z_{a} z_{b}\right) \end{aligned}$$
+$$
+\begin{aligned} & \vec{a} \cdot \vec{b}=\vec{a}^{T} \vec{b} \\=\left(\begin{array}{lll}x_{a} & y_{a} & z_{a}\end{array}\right)\left(\begin{array}{l}x_{b} \\ y_{b} \\ z_{b}\end{array}\right)=\left(x_{a} x_{b}+y_{a} y_{b}+z_{a} z_{b}\right) \end{aligned} \\
+$$
 
 * 叉乘
 
-$$\vec{a} \times \vec{b}=A^{*} b=\left(\begin{array}{ccc}0 & -z_{a} & y_{a} \\ z_{a} & 0 & -x_{a} \\ -y_{a} & x_{a} & 0\end{array}\right)\left(\begin{array}{l}x_{b} \\ y_{b} \\ z_{b}\end{array}\right)$$
+$$
+\vec{a} \times \vec{b}=A^{*} b=\left(\begin{array}{ccc}0 & -z_{a} & y_{a} \\ z_{a} & 0 & -x_{a} \\ -y_{a} & x_{a} & 0\end{array}\right)\left(\begin{array}{l}x_{b} \\ y_{b} \\ z_{b}\end{array}\right)
+$$
 
 注意 ： A\*b的\*不表示乘法
 

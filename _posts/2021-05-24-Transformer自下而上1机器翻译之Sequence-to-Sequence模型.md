@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/374840075>
+
 > 本篇文章内容基于Shusen Wang老师的《RNN模型与NLP应用》系列课程。 课程视频链接：[https://www.youtube.com/playlist?list=PLvOO0btloRnuTUGN4XqO85eKPeFSZsEqK](https://link.zhihu.com/?target=https%3A//www.youtube.com/playlist%3Flist%3DPLvOO0btloRnuTUGN4XqO85eKPeFSZsEqK) 课件：[https://github.com/wangshusen/DeepLearning](https://link.zhihu.com/?target=https%3A//github.com/wangshusen/DeepLearning)
 
 本文主要分成三个部分，首先介绍对句子tokenization，之后介绍句子编码方式，最后介绍Seq2Seq模型细节。

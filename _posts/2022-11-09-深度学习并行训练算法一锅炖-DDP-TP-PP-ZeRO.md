@@ -1,6 +1,6 @@
 ---
 layout: post
-title: '深度学习并行训练算法一锅炖: DDP, TP, PP, ZeRO'
+title: 深度学习并行训练算法一锅炖: DDP, TP, PP, ZeRO
 date: '2022-11-09'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/581677880>
 
 > “ 本文主要参考ColossalAI论文 《Colossal-AI: A Unified Deep Learning System For Large-Scale Parallel Training》  
 >  ColossalAI框架开源提供了本文介绍的所有并行训练: [https://github.com/hpcaitech/ColossalAI](https://link.zhihu.com/?target=https%3A//github.com/hpcaitech/ColossalAI)  
@@ -87,7 +89,7 @@ Megatron-LM [1]是最早提出1D Tensor并行的工作。该工作主要是为�
 
 **2.2.2 2D Tensor Parallelism**
 
-2D Tensor Parallel [2] 基于SUMMA和Cannon矩阵相乘算法沿着两个不同的维度对 *输入数据*，*模型权重*，*每层的输出* 进行划分。给定$N$个GPU，tensor会被划分成$N$个chunk（使用`torch.chunk`），每个GPU保存一个chunk。这$N$个GPU呈方形网络拓扑结构，即每行每列均为$\sqrt{N}$个GPU。假设tensor的维度大小是$[P,Q]$，那么划分后每个GPU上存的chunk大小即为$[P/\sqrt{N},Q/\sqrt{N}]$。至此，每个GPU都只会保存部分的输入输出以及部分的权重。虽然相比于1D Tensor并行，2D额外增加了模型权重的通信，但是需要注意的是当GPU数量很多的时候，每个GPU上分配的模型权重就会小很多，而且因为使用的All-reduce通信方式，所以2D也还是要比1D更高效的。
+2D Tensor Parallel [2] 基于SUMMA和Cannon矩阵相乘算法沿着两个不同的维度对 *输入数据*，*模型权重*，*每层的输出* 进行划分。给定$N$个GPU，tensor会被划分成$N$个chunk（使用`torch.chunk`），每个GPU保存一个chunk。这$N$个GPU呈方形网络拓扑结构，即每行每列均为$\sqrt{N}$个GPU。假设tensor的维度大小是![[P,Q]](https://www.zhihu.com/equation?tex=%5BP%2CQ%5D)，那么划分后每个GPU上存的chunk大小即为![[P/\sqrt{N},Q/\sqrt{N}]](https://www.zhihu.com/equation?tex=%5BP%2F%5Csqrt%7BN%7D%2CQ%2F%5Csqrt%7BN%7D%5D)。至此，每个GPU都只会保存部分的输入输出以及部分的权重。虽然相比于1D Tensor并行，2D额外增加了模型权重的通信，但是需要注意的是当GPU数量很多的时候，每个GPU上分配的模型权重就会小很多，而且因为使用的All-reduce通信方式，所以2D也还是要比1D更高效的。
 
 **2.2.3 2.5D Tensor Parallelism**
 
@@ -97,7 +99,7 @@ Megatron-LM [1]是最早提出1D Tensor并行的工作。该工作主要是为�
 
 **2.2.4 3D Tensor Parallelism**
 
-3D Tensor Parallel [5]是基于3D矩阵乘法算法 [6]实现的。假设有 $N$个 GPU，tensor维度大小为$[P, Q, K]$，那么每个chunk的大小即为 $[P/\sqrt[3]{N},Q/\sqrt[3]{N},K/\sqrt[3]{N}]$。当tensor维度小于3时，以全连接层为例，假设权重维度大小为 $[P, Q]$ ,那么可以对第一个维度划分两次，即每个chunk的维度大小为 $[P/(\sqrt[3]{N})^2,Q/\sqrt[3]{N}]$ 。3D Tensor并行的通信开销复杂度是 $O(N^{1/3})$ ，计算和内存开销都均摊在所有GPU上。
+3D Tensor Parallel [5]是基于3D矩阵乘法算法 [6]实现的。假设有 $N$个 GPU，tensor维度大小为![[P, Q, K]](https://www.zhihu.com/equation?tex=%5BP%2C+Q%2C+K%5D)，那么每个chunk的大小即为 ![[P/\sqrt[3]{N},Q/\sqrt[3]{N},K/\sqrt[3]{N}]](https://www.zhihu.com/equation?tex=%5BP%2F%5Csqrt%5B3%5D%7BN%7D%2CQ%2F%5Csqrt%5B3%5D%7BN%7D%2CK%2F%5Csqrt%5B3%5D%7BN%7D%5D)。当tensor维度小于3时，以全连接层为例，假设权重维度大小为 ![[P, Q]](https://www.zhihu.com/equation?tex=%5BP%2C+Q%5D) ,那么可以对第一个维度划分两次，即每个chunk的维度大小为 ![[P/(\sqrt[3]{N})^2,Q/\sqrt[3]{N}]](https://www.zhihu.com/equation?tex=%5BP%2F%28%5Csqrt%5B3%5D%7BN%7D%29%5E2%2CQ%2F%5Csqrt%5B3%5D%7BN%7D%5D) 。3D Tensor并行的通信开销复杂度是 $O(N^{1/3})$ ，计算和内存开销都均摊在所有GPU上。
 
 **2.2.5 小结**
 

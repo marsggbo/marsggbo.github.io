@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/165338777>
+
 **Unsupervised Learning** 本周我们讲学习非监督学习算法，会学习到如下概念
 
 * 聚类（clustering）
@@ -58,15 +60,21 @@ toc:
 
 1）**Minkowski Distance**公式——λ可以随意取值，可以是负数，也可以是正数，或是无穷大。
 
-$$d_{ij}=\sqrt{ \sum_{k=1}^{n}|x_{ik} - y_{jk}|^λ  }$$
+$$
+d_{ij}=\sqrt{ \sum_{k=1}^{n}|x_{ik} - y_{jk}|^λ  } \\
+$$
 
 2）**Euclidean Distance**公式——也就是第一个公式λ=2的情况
 
-$$d_{ij}=\sqrt{ \sum_{k=1}^{n}|x_{ik} - y_{jk}|^2 }$$
+$$
+d_{ij}=\sqrt{ \sum_{k=1}^{n}|x_{ik} - y_{jk}|^2 } \\
+$$
 
 3）**CityBlock Distance**公式——也就是第一个公式λ=1的情况
 
-$$d_{ij}=\sum_{k=1}^{n}|x_{ik} - y_{jk}|$$
+$$
+d_{ij}=\sum_{k=1}^{n}|x_{ik} - y_{jk}|   \\
+$$
 
 这三个公式的求中心点有一些不一样的地方，我们看下图（对于第一个λ在0-1之间）。
 
@@ -88,7 +96,9 @@ m：样本数据集的大小 $c^{(i)}$:第i个数据$x^{(i)}$所属聚类的下�
 
 是的，k-means也有优化目标函数，如下：
 
-$$minJ_(c^{(1)},……c^{(m)},μ_1,……μ_k)=\frac{1}{m}\sum_{i=1}^{m}{||x^{(i)}-μ_{c^{(i)}||^2}$$
+$$
+minJ_(c^{(1)},……c^{(m)},μ_1,……μ_k)=\frac{1}{m}\sum_{i=1}^{m}{||x^{(i)}-μ_{c^{(i)}}||^2} \\
+$$
 
 ### **3) Random Initialization**
 
@@ -177,7 +187,9 @@ PCA的方法是
 
 * **计算协方差矩阵Σ**
 
-$$Σ=\frac{1}{m}\sum_{i=1}^{m}(x^{(i)})(x^{(i)})^T$$
+$$
+Σ=\frac{1}{m}\sum_{i=1}^{m}(x^{(i)})(x^{(i)})^T \\
+$$
 
 > 左边的Σ是希腊大写的σ，右边的∑是求和符号
 
@@ -199,7 +211,9 @@ sigma = 1\m * (X' * X)
 
 * **将x向量转化成z向量**
 
-$$z = (U_{reduce})^T*x$$
+$$
+z = (U_{reduce})^T*x
+$$
 
 维度表示： $(R^{k×n}*R^{n×1}) = R^{k×1}$
 
@@ -213,7 +227,7 @@ $$z = (U_{reduce})^T*x$$
 
 2.计算协方差Σ: $Σ=\frac{1}{m}\sum_{i=1}^{m}(x^{(i)})(x^{(i)})^T$
 
-3.计算特征向量U: $[U,S,V] = svd(sigma)$
+3.计算特征向量U: ![[U,S,V] = svd(sigma)](https://www.zhihu.com/equation?tex=%5BU%2CS%2CV%5D+%3D+svd%28sigma%29)
 
 4.获取k维的$U_{reduce}^{n×k}$
 
@@ -227,7 +241,9 @@ $$z = (U_{reduce})^T*x$$
 
 即已知降维后的向量z，如何还原成x？方法如下：
 
-$$x = U_{reduce} * z$$
+$$
+x = U_{reduce} * z \\
+$$
 
 注意这里的还原并不是真正的还原成原始数据，因为这个公式得到的x是映射面U上的点，记为$x_{approx}$,虽然有些误差，但是误差一般很小。
 
@@ -235,15 +251,21 @@ $$x = U_{reduce} * z$$
 
 * **方法一** 前面已经提到过$x_{approx}$表示U映射面的点，而PCA优化目标就是最小化**投影误差(projection error)**:
 
-$$minE_p = min\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)}||^2$$
+$$
+minE_p = min\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)}||^2 \\
+$$
 
 我们记原始数据离原点距离的平方的均值为
 
-$$E_{total}=\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}||^2$$
+$$
+E_{total}=\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}||^2 \\
+$$
 
 选择k值的标准就是满足下面的条件
 
-$$\frac{E_p }{E_{total}=\frac{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}||^2}≤0.01$$
+$$
+\frac{E_p }{E_{total}}=\frac{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}||^2}≤0.01 \\
+$$
 
 所以算法描述如下：
 
@@ -251,7 +273,7 @@ $$\frac{E_p }{E_{total}=\frac{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)
 
 即k从1开始不断计算，知道满足小于等于0.01为止（也不一定非得是0.01，具体情况具体分析）。
 
-* **方法二** 这个方法要比上面一个方法**更加简单**。 前面提到过这个方法$[U,S,V] = svd(sigma)$，其中的s也是(n,n)的矩阵，如下图所示，是一个对角矩阵。
+* **方法二** 这个方法要比上面一个方法**更加简单**。 前面提到过这个方法![[U,S,V] = svd(sigma)](https://www.zhihu.com/equation?tex=%5BU%2CS%2CV%5D+%3D+svd%28sigma%29)，其中的s也是(n,n)的矩阵，如下图所示，是一个对角矩阵。
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week8K-meansPCA/e9c52789.jpg)
 
@@ -261,7 +283,9 @@ $$\frac{E_p }{E_{total}=\frac{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)
 
 即
 
-$$\frac{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}||^2}=1-\frac{\sum_{i=1}^{k}s_{ii}{\sum_{i=1}^{n}s_{ii}≤0.01$$
+$$
+\frac{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}-x_{approx}^{(i)}||^2}{\frac{1}{m}\sum_{i=1}^{m}||x^{(i)}||^2}=1-\frac{\sum_{i=1}^{k}s_{ii}}{\sum_{i=1}^{n}s_{ii}}≤0.01 \\
+$$
 
 S矩阵只需要计算一次即可，所以只需要将k从1递增，知道满足小于等于0.01即可求出k值。
 

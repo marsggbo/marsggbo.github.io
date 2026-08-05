@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/669901093>
+
 > “ 以下笔记参考huggingface 官方 tutorial： [https://huggingface.co/learn/nlp-course/chapter6](https://link.zhihu.com/?target=https%3A//huggingface.co/learn/nlp-course/chapter6)  
 >  ”
 
@@ -22,7 +24,7 @@ toc:
 
 normalize 其实就是根据不同的需要对文本数据做一下清洗工作，以英文文本为例可以包括删除不必要的空白、小写和/或删除重音符号。
 
-```
+```python
 from transformers import AutoTokenizer
 
 tokenizer = AutoTokenizer.from_pretrained("bert-base-uncased")
@@ -103,7 +105,7 @@ corpus = [
 
 normalize 步骤就省略了。我们直接先构建一下语料库，以单词为单位对原始文本序列进行划分，并统计每个单词的频率。
 
-```
+```python
 from transformers import AutoTokenizer
 from collections import defaultdict
 
@@ -126,7 +128,7 @@ print(word_freqs)
 
 * 词汇表
 
-```
+```python
 alphabet = []
 
 for word in word_freqs.keys():
@@ -152,7 +154,7 @@ splits = {word: [c for c in word] for word in word_freqs.keys()}
 
 遍历搜索，找到出现频率最高的 byte-pair
 
-```
+```python
 def compute_pair_freqs(splits):
     pair_freqs = defaultdict(int)
     for word, freq in word_freqs.items():
@@ -187,7 +189,7 @@ merges = {("Ġ", "t"): "Ġt"}
 
 根据新增合并规则更新语料库
 
-```
+```python
 def merge_pair(a, b, splits):
     for word in word_freqs:
         split = splits[word]
@@ -211,7 +213,7 @@ print(splits["Ġtrained"])
 
 总结一下上述步骤，我们找到了出现频率最高的一组 byte-pair，由此更新了词汇表和语料库。接下来，我们重复上述过程，不断增加词汇表的大小，直到词汇表包含 50 个 token 为止：
 
-```
+```python
 vocab_size = 50
 
 while len(vocab) < vocab_size:
@@ -243,7 +245,7 @@ print(merges)
 
 至此，我们完成了对给定文本数据的 BPE 算法，得到了长度为 50 的词汇表和语料库。那么该如何利用生成的词汇表和语料库对新的文本数据做 tokenization 呢？代码如下：
 
-```
+```python
 def tokenize(text):
     pre_tokenize_result = tokenizer._tokenizer.pre_tokenizer.pre_tokenize_str(text)
     pre_tokenized_text = [word for word, offset in pre_tokenize_result]
@@ -268,7 +270,7 @@ tokenize("This is not a token.")
 
 借助前面生成的 merge 字典，我们可以实现 tokenize的逆过程，这通常是在处理模型预测结果的时候需要用到，代码如下：
 
-```
+```python
 def detokenize(tokens, merges):
     reconstructed_text = ''.join(tokens)
     for pair, merge in merges.items():

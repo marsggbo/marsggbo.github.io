@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/2031750167255367893>
+
 > 原文：[DroidSpeak: KV Cache Sharing for Cross-LLM Communication and Multi-LLM Serving](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/2411.02820)
 
 ## 1. 前言：一个很自然但从没人解决过的问题

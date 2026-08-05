@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/1896933834148254566>
+
 在写科研文稿时，我们经常需要插入结构图、模型图等 PDF 格式的矢量图。但在 Overleaf 中，我遇到了一个较难定位的问题：使用 `\includegraphics` 插入 PDF 图片时，**编译无报错，但无法显示图片甚至生成 PDF 文件失败**。提示如下信息
 
 ```
@@ -27,8 +29,7 @@ This project contains a file called output.pdf. If that file exists, please rena
 
 文档中使用如下方式插入图像：
 
-{% raw %}
-```
+```latex
 \usepackage{graphicx}
 \graphicspath{{figures/.../}}
 
@@ -41,7 +42,6 @@ This project contains a file called output.pdf. If that file exists, please rena
     \label{fig:pruning}
 \end{figure}
 ```
-{% endraw %}
 
 其中 prune\_structure.pdf 是一张矢量格式的图像，在本地查看没有问题,并没有损坏。
 

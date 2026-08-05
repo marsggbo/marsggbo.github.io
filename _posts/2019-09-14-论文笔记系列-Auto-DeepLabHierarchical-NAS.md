@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/82491292>
+
 > Pytorch实现代码:[https://github.com/MenghaoGuo/AutoDeeplab](https://link.zhihu.com/?target=https%3A//github.com/MenghaoGuo/AutoDeeplab)
 
 ## **创新点**
@@ -48,17 +50,23 @@ cell level的结构搜索方式参考的是DARTS，细节可参阅[论文笔记�
 
 1子节点表示为 $H^l_1$ ,1到2子节点之间的操作可以表示为:
 
-$$\overline{O}{1 \rightarrow 2}(H^l_1)=\sum{k=1}^3\alpha^k_{1 \rightarrow 2} O^k(H^l_1)$$
+$$
+\overline{O}{1 \rightarrow 2}(H^l_1)=\sum{k=1}^3\alpha^k_{1 \rightarrow 2} O^k(H^l_1)
+$$
 
 其中 $\alpha^k$ 表示第k个operation的概率，上图中一共有三种操作，所以最终的操作应该是三种操作的加权值，另外三个操作的和应该为1，所以通常需要使用softmax操作来实现。更一般化的表达方式如下：
 
-$$\begin{array}{l}{\qquad \overline{O}{j \rightarrow i}\left(H{j}^{l}\right)=\sum{O^{k} \in \mathcal{O} \alpha{j \rightarrow i}^{k} O^{k}\left(H_{j}^{l}\right)} \  \end{array}$$
+$$
+\begin{array}{l}{\qquad \overline{O}{j \rightarrow i}\left(H{j}^{l}\right)=\sum{O^{k} \in \mathcal{O}} \alpha{j \rightarrow i}^{k} O^{k}\left(H_{j}^{l}\right)} \  \end{array}
+$$
 
-其中${\qquad \begin{aligned} \sum{k=1}^{|\mathcal{O}|} \alpha{j \rightarrow i}^{k}=1 & \,\,\,\, \forall i, j \ \alpha_{j \rightarrow i}^{k} \geq 0 & \,\,\,\, \forall i, j, k \end{aligned}$
+其中${\qquad \begin{aligned} \sum{k=1}^{|\mathcal{O}|} \alpha{j \rightarrow i}^{k}=1 & \,\,\,\, \forall i, j \ \alpha_{j \rightarrow i}^{k} \geq 0 & \,\,\,\, \forall i, j, k \end{aligned}}$
 
 有了操作的表达式后，那么每个子节点的表达方式也就是对多个输入节点作加权求和，如下：
 
-$$H{i}^{l}=\sum{H{j}^{l} \in \mathcal{I}{i}^{l} O{j \rightarrow i}\left(H{j}^{l}\right)$$
+$$
+H{i}^{l}=\sum{H{j}^{l} \in \mathcal{I}{i}^{l}} O{j \rightarrow i}\left(H{j}^{l}\right)
+$$
 
 ## **Network-level search space**
 
@@ -72,9 +80,11 @@ $$H{i}^{l}=\sum{H{j}^{l} \in \mathcal{I}{i}^{l} O{j \rightarrow i}\left(H{j}^{l}
 
 右边刚开始看的时候还以为就只是介绍了cell结构，但是结合代码后发现有个地方稍微有些不同，这个其实在后面的论文中也有介绍，但是当时没注意看，即每个节点的表达式如下：
 
-$$\begin{aligned}^{s} H^{l}=& \beta{\frac{\varepsilon}{2} \rightarrow s}^{l} \operatorname{Cell}\left(^{\frac{s}{2} H^{l-1},^{s} H^{l-2} ; \alpha\right) \ &+\beta{s \rightarrow s}^{l} \operatorname{Cell}\left(^{s} H^{l-1},^{s} H^{l-2} ; \alpha\right) \ &+\beta_{2 s \rightarrow s}^{l} \operatorname{Cell}\left(^{2 s} H^{l-1},^{s} H^{l-2} ; \alpha\right) \end{aligned}$$
+$$
+\begin{aligned}^{s} H^{l}=& \beta{\frac{\varepsilon}{2} \rightarrow s}^{l} \operatorname{Cell}\left(^{\frac{s}{2}} H^{l-1},^{s} H^{l-2} ; \alpha\right) \ &+\beta{s \rightarrow s}^{l} \operatorname{Cell}\left(^{s} H^{l-1},^{s} H^{l-2} ; \alpha\right) \ &+\beta_{2 s \rightarrow s}^{l} \operatorname{Cell}\left(^{2 s} H^{l-1},^{s} H^{l-2} ; \alpha\right) \end{aligned}
+$$
 
-其中$\begin{array}{ll}{\beta{s \rightarrow \frac{s}{2}^{l}+\beta{s \rightarrow s}^{l}+\beta_{s \rightarrow 2 s}^{l}=1} & {\forall s, l} \  {\beta{s \rightarrow \frac{s}{2}^{l} \geq 0 \quad \beta{s \rightarrow s}^{l} \geq 0} & {\beta_{s \rightarrow 2 s}^{l} \geq 0 \quad \forall s, l}\end{array}$
+其中$\begin{array}{ll}{\beta{s \rightarrow \frac{s}{2}}^{l}+\beta{s \rightarrow s}^{l}+\beta_{s \rightarrow 2 s}^{l}=1} & {\forall s, l} \  {\beta{s \rightarrow \frac{s}{2}}^{l} \geq 0 \quad \beta{s \rightarrow s}^{l} \geq 0} & {\beta_{s \rightarrow 2 s}^{l} \geq 0 \quad \forall s, l}\end{array}$
 
 上面的公式乍看会很懵，我们慢慢看：
 

@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/547117062>
+
 ## **背景**
 
 Slurm集群一般是由一个主节点（master）和各个带有GPU资源的子节点组成的，每次要想使用GPU需要通过主节点跳转到子节点。那么如果我们想使用jupyter使用子节点的GPU应该怎么做呢？
@@ -33,7 +35,7 @@ srun -N 1 -p v100 -t 1440 --pty "bash";
 
 1. 查看节点IP
 
-```
+```bash
 cat /etc/hosts
 ```
 

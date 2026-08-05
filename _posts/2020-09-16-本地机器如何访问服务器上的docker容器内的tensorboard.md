@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/248113520>
+
 本文介绍如何在本地机器访问服务器上的docker容器内的tensorboard。
 
 ## 1. 创建绑定端口的docker容器

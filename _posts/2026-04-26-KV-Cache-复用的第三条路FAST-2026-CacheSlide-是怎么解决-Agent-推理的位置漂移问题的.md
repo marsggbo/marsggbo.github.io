@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/2031738806794199145>
+
 ## 1. 前言：两种方案都不够用
 
 作为一个天天和 LLM 推理打交道的牛马，我对 KV Cache 这个话题有复杂感情——它是 LLM serving 里最核心的优化点，但研究来研究去，工程上每次都会冒出新的问题。
@@ -123,7 +125,9 @@ CCPE 做的事情是：把 prompt 按模板切成若干 chunk，标注哪些是"
 
 1. **Layer 1**：对全部 token 做一次完整 recompute，计算每个 token 的偏差 `d_i = ||K_recompute - K_reuse||²`，取 deviation 最大的 top-k 个 token 放入集合 `Sk`。
 2. **Layer 2 以后**：只对 `Sk` 里的 token 重算 KV，然后用加权融合：  
-$$K_i = \alpha_i · K_{recompute} + (1 - \alpha_i) · K_{reuse}$$
+    $$
+    K_i = \alpha_i · K_{recompute} + (1 - \alpha_i) · K_{reuse}
+    $$
      
     权重 `α` 根据 deviation 动态计算，漂移大的 token 更偏向 recompute，漂移小的 token 更偏向 cache。
 3. **每 4 层评估一次 CKSim**：如果某个 token 的 CKSim < 阈值 τ，说明它已经修正得差不多了，从 `Sk` 里移出；同时把 `S` 里下一个偏差最大的 token 加入。

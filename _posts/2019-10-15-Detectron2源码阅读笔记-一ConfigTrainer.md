@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/86749823>
+
 ## 一、代码结构概览
 
 ## 1.核心部分
@@ -43,7 +45,7 @@ toc:
 
 * `tools/train_net.py`
 
-```
+```python
 from detectron2.config import get_cfg
 from detectron2.engine import DefaultTrainer, default_argument_parser, default_setup, hooks, launch
 ...
@@ -64,7 +66,7 @@ def setup(args):
 * cfg.merge\_from\_file(args.config\_file)：config\_file是指定的yaml配置文件，通过`merge_from_file`这个函数会将yaml文件中指定的超参数对默认值进行覆盖。
 * cfg.merge\_from\_list(args.opts)：`merge_from_list`作用同上面的类似，只不过是通过命令行的方式覆盖。 例如
 
-```
+```python
 opts = ["SYSTEM.NUM_GPUS", 8, "TRAIN.SCALES", "(1, 2, 3, 4)"]
 cfg.merge_from_list(opts)
 print("cfg\n",cfg)
@@ -105,7 +107,7 @@ TRAIN:
 
 好了，我们继续回到`tools/train_net.py`的main函数,代码如下所示。
 
-```
+```python
 def main(args):
     cfg = setup(args)
 

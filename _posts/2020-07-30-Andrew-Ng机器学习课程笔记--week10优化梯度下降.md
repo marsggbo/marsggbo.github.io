@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/165344655>
+
 本周主要介绍了梯度下降算法运用到大数据时的优化方法。
 
 ## **一、内容概要**
@@ -39,7 +41,9 @@ $h_θ(x)=\sum_{j=1}^{n}θ_jx_j \tag {1.1}$$J(θ) = \frac{1}{2m}\sum_{i=1}^{m}(h_
 
 Repeat until convergence {
 
-$$\begin{aligned} \theta_{j} &=\theta_{j}-\alpha \frac{\partial J(\theta)}{\partial \theta_{j} \\ &=\theta_{j}-\alpha \frac{1}{m} \sum_{i=1}^{m}\left(h_{\theta}\left(x^{(i)}\right)-y^{(i)}\right) x_{j}^{(i)} \quad j=1,2 \ldots, n \end{aligned}$$
+$$
+\begin{aligned} \theta_{j} &=\theta_{j}-\alpha \frac{\partial J(\theta)}{\partial \theta_{j}} \\ &=\theta_{j}-\alpha \frac{1}{m} \sum_{i=1}^{m}\left(h_{\theta}\left(x^{(i)}\right)-y^{(i)}\right) x_{j}^{(i)} \quad j=1,2 \ldots, n \end{aligned}
+$$
 
 }
 
@@ -56,7 +60,9 @@ $cost(θ,(x^{(i)}, y^{(i)})) = \frac{1}{2}( h_θ(x^{(i)}) - y^{(i)} )^2 \tag {2.
 * 1.打乱数据，重新随机排列
 * 2.Repeat until convergence{
 
-$$\begin{align} θ_j &=θ_j-α\frac{∂cost(θ,(x^{(i)}, y^{(i)}))}{∂θ_j} \tag{2.31}\\ &= θ_j - α( h_θ(x^{(i)})-y^{(i)})x_j^{(i)} \quad j=1,2...,n \tag{2.32} \end{align}$$
+$$
+\begin{align} θ_j &=θ_j-α\frac{∂cost(θ,(x^{(i)}, y^{(i)}))}{∂θ_j} \tag{2.31}\\ &= θ_j - α( h_θ(x^{(i)})-y^{(i)})x_j^{(i)} \quad j=1,2...,n \tag{2.32} \end{align}
+$$
 
 }
 

@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/374841046>
+
 目录
 
 * 1. 早期Seq2Seq缺点
@@ -54,7 +56,7 @@ Attention机制最早是在[[1]](https://link.zhihu.com/?target=https%3A//arxiv.
 
 * 1.我们先看上图最右边，首先将$h_i$和$s_0$拼接成一个向量
 * 2.然后对拼接得到的向量左乘一个矩阵$W$，该矩阵是一个可学习的参数矩阵。另外可以看到矩阵$W$也有不同颜色的矩阵组成，其实也可以理解成$W$是由两个不同的参数矩阵拼凑而成的，左右分别是$h_i$和$s_0$的参数矩阵
-* 3.$W$和$[h_i,s_0]^T$的相乘结构取tanh后，会再左乘一个向量$V^T$，这样就得到了$\alpha_i$。
+* 3.$W$和![[h_i,s_0]^T](https://www.zhihu.com/equation?tex=%5Bh_i%2Cs_0%5D%5ET)的相乘结构取tanh后，会再左乘一个向量$V^T$，这样就得到了$\alpha_i$。
 * 4.计算出所有$\alpha_i$后会再使用softmax做处理。
 
 写到这我突然发现，上述过程其实和卷积网络中的**Separable Depthwise Convolution**操作很像，比如上面的第二步的$h_i,s_0$其实就可以理解成两个不同的通道，$W$的作用就是对每一层做特征提取。 第二步完了之后，我们只是得到了每一层通道的特征而已，但是通道之间的关系还没有得到，所以还需要通过一个向量来将通道之间的信息关联起来，这和卷积网络中的1\*1的卷积作用非常类似。
@@ -77,15 +79,17 @@ Attention机制最早是在[[1]](https://link.zhihu.com/?target=https%3A//arxiv.
 
 可以看到在使用Attention之前，Decoder的第一个输出$s_1$为
 
-$$\mathrm{s}_{1}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{1}^{\prime} \\ \mathrm{s}_{0} \end{array}\right]+\mathbf{b}\right) \tag{1}$$
+![\mathrm{s}_{1}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{1}^{\prime} \\ \mathrm{s}_{0} \end{array}\right]+\mathbf{b}\right) \tag{1} ](https://www.zhihu.com/equation?tex=%5Cmathrm%7Bs%7D_%7B1%7D%3D%5Ctanh+%5Cleft%28%5Cmathbf%7BA%7D%5E%7B%5Cprime%7D+%5Ccdot%5Cleft%5B%5Cbegin%7Barray%7D%7Bl%7D+%5Cmathbf%7Bx%7D_%7B1%7D%5E%7B%5Cprime%7D+%5C%5C+%5Cmathrm%7Bs%7D_%7B0%7D+%5Cend%7Barray%7D%5Cright%5D%2B%5Cmathbf%7Bb%7D%5Cright%29+%5Ctag%7B1%7D+)
 
 计算出各个隐状态$h_i$对应的权重后，会进一步计算出$c_0$，即
 
-$$c_0=\alpha_1h_1+...\alpha_mh_m  \tag{2}$$
+$$
+c_0=\alpha_1h_1+...\alpha_mh_m  \tag{2}
+$$
 
 之后Decoder的会将$c_0$也考虑进去，此时$s_1$的计算公式为：
 
-$$\mathbf{s}_{1}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{1}^{\prime} \\ \mathbf{s}_{0} \\ \mathbf{c}_{0} \end{array}\right]+\mathbf{b}\right)  \tag{3}$$
+![\mathbf{s}_{1}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{1}^{\prime} \\ \mathbf{s}_{0} \\ \mathbf{c}_{0} \end{array}\right]+\mathbf{b}\right)  \tag{3} ](https://www.zhihu.com/equation?tex=%5Cmathbf%7Bs%7D_%7B1%7D%3D%5Ctanh+%5Cleft%28%5Cmathbf%7BA%7D%5E%7B%5Cprime%7D+%5Ccdot%5Cleft%5B%5Cbegin%7Barray%7D%7Bl%7D+%5Cmathbf%7Bx%7D_%7B1%7D%5E%7B%5Cprime%7D+%5C%5C+%5Cmathbf%7Bs%7D_%7B0%7D+%5C%5C+%5Cmathbf%7Bc%7D_%7B0%7D+%5Cend%7Barray%7D%5Cright%5D%2B%5Cmathbf%7Bb%7D%5Cright%29++%5Ctag%7B3%7D+)
 
 计算出第一个预测值$s_1$后，之后的预测值怎么计算呢？如下图示，其实和第一个预测值的计算方法是类似的，差别就在于输入数据状态变成了$s_1$和$c_1$。这个$c_1$的计算和$c_0$是类似的，差别就在于$c_0$的基于$h_i$和$s_0$计算得到的，而$c_1$是基于$h_i$和$s_1$计算得到的。
 

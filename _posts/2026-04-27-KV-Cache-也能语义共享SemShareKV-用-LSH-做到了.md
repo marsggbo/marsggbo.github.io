@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/2032216700423287711>
+
 > 原文：[SemShareKV: Efficient KVCache Sharing for Semantically Similar Prompts via Token-Level LSH Matching](https://link.zhihu.com/?target=https%3A//aclanthology.org/2025.findings-ijcnlp.25.pdf)
 
 ## 1. 前言

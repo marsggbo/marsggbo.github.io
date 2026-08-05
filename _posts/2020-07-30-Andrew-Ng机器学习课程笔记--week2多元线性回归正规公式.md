@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/165322806>
+
 ## **1. 内容概要**
 
 * **Multivariate Linear Regression(多元线性回归)**
@@ -52,13 +54,17 @@ toc:
 
 * **feature scaling**
 
-$$\begin{equation} x_i := \frac{x_i}{x_\max - x_\min} \end{equation}$$
+$$
+\begin{equation} x_i := \frac{x_i}{x_\max - x_\min} \end{equation} \\
+$$
 
 每个输入值除以(max - min)
 
 * **mean normalization**
 
-$$\begin{equation} x_i := \frac{x_i - μ_i}{s_i} \end{equation}$$
+$$
+\begin{equation} x_i := \frac{x_i - μ_i}{s_i} \end{equation} \\
+$$
 
 μi: 均值 si: max - min
 
@@ -66,7 +72,9 @@ $$\begin{equation} x_i := \frac{x_i - μ_i}{s_i} \end{equation}$$
 
 **Normal Equation**
 
-$$\begin{equation} θ = （X^T·X）^{﹣1}·X·Y \end{equation}$$
+$$
+\begin{equation} θ = （X^T·X）^{﹣1}·X·Y \end{equation} \\
+$$
 
 > 具体推理过程详见**[掰开揉碎推导Normal Equation](https://zhuanlan.zhihu.com/p/22757336)**
 

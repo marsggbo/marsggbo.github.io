@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/683418039>
+
 > “ 标题党一下，顺便蹭一下 OpenAI Sora大模型的热点，主要也是回顾一下扩散模型的原理。  
 >  ”
 
@@ -36,19 +38,25 @@ toc:
 
 那我们可以很自然地知道，t 时刻的图像应该跟 t-1时刻的图像和噪声相关，所以有
 
-$$X_t=\sqrt{\alpha_t}X_{t-1}+\sqrt{1-\alpha_t}z_1$$
+$$
+X_t=\sqrt{\alpha_t}X_{t-1}+\sqrt{1-\alpha_t}z_1 \\
+$$
 
 其中$\alpha_t=1-\beta_t$, $z_1$是服从 (0,1) 正太分布的随机变量。常见的参数设置是$\beta_t$从 0.0001 逐渐增加到0.002，所以$\alpha_t$对应越来越小，也就是说噪声的占比逐渐增大。
 
-我们同样有$X_{t-1}=\sqrt{\alpha_{t-1}X_{t-2}+\sqrt{1-\alpha_{t-1}z_2$，此时我们有
+我们同样有$X_{t-1}=\sqrt{\alpha_{t-1}}X_{t-2}+\sqrt{1-\alpha_{t-1}}z_2$，此时我们有
 
-$$\begin{align} X_{t}\,&=\,{\sqrt{a_{t}({\sqrt{a_{t-1}X_{t-2}+{\sqrt{1-\alpha_{t-1}z_{2})+{\sqrt{1-\alpha_{t}z_1 \\ &=\sqrt{a_{t}a_{t-1}X_{t-2}+(\sqrt{(a_{t}(1-\alpha_{t-1})}z_{2}+\sqrt{1-\alpha_{t}z_{1}) \\ &= \sqrt{a_{t}a_{t-1}X_{t-2}+\sqrt{1-\alpha_t\alpha_{t-1}z_2 \\ &= \sqrt{a_{t}a_{t-1}X_{t-2}+\tilde{z}_2 \notag \end{align}$$
+$$
+\begin{align} X_{t}\,&=\,{\sqrt{a_{t}}}({\sqrt{a_{t-1}}}X_{t-2}+{\sqrt{1-\alpha_{t-1}}}z_{2})+{\sqrt{1-\alpha_{t}}}z_1 \\ &=\sqrt{a_{t}a_{t-1}}X_{t-2}+(\sqrt{(a_{t}(1-\alpha_{t-1})}z_{2}+\sqrt{1-\alpha_{t}}z_{1}) \\ &= \sqrt{a_{t}a_{t-1}}X_{t-2}+\sqrt{1-\alpha_t\alpha_{t-1}}z_2 \\ &= \sqrt{a_{t}a_{t-1}}X_{t-2}+\tilde{z}_2 \notag \end{align} \\
+$$
 
-因为$z_1,z_2$都服从正太分布，且$\mathcal{N}(0,\sigma_{1}^{2})+\mathcal{N}(0,\sigma_{2}^{2})\sim\mathcal{N}(0,(\sigma_{1}^{2}+\sigma_{2}^{2}))$，所以公式(2)的括号内的两项之和得到一个新的服从均值为 0， 方差是$\sqrt{(a_{t}(1-\alpha_{t-1})}^2+\sqrt{1-\alpha_{t}^2=1-\alpha_t\alpha_{t-1}$的变量$\tilde z_2\sim\mathcal{N}(0,1-\alpha_t\alpha_{t-1})$。
+因为$z_1,z_2$都服从正太分布，且$\mathcal{N}(0,\sigma_{1}^{2})+\mathcal{N}(0,\sigma_{2}^{2})\sim\mathcal{N}(0,(\sigma_{1}^{2}+\sigma_{2}^{2}))$，所以公式(2)的括号内的两项之和得到一个新的服从均值为 0， 方差是$\sqrt{(a_{t}(1-\alpha_{t-1})}^2+\sqrt{1-\alpha_{t}}^2=1-\alpha_t\alpha_{t-1}$的变量$\tilde z_2\sim\mathcal{N}(0,1-\alpha_t\alpha_{t-1})$。
 
 我们不断递归能够得到$X_t$和$X_0$的关系如下：
 
-$$\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t \\ &=\sqrt{\overline{\alpha}_t}X_0+\sqrt{1-\overline{\alpha}_t}{z}_t \end{align}$$
+$$
+\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t \\ &=\sqrt{\overline{\alpha}_t}X_0+\sqrt{1-\overline{\alpha}_t}{z}_t \end{align} \\
+$$
 
 其中$\overline{\alpha}_t=\alpha_t\alpha_{t-1}...\alpha_{1}$, $\overline{z}_t$是均值为 0，方差$\sigma=1-\overline{\alpha}_t$的高斯变量, $z_t$服从(0,1)正态分布。可以看到给定0 时刻的图像数据$X_0$，我们可以求得任意t时刻的$\overline{\alpha}_t$和与之有关的$\overline z_t$，进而得到对应的$X_t$数据，至此前向过程就结束了。
 
@@ -58,11 +66,15 @@ $$\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t \\ &=\sqrt{\ov
 
 扩散模型在应用的时候主要就是 reverse 过程，即给定一组随机噪声，通过逐步的还原得到想要的图像，可以表示为$q(X_0|X_t)$。但是很显然，我们无法直接从 T 时刻还原得到 0 时刻的数据，所以退而求其次，先求$q(X_{t-1}|X_t)$。但是这个也没那么容易求得，但是由贝叶斯公式我们可以知道
 
-$$q(X_{t-1}|X_t)=\frac{q(X_t|X_{t-1})q(X_{t-1})}{q(X_t)}$$
+$$
+q(X_{t-1}|X_t)=\frac{q(X_t|X_{t-1})q(X_{t-1})}{q(X_t)} \\
+$$
 
 我们这里考虑扩散模型训练过程，我们默认是知道$X_o$的，所以有
 
-$$q(X_{t-1}|X_t,X_0)=\frac{q(X_t|X_{t-1},X_0)q(X_{t-1}|X_0)}{q(X_t|X_0)}$$
+$$
+q(X_{t-1}|X_t,X_0)=\frac{q(X_t|X_{t-1},X_0)q(X_{t-1}|X_0)}{q(X_t|X_0)} \\
+$$
 
 解释一下上面的公式：因为我们可以人为设置噪声分布，所以正向过程中每个时刻的数据也是知道的。例如，假设噪声$z$是服从高斯分布的，那么$X_1=X_0+z$，所以$q(X_1,X_0)$是可以知道的，同样$q(X_{t-1},X_0),q(X_t,X_0)$也都是已知的，更一般地，$q(X_t|X_{t-1},X_0)$也是已知的。所以上面公式的右边三项都是已知的，要计算出左边的结果，就只需要分别求出右边三项的数学表达式了。
 
@@ -74,15 +86,21 @@ $$q(X_{t-1}|X_t,X_0)=\frac{q(X_t|X_{t-1},X_0)q(X_{t-1}|X_0)}{q(X_t|X_0)}$$
 
 下面公式中左边的概率分布其实就是右边三项概率分布的计算结果。
 
-$$q(X_{t-1}|X_t,X_0)=\frac{q(X_t|X_{t-1},X_0)q(X_{t-1}|X_0)}{q(X_t|X_0)}$$
+$$
+q(X_{t-1}|X_t,X_0)=\frac{q(X_t|X_{t-1},X_0)q(X_{t-1}|X_0)}{q(X_t|X_0)} \\
+$$
 
 我们假设了噪声数据服从高斯分布$\mathcal{N}(\mu,\sigma^2)$，并且知道高斯分布的概率密度函数是$exp{(-\frac{1}{2}\frac{(x-\mu)^2}{\sigma^2})}$。结合上面已经给出的三项的高斯分布情况，例如
 
 ![](/assets/img/marsggbo/2024-02-22-OpenAI-的视频生成大模型Sora的核心技术详解一Diffusion模型原理和代码详解/c7d6e27a.jpg)
 
-我们可以求得$q(X_t|X_0)$的概率密度函数为$exp(-\frac{1}{2}\frac{(X_t-\sqrt{\overline{a_t}X_0)^2}{1-\overline{a_t})$，其它两项同理，它们计算后得到的最终的概率密度函数为：
+我们可以求得$q(X_t|X_0)$的概率密度函数为$exp(-\frac{1}{2}\frac{(X_t-\sqrt{\overline{a_t}}X_0)^2}{1-\overline{a_t}})$，其它两项同理，它们计算后得到的最终的概率密度函数为：
 
-$$\propto\exp\left(-\,\frac{1}{2}\,(\frac{({X}_{t}-\sqrt{\alpha_{t}{X}_{t-1})^{2}{\beta_{t}+\frac{({X}_{t-1}-\sqrt{\alpha}_{t-1}{X}_{0})^{2}{1-\overline{\alpha}_{t-1}-\frac{({X}_{t}-\sqrt{\overline{\alpha}_{t}{X}_{0})^{2}{1-\overline{\alpha}_{t})\right)$$
+{% raw %}
+$$
+\propto\exp\left(-\,\frac{1}{2}\,(\frac{({X}_{t}-\sqrt{\alpha_{t}}{X}_{t-1})^{2}}{\beta_{t}}+\frac{({X}_{t-1}-\sqrt{\alpha}_{t-1}{X}_{0})^{2}}{1-\overline{{{\alpha}}}_{t-1}}-\frac{({X}_{t}-\sqrt{\overline{{{\alpha}}}_{t}}{X}_{0})^{2}}{1-\overline{{{\alpha}}}_{t}})\right) \\
+$$
+{% endraw %}
 
 其中上面公式中$\beta_t=1-\alpha_t$。接着我们把上面公式的平方项展开，以$X_{t-1}$为变量（因为此时我们的目的是求得$X_{t-1}$）合并同类项整理一下最后可以得到
 
@@ -92,21 +110,31 @@ $$\propto\exp\left(-\,\frac{1}{2}\,(\frac{({X}_{t}-\sqrt{\alpha_{t}{X}_{t-1})^{2
 
 * 方差
 
-$$\tilde\sigma_t^2=\frac{1-\overline{\alpha}_{t-1}{1-\overline{\alpha}_t}\beta_t$$
+$$
+\tilde\sigma_t^2=\frac{1-\overline{\alpha}_{t-1}}{1-\overline{\alpha}_t}\beta_t \\
+$$
 
 方差等式中的$\alpha,\beta$都是与分布相关的固定值，即给定高斯分布后，这些变量的值是固定的，所以方差是固定值。
 
 * 均值
 
-$$\tilde{\mu}_{t}({X}_{t},{X}_{0})\;=\frac{\sqrt{\alpha_{t}({\bf1}-\bar{\alpha}_{t-1})}{\bf1}-\bar{\alpha}_{t}{X}_{t}+\frac{\sqrt{\bar{\alpha}_{t-1}\beta_{t}{\bf1}-\bar{\alpha}_{t}{X}_{0}$$
+{% raw %}
+$$
+\tilde{\mu}_{t}({X}_{t},{X}_{0})\;=\frac{\sqrt{\alpha_{t}}({\bf1}-\bar{\alpha}_{t-1})}{{\bf1}-\bar{\alpha}_{t}}{X}_{t}+\frac{\sqrt{\bar{\alpha}_{t-1}}\beta_{t}}{{\bf1}-\bar{\alpha}_{t}}{X}_{0} \\
+$$
+{% endraw %}
 
-均值跟$X_t$和$X_0$有关 ，但是此时的已知量是$X_t$，而$X_0$是未知的。不过我们可以估计一下$X_0$的值，通过前向过程我们知道 $X_t=\sqrt{\overline{a}_t}X_0+\sqrt{1-\overline{a}_t}z_t$，那么可以逆向估计一下 $X_0=\frac{1}{\sqrt{\overline{a}_t}(X_t-\sqrt{1-\overline{a}_t}z_t)$。不过需要注意的是，这里的$X_0$只是通过$X_t$估算得到的，并不是真实值。所以均值表达式还可以进一步简化，即
+均值跟$X_t$和$X_0$有关 ，但是此时的已知量是$X_t$，而$X_0$是未知的。不过我们可以估计一下$X_0$的值，通过前向过程我们知道 $X_t=\sqrt{\overline{a}_t}X_0+\sqrt{1-\overline{a}_t}z_t$，那么可以逆向估计一下 $X_0=\frac{1}{\sqrt{\overline{a}_t}}(X_t-\sqrt{1-\overline{a}_t}z_t)$。不过需要注意的是，这里的$X_0$只是通过$X_t$估算得到的，并不是真实值。所以均值表达式还可以进一步简化，即
 
-$$\tilde{\mu}_{t}=\frac{1}{\sqrt{a_{t}(X_{t}-\frac{\beta_{t}{\sqrt{1-\bar{a}_{t}{z}_{t})$$
+$$
+\tilde{\mu}_{t}=\frac{1}{\sqrt{a_{t}}}(X_{t}-\frac{\beta_{t}}{\sqrt{1-\bar{a}_{t}}}{z}_{t}) \\
+$$
 
 每个时刻的均值和方差的表达式就都有了。不过，每个时刻的方差是个定值，很容易求解，而均值却跟变量$z_t$相关。如果能求解得到$z_t$，那么只要给定一个t 时刻的随机噪声填满的图像$X_t$，我们就能知道该时刻噪声的均值和方差，那么我们就可以通过采样得到上一时刻的噪声数据
 
-$$X_{t-1}=\tilde\mu_t+\tilde\sigma_t \epsilon$$
+$$
+X_{t-1}=\tilde\mu_t+\tilde\sigma_t \epsilon \\
+$$
 
 $\epsilon$是服从(0,1)的正态分布的随机变量。至此，我们只需要引入神经网络模型来预测 t 时刻的$z_t$,即$z_t=\text{diffusion_model}(x_t)$，模型训练好后就能得到前一时刻的$X_{t-1}$了。
 
@@ -125,13 +153,15 @@ $\epsilon$是服从(0,1)的正态分布的随机变量。至此，我们只需�
 
 给定原始图像$X_0$和加噪的超参数$\alpha_t=1-\beta_t$可以求得任意时刻对应的加噪后的数据$X_t$，即
 
-$$\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t\\ &=\sqrt{\overline{\alpha}_t}X_0+\sqrt{1-\overline{\alpha}_t}{z}_t \end{align}$$
+$$
+\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t\\ &=\sqrt{\overline{\alpha}_t}X_0+\sqrt{1-\overline{\alpha}_t}{z}_t \end{align} \\
+$$
 
 其中$\overline{\alpha}_t=\alpha_t\alpha_{t-1}...\alpha_{1}$, $\overline{z}_t$是均值为 0，标准差$\sigma=\sqrt{1-\overline{\alpha}_t}$的高斯变量。
 
 下面是具体的代码实现，首先是与噪声相关超参数的设置和提前计算：
 
-```
+```python
 from PIL import Image
 import matplotlib.pyplot as plt
 
@@ -159,7 +189,7 @@ posterior_variance = betas * (1.0 - alphas_cumprod_prev) / (1.0 - alphas_cumprod
 
 接下来是具体的前向过程的计算，其中`get_index_from_list`函数是为了快速获得指定 t 时刻对应的超参数的值，支持批量图像操作。`forward_diffusion_sample`则是前向扩散采样函数。
 
-```
+```python
 def get_index_from_list(vals, time_step, x_shape):
     """
     返回传入的值列表vals（如β_t 或者α_t）中特定时刻t的值,同时考虑批量维度。
@@ -206,7 +236,7 @@ for idx in range(T):
 
 我们忽略具体的模型结构细节，先看看训练流程是怎样的：
 
-```
+```python
 if __name__ == "__main__":
     model = SimpleUnet()
     T = 300
@@ -241,13 +271,13 @@ if __name__ == "__main__":
 
 给定某一时刻的数据$X_t$，该时刻的均值$\mu$和方差$\sigma$如下
 
-$\tilde{\mu}_{t}=\frac{1}{\sqrt{a_{t}(X_{t}-\frac{\beta_{t}{\sqrt{1-\bar{a}_{t}{z}_{t})$$\tilde\sigma_t^2=\frac{1-\overline{\alpha}_{t-1}{1-\overline{\alpha}_t}\beta_t$
+$\tilde{\mu}_{t}=\frac{1}{\sqrt{a_{t}}}(X_{t}-\frac{\beta_{t}}{\sqrt{1-\bar{a}_{t}}}{z}_{t}) \\$$\tilde\sigma_t^2=\frac{1-\overline{\alpha}_{t-1}}{1-\overline{\alpha}_t}\beta_t \\$
 
 通过对$\mathcal{N}(\tilde\mu_t,\tilde\sigma_t^2)$分布进行采样得到上一时刻的数据$X_{t-1}=\tilde\mu_t+\tilde\sigma_t\epsilon$，$z_t$是模型训练收敛后，在给定噪声图像和对应时刻 t 后计算得到的噪声数据，$\epsilon$是正态分布随机变量。
 
 实现代码如下：
 
-```
+```python
 @torch.no_grad()
 def sample_timestep(model, x, t):
     """
@@ -294,7 +324,9 @@ for i in reversed(range(0, T)):
 
 给定原始图像$X_0$和加噪的超参数$\alpha_t=1-\beta_t$可以求得任意时刻对应的加噪后的数据$X_t$，即
 
-$$\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t\\ &=\sqrt{\overline{\alpha}_t}X_0+\sqrt{1-\overline{\alpha}_t}{z}_t \end{align}$$
+$$
+\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t\\ &=\sqrt{\overline{\alpha}_t}X_0+\sqrt{1-\overline{\alpha}_t}{z}_t \end{align} \\
+$$
 
 其中$\overline{\alpha}_t=\alpha_t\alpha_{t-1}...\alpha_{1}$, $\overline{z}_t$是均值为 0，标准差$\sigma=\sqrt{1-\overline{\alpha}_t}$的高斯变量。
 
@@ -302,7 +334,7 @@ $$\begin{align} X_t&=\sqrt{\overline{\alpha}_t}X_0+\overline{z}_t\\ &=\sqrt{\ove
 
 给定某一时刻的数据$X_t$，该时刻的均值$\mu$和方差$\sigma$如下
 
-$\tilde{\mu}_{t}=\frac{1}{\sqrt{a_{t}(X_{t}-\frac{\beta_{t}{\sqrt{1-\bar{a}_{t}{z}_{t})$$\tilde\sigma_t^2=\frac{1-\overline{\alpha}_{t-1}{1-\overline{\alpha}_t}\beta_t$
+$\tilde{\mu}_{t}=\frac{1}{\sqrt{a_{t}}}(X_{t}-\frac{\beta_{t}}{\sqrt{1-\bar{a}_{t}}}{z}_{t}) \\$$\tilde\sigma_t^2=\frac{1-\overline{\alpha}_{t-1}}{1-\overline{\alpha}_t}\beta_t \\$
 
 通过对$\mathcal{N}(\tilde\mu_t,\tilde\sigma_t^2)$分布进行采样得到上一时刻的数据$X_{t-1}=\tilde\mu_t+\tilde\sigma_t\epsilon$，$z_t$是模型训练收敛后，在给定噪声图像和对应时刻 t 后计算得到的噪声数据,$\epsilon$是正态分布随机变量。迭代 t 次后即可得到 0 时刻的图像了。
 

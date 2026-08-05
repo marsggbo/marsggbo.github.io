@@ -1,6 +1,6 @@
 ---
 layout: post
-title: "【论文笔记系列】AutoML：A Survey of State-of-the-art （下）"
+title: 【论文笔记系列】AutoML：A Survey of State-of-the-art （下）
 date: '2020-02-11'
 tags: [techniques]
 category: techniques
@@ -10,6 +10,8 @@ related_posts: false
 toc:
   sidebar: left
 ---
+
+> 原文: <http://zhuanlan.zhihu.com/p/106224268>
 
 > **[【论文笔记系列】AutoML：A Survey of State-of-the-art （上）](https://zhuanlan.zhihu.com/p/106205363)**  
 >  论文地址：[https://arxiv.org/abs/1908.00709](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1908.00709)
@@ -119,11 +121,13 @@ toc:
 
 之前不少NAS算法只关注找到表现好的模型，而忽略了模型大小，因为说到底我们找模型是为了应用到实际，而很多情况是希望能移植到移动设备上，所以也有很多方法把resource纳入了考虑，比较受关注的方法是MnasNet，这是Google提出的，它的设计思路也成了后面很多方法的范式。那么如何设计resource-aware的模型呢？一种就是想MnasNet一样，它借鉴了MobileNet的设计思路，指定operation为MBConv，这种设计方式使得参数量少，而且效果还不错。另一种就是在loss函数中加入约束项。这个约束项的值可以是1）模型参数大小；2）Multiply-ACcumulate (MAC) 计算数量；3）FLOPs数量；4）模型在真实设备上的延迟。比如MONAS【15】是一个基于强化学习的算法，所以它直接MAC加入到reward function中来控制模型大小。而对于基于梯度更新的算法，显然不能直接在loss中加上这个常数，因为你求导等于0，并没有什么贡献。MnasNet则是通过设计了一种自定义的loss函数来使得可求导，公式为：
 
-$$\underset{m}{\operatorname{maximize} \quad A C C(m) \times\left[\frac{L A T(m)}{T}\right]^{w}$$
+![\underset{m}{\operatorname{maximize}} \quad A C C(m) \times\left[\frac{L A T(m)}{T}\right]^{w} \\](https://www.zhihu.com/equation?tex=%5Cunderset%7Bm%7D%7B%5Coperatorname%7Bmaximize%7D%7D+%5Cquad+A+C+C%28m%29+%5Ctimes%5Cleft%5B%5Cfrac%7BL+A+T%28m%29%7D%7BT%7D%5Cright%5D%5E%7Bw%7D+%5C%5C)
 
 where $w$ is the weight factor defined as:
 
-$$w=\left\{\begin{array}{ll} {\alpha,} & {\text { if } L A T(m) \leq T} \\ {\beta,} & {\text { otherwise } \end{array}\right.$$
+$$
+w=\left\{\begin{array}{ll} {\alpha,} & {\text { if } L A T(m) \leq T} \\ {\beta,} & {\text { otherwise }} \end{array}\right. \\
+$$
 
 FBNet是通过查表的方式来获得每个操作的延迟时间，SNAS中延迟与网络结构线性相关，这样便可以求导了。
 

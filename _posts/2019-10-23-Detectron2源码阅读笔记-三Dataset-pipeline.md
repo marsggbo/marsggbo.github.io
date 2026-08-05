@@ -11,9 +11,11 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/88149772>
+
 ## 构建data\_loader原理步骤
 
-```
+```python
 # engine/default.py
 from detectron2.data import (
     MetadataCatalog,
@@ -40,7 +42,7 @@ class DefaultTrainer(SimpleTrainer):
 
 结合前面两篇文章的内容可以看到detectron2在构建model,optimizer和data\_loader的时候都是在对应的`build.py`文件里实现的。我们看一下`build_detection_train_loader`是如何定义的(对应上图中**紫色方框内**的部分(**自下往上**的顺序)）：
 
-```
+```python
 def build_detection_train_loader(cfg, mapper=None):
     """
     A data loader is created by the following steps:
@@ -106,7 +108,7 @@ def build_detection_train_loader(cfg, mapper=None):
 
 解析的原理是：`DatasetCatalog`有一个字典`_REGISTERED`，默认已经注册好了例如`coco,voc`这些数据集的信息。如果你想要使用你自己的数据集，那么你需要在最开始前你需要定义你的数据集名字以及定义一个函数(这个函数不需要传参，而且最后会返回一个dict，该dict包含你的数据集信息)，举个栗子：
 
-```
+```python
 from detectron2.data import DatasetCatalog
 my_dataset_name = 'apple'
 def get_dicts():
@@ -118,7 +120,7 @@ DatasetCatalog.register(my_dataset_name, get_dicts)
 
 当然，如果你的数据集已经是COCO的格式了，那么你也可以使用如下方法进行注册：
 
-```
+```python
 from detectron2.data.datasets import register_coco_instances
 my_dataset_name = 'apple'
 register_coco_instances(my_dataset_name, {}, "json_annotation.json", "path/to/image/dir")
@@ -128,7 +130,7 @@ register_coco_instances(my_dataset_name, {}, "json_annotation.json", "path/to/im
 
 **`MetadataCatalog`的作用是记录数据集的一些特征**，这样我们就可以很方便的在整个代码中获取数据集的特征信息。在注册`DatasetCatalog`后，我们可以按如下栗子对`MetadataCatalog`进行注册并定义我们后面可能会用到的属性特征：
 
-```
+```python
 from detectron2.data import MetadataCatalog
 MetadataCatalog.get("my_dataset").thing_classes = ["person", "dog"]
 
@@ -149,7 +151,7 @@ MetadataCatalog.get("my_dataset").set("thing_classes",["person", "dog"])
 
 `DatasetFromList(dataset_dict)`函数定义在`detectron2/data/common.py`中，它其实就是一个`torch.utils.data.Dataset`类，其源码如下
 
-```
+```python
 class DatasetFromList(data.Dataset):
     """
     Wrap a list to a torch Dataset. It produces elements of the list as data.
@@ -200,7 +202,7 @@ class DatasetFromList(data.Dataset):
 
 其源码如下（有删减）：
 
-```
+```python
 class DatasetMapper:
     def __init__(self, cfg, is_train=True):
         # 读取cfg的参数
@@ -241,7 +243,7 @@ class DatasetMapper:
 
 ### **`MapDataset`**
 
-```
+```python
 class MapDataset(data.Dataset):
     def __init__(self, dataset, map_func):
         self._dataset = dataset

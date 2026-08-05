@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/500773671>
+
 假设我的项目目录大致如下
 
 ```
@@ -33,7 +35,7 @@ myapp/
 
 `setup.py`如下
 
-```
+```python
 from setuptools import setup, find_packages
 
 setup(
@@ -50,7 +52,7 @@ setup(
 
 我们运行如下命令
 
-```
+```bash
 python setup.py sdist bdist_wheel
 ```
 
@@ -99,7 +101,7 @@ recursive-include myapp/configs *.yaml
 
 现在我们重新执行打包命令
 
-```
+```bash
 python setup.py sdist bdist_wheel
 ```
 

@@ -11,13 +11,16 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/99057715>
+
 我们平时在写markdown时常常会用到latex公式，然而直接将markdown上传至知乎的话，知乎并不能正常解析公式，因为他还无法识别$$。
 
 通过分析知乎网站代码可以看到知乎的处理方式是这样的：
 
 假设你的latex代码如下：
 
-```$$\frac{a}{b}$$
+```
+$$\frac{a}{b}$$
 ```
 
 知乎的显示数学代码的方式是转换成html中的`img`标签：

@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/1896974320389038875>
+
 在撰写笔记、教程或技术总结时，我们常常使用 Markdown 来写作，并希望将其发布到社交平台，如小红书、公众号、知乎等。但这些平台往往不支持直接粘贴 Markdown，因此将 Markdown 渲染为图片成为一种通用且视觉友好的方式。
 
 本文介绍一种基于 `Node.js` 的自动化方案：**将 Markdown 转换成 HTML，再用浏览器截图为多张图片，适配小红书的阅读体验。**
@@ -52,7 +54,7 @@ npm install marked puppeteer highlight.js katex minimist
 
 1. 克隆项目
 
-```
+```bash
 git clone https://github.com/marsggbo/markdown2rednote.git
 cd markdown2rednote
 ```
@@ -65,7 +67,7 @@ cd markdown2rednote
 
 赋予脚本权限并执行：
 
-```
+```bash
 chmod +x ./md2xhs.sh
 ./md2xhs.sh how_to_markdown2rednote.md
 ```

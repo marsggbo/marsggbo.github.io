@@ -11,9 +11,11 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/477870660>
+
 `pin_memory` 和 `non_blocking`的作用分别是什么?网上看了很多解释，只是稀里糊涂的有个感觉，就是用了这玩意速度能变快，但是不知所以然，这篇文章希望能帮助你解惑，也给自己做个笔记，以备日后查阅。
 
-```
+```python
 train_sampler = None
 train_loader = torch.utils.data.DataLoader(
  train_dataset,
@@ -117,7 +119,7 @@ non-default stream上的所有操作相对于 host code 都是 non-blocking 的�
 
 所以下面代码中的第二行应该是在第一行启动后就立马执行了。Pytorch官方的建议[5]是`pin_memory=True`和`non_blocking=True`搭配使用，这样能使得data transfer可以overlap computation。
 
-```
+```python
 x = x.cuda(non_blocking=True)
 pre_compute()
 ...
@@ -126,7 +128,7 @@ y = model(x)
 
 注意`non_blocking=True`后面紧跟与之相关的语句时，就会需要做同步操作，等到data transfer完成为止，如下面代码示例
 
-```
+```python
 x=x.cuda(non_blocking=True)
 y = model(x)
 ```

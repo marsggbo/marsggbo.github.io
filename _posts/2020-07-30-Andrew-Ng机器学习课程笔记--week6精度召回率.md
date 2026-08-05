@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/165332666>
+
 **Advice for applying machine learning**
 
 > 本周主要学习如何提升算法效率，以及如何判断学习算法在什么时候表现的很糟糕和如何debug我们的学习算法。为了让学习算法表现更好，我们还会学习如何解决处理偏态数据（skewed data）。
@@ -101,7 +103,7 @@ testError的计算方法依计算类型不同而不同：
 
 对于过拟合问题，正则化是个非常有效的解决方案，下面是一个之前提到过的正则化线性回归的例子：
 
-$h_θ(x) = θ_0 + θ_1x + θ_2x^2 +…… +θ_nx^n$$J(θ) = \frac{1}{2m}\sum_{i=1}^{m}(h_θ(x^{(i)})-y^{(i)})^2+\frac{λ}{2m}\sum_{j=1}^{m}θ_j^2$
+$h_θ(x) = θ_0 + θ_1x + θ_2x^2 +…… +θ_nx^n \\$$J(θ) = \frac{1}{2m}\sum_{i=1}^{m}(h_θ(x^{(i)})-y^{(i)})^2+\frac{λ}{2m}\sum_{j=1}^{m}θ_j^2\\$
 
 但是如何选择λ的值呢？this is a question！方法和上面的模式选择类似（见下图）
 
@@ -184,9 +186,13 @@ False Negative（假负例 , FN）被模型预测为负的正样本；可以称�
 
 计算公式如下：
 
-$$Precision =\frac{\text { True positives }{\# \text { predicted as positive }=\frac{\text { True positives }{\text { True positives }+\text { False positives }$$
+$$
+Precision =\frac{\text { True positives }}{\# \text { predicted as positive }}=\frac{\text { True positives }}{\text { True positives }+\text { False positives }}
+$$
 
-$$\operatorname{Recall}=\frac{\text { True positives }{\# \text { actual positives }=\frac{\text { True positives }{\text { True positives }+\text { False negatives }$$
+$$
+\operatorname{Recall}=\frac{\text { True positives }}{\# \text { actual positives }}=\frac{\text { True positives }}{\text { True positives }+\text { False negatives }}
+$$
 
 例题：
 
@@ -194,9 +200,13 @@ $$\operatorname{Recall}=\frac{\text { True positives }{\# \text { actual positiv
 
 计算可得
 
-$$Precision =\frac{80}{80+20}=0.8$$
+$$
+Precision =\frac{80}{80+20}=0.8
+$$
 
-$$\text {Recall}=\frac{80}{80+80}=0.5$$
+$$
+\text {Recall}=\frac{80}{80+80}=0.5
+$$
 
 Precision:预测中实际得癌症的病人数量(真正例)除以我们预测的得癌症的病人数量 Recall-预测中实际得癌症的病人数量(真正例)除以实际得癌症的病人数量
 
@@ -244,7 +254,9 @@ F值 = 70% \* 100% \* 2 / (70% + 100%) = 82.35%
 
 现在我们引入标准的F值或者F1-score:
 
-$$F1_{score} = 2\frac{P·R}{P+R}$$
+$$
+F1_{score} = 2\frac{P·R}{P+R}
+$$
 
 ![](/assets/img/marsggbo/2020-07-30-Andrew-Ng机器学习课程笔记--week6精度召回率/c851ed0f.jpg)
 

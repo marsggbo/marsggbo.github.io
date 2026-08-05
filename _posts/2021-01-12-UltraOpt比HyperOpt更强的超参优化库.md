@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/343813197>
+
 本次介绍一个AutoML框架，叫`UltraOpt`，该框架吸收了多个开源项目的优点，并且包含原作者自研的贝叶斯优化算法：`ETPE`，其在基准测试中比`HyperOpt`的`TPE`算法表现更为出色。`UltraOpt`对分布式计算有更强的适应性，支持**MapReduce**和**异步通信**两种并行策略，并且可以扩展到各种计算环境中。
 
 除此之外，`UltraOpt`对与新手也特别友好，笔者特地花了3周的时间写中文文档，就是为了让小白也能0基础看懂AutoML（自动机器学习）是在做什么。`UltraOpt`使用起来也是相当的轻量简洁，并且有大量的可视化工具函数帮助您更快地分析问题。
@@ -19,7 +21,7 @@ toc:
 
 安装方法：
 
-```
+```bash
 pip install ultraopt
 ```
 
@@ -57,7 +59,7 @@ pip install ultraopt
 
 在定义了超参空间和目标函数后，进行优化其实就是一行代码的事情，只需要调用`UltraOpt`的`fmin`函数就行了：
 
-```
+```python
 from ultraopt import fmin
 result = fmin(eval_func=evaluate, config_space=HDL, 
    optimizer="ETPE", n_iterations=30)

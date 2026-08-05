@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/158162306>
+
 > 论文: [AutoML: A Survey of the State-of-the-Art](https://link.zhihu.com/?target=https%3A//arxiv.org/abs/1908.00709)  
 >  下面这个网站会不断更新AutoML相关的论文，当然如果你的论文未被收录，你也可以手动上传你的论文让更多人看到(建议电脑端查看）：  
 >  [https://marsggbo.github.io/automl\_a\_survey\_of\_state\_of\_the\_art/](https://link.zhihu.com/?target=https%3A//marsggbo.github.io/automl_a_survey_of_state_of_the_art/)
@@ -159,7 +161,9 @@ ENAS 和DARTS都采用了类似的方式，即所有可能的模型都是一个s
 
 但是上面的都是基于accuracy和搜索时间上做的对比。有不少方法开始寻找其他的NAS算法评价指标，。我们知道大多数NAS其实分成两个步骤，一是搜索最有潜力的模型（搜索阶段）；二是验证该模型的表现（评估阶段）。但是很多时候搜索阶段表现最好的，在评估阶段并不是最好的，甚至可能表现很差。 因此一种用的比较多的就是**Kendall Tau metric**，它会评估两个阶段模型性能的相关性，相关性越高则表示算法越有效，它的计算公式如下：
 
-$$\tau=\frac{N_{C}-N_{D}{N_{C}+N_{D}$$
+$$
+\tau=\frac{N_{C}-N_{D}}{N_{C}+N_{D}} \\
+$$
 
 其中$N_C,N_D$分别表示 concordant and discordant pairs。$\tau$的大小在-1到1之间：
 

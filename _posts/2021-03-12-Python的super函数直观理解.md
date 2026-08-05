@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/356720970>
+
 > `super`相关的介绍文章看了无数遍，每次看得都云里雾里的，没过多久就忘了，只模糊知道跟MRO有关，但是稍微一复杂就不知道怎么回事了，本篇文章主要记录我对super的理解，尽量以简单易懂的方式介绍，如果你看完这篇文章还是没懂。。。那么很抱歉，我尽力了hhhh
 
 ## **粗暴简单的理解**
@@ -19,7 +21,7 @@ toc:
 
 比如以单继承为例
 
-```
+```python
 class A:
     def p(self):
         print('A')
@@ -41,7 +43,7 @@ B().p()
 
 我们看下面的例子
 
-```
+```python
 class A:
     def p(self):
         print('A')
@@ -114,7 +116,7 @@ super(A, c).p()
 
 > 注意：有的类里面没有`super()`
 
-```
+```python
 class A:
     def p(self):
         print('A')
@@ -137,7 +139,7 @@ d.p()
 
 那如果D类改成如下样子呢？
 
-```
+```python
 class D(C):
     def p(self):
         super().p()
@@ -148,7 +150,7 @@ class D(C):
 
 我们再看看最复杂的继承情况
 
-```
+```python
 class A:
     def p(self):
         print('A')
@@ -178,7 +180,7 @@ d.p()
 
 如果一个类继承多个类，原理一样，我们只要知道了MRO就能知道执行顺序了，比如下面的例子：
 
-```
+```python
 class A:
     def __init__(self):
         print('A')

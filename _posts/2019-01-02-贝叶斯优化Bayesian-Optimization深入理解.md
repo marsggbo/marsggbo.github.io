@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/53826787>
+
 > 没想到之前随手写的一个笔记“火”了，哈哈哈哈。有评论说谷歌搜索都排第一名了为了尽量不误导大家，故对文章里的参数符号作了修改，如有错误欢迎在评论区指出指正，谢谢！  
 >  目前在研究Automated Machine Learning,其中有一个子领域是实现网络超参数自动化搜索，而常见的搜索方法有Grid Search、Random Search以及贝叶斯优化搜索。前两者很好理解，这里不会详细介绍。本文将主要解释什么是体统(沉迷延禧攻略2333)，不对应该解释到底什么是贝叶斯优化。
 
@@ -36,7 +38,9 @@ toc:
 
 假设我们有一个函数$f:x→\Bbb{R}$,我们需要在$x\subseteq X$内找到
 
-$$x^*=\underset{x\in X}{\operatorname{argmin}f(x) \tag{1}$$
+$$
+x^*=\underset{x\in X}{\operatorname{argmin}}f(x) \tag{1}
+$$
 
 > 注意上面的$x$表示的是超参数，而不是输入数据。以图像分类任务为例，$x$可以是学习率，batch size等超参数的设置。而为了避免全文符号太多，所以将输入数据隐去了，换句话说$f(x)$等价于$f(x|img)$
 
@@ -76,9 +80,11 @@ $$x^*=\underset{x\in X}{\operatorname{argmin}f(x) \tag{1}$$
 
 因为我们已经假设$f$~$GP(μ,K)$。 (**GP**:高斯过程，**μ**:均值 **K**:协方差kernel,)。所以预测也是服从正态分布的，即有$p(y|x,D)=\cal{N}(y|\hat{μ},\hat{σ}^2)$
 
-$$\begin{aligned} \mathbf{y} &=\left(\begin{array}{lll} y_{1} & \cdots & y_{i} \end{array}\right)^{T} \\ \hat{\mu} &=\mathbf{k}(\mathbf{x})^{T}\left(\mathbf{K}+\sigma_{n}^{2} \mathbf{l}\right)^{-1} \mathbf{y} \\ \hat{\sigma}^{2} &=K\left(\mathbf{x}_{1} \mathbf{x}\right)-\mathbf{k}(\mathbf{x})^{T}\left(\mathbf{K}+\sigma_{n}^{2} \mathbf{l}\right)^{-1} \mathbf{k}(\mathbf{x}) \end{aligned}$$
+$$
+\begin{aligned} \mathbf{y} &=\left(\begin{array}{lll} y_{1} & \cdots & y_{i} \end{array}\right)^{T} \\ \hat{\mu} &=\mathbf{k}(\mathbf{x})^{T}\left(\mathbf{K}+\sigma_{n}^{2} \mathbf{l}\right)^{-1} \mathbf{y} \\ \hat{\sigma}^{2} &=K\left(\mathbf{x}_{1} \mathbf{x}\right)-\mathbf{k}(\mathbf{x})^{T}\left(\mathbf{K}+\sigma_{n}^{2} \mathbf{l}\right)^{-1} \mathbf{k}(\mathbf{x}) \end{aligned}\\
+$$
 
-* **$x_i←\underset{x\in X}{\operatorname{argmax}S(X,p(y|X,D))$**
+* **$x_i←\underset{x\in X}{\operatorname{argmax}}S(X,p(y|X,D))$**
 
 现在已经将假设的模型计算出来了，那么下一步我们需要基于假设模型的基础上选择满足公式(1)的参数了，也就是选择$X$，那么如何选择呢？这就涉及到了**Acquisition Function**，为了让文章篇幅更易阅读，想了解**Acquisition Function**移步到文末。
 
@@ -100,13 +106,15 @@ Acquisition Function的选择可以有很多种，下面将分别介绍不同的
 
 然后定义utility function如下：
 
-$$u(x) = 		\begin{cases} 		o,  & \text{if $f(x)>f'$} \\ 		1, & \text{if $f(x)≤f'$ } 		\end{cases}$$
+$$
+u(x) = 		\begin{cases} 		o,  & \text{if $f(x)>f'$} \\ 		1, & \text{if $f(x)≤f'$ } 		\end{cases} \\
+$$
 
 其实也可以把上面的$u(x)$理解成一个reward函数，如果f(x)不大于f'就有奖励，反之没有。
 
 probability of improvement acquisition function定义为the expected utility as a function of x:
 
-$$\begin{align}    a_{PI}(x)=E[u(x)|x,D] & = \int_{-∞}^{f'}\cal{N}(f;μ(x),K(x,x))df \notag{} \\     & = \cal{\Phi}(f';μ(x),K(x,x)) \notag{} \end{align}$$
+![\begin{align}    a_{PI}(x)=E[u(x)|x,D] & = \int_{-∞}^{f'}\cal{N}(f;μ(x),K(x,x))df \notag{} \\     & = \cal{\Phi}(f';μ(x),K(x,x)) \notag{} \end{align} \\](https://www.zhihu.com/equation?tex=%5Cbegin%7Balign%7D++++a_%7BPI%7D%28x%29%3DE%5Bu%28x%29%7Cx%2CD%5D+%26+%3D+%5Cint_%7B-%E2%88%9E%7D%5E%7Bf%27%7D%5Ccal%7BN%7D%28f%3B%CE%BC%28x%29%2CK%28x%2Cx%29%29df+%5Cnotag%7B%7D+%5C%5C+++++%26+%3D+%5Ccal%7B%5CPhi%7D%28f%27%3B%CE%BC%28x%29%2CK%28x%2Cx%29%29+%5Cnotag%7B%7D+%5Cend%7Balign%7D+%5C%5C)
 
 之后只需要求出$a(x)$的最大值即可求出基于高斯分布的满足要求的$x$。
 
@@ -114,13 +122,15 @@ $$\begin{align}    a_{PI}(x)=E[u(x)|x,D] & = \int_{-∞}^{f'}\cal{N}(f;μ(x),K(x
 
 上面的AC function有个缺点就是找到的$x$可能是局部最优点，所以有了Expected improvement。$f'$的定义和上面一样，即$f'=min \, f$。utility function定义如下:
 
-$$u(x)=max(0,f'-f(x))$$
+$$
+u(x)=max(0,f'-f(x)) \\
+$$
 
 因为我们最初的目的是找到使得f(x)最小的x，所以这个utility function的含义很好理解，即接下来找到的$f(x)$比已知最小的$f'$越小越好，然后选出小的程度最大的那个$f(x)$和$f'$之间的差距的绝对值作为奖励，如果没有更小的那么奖励则为0.
 
 AC function定义如下：
 
-$$\begin{align}    a_{EI}(x)=E[u(x)|x,D] & = \int_{-∞}^{f'}(f'-f)\cal{N}(f;μ(x),K(x,x))df \notag{} \\     & = (f'-μ(x))\cal{\Phi}(f';μ(x),K(x,x)) \, + \, K(x,x)\cal{N}(f';μ(x),K(x,x))  \notag{} \end{align}$$
+![\begin{align}    a_{EI}(x)=E[u(x)|x,D] & = \int_{-∞}^{f'}(f'-f)\cal{N}(f;μ(x),K(x,x))df \notag{} \\     & = (f'-μ(x))\cal{\Phi}(f';μ(x),K(x,x)) \, + \, K(x,x)\cal{N}(f';μ(x),K(x,x))  \notag{} \end{align} \\](https://www.zhihu.com/equation?tex=%5Cbegin%7Balign%7D++++a_%7BEI%7D%28x%29%3DE%5Bu%28x%29%7Cx%2CD%5D+%26+%3D+%5Cint_%7B-%E2%88%9E%7D%5E%7Bf%27%7D%28f%27-f%29%5Ccal%7BN%7D%28f%3B%CE%BC%28x%29%2CK%28x%2Cx%29%29df+%5Cnotag%7B%7D+%5C%5C+++++%26+%3D+%28f%27-%CE%BC%28x%29%29%5Ccal%7B%5CPhi%7D%28f%27%3B%CE%BC%28x%29%2CK%28x%2Cx%29%29+%5C%2C+%2B+%5C%2C+K%28x%2Cx%29%5Ccal%7BN%7D%28f%27%3B%CE%BC%28x%29%2CK%28x%2Cx%29%29++%5Cnotag%7B%7D+%5Cend%7Balign%7D+%5C%5C)
 
 通过计算使得$a_{EI}$值最大的点即为最优点。
 

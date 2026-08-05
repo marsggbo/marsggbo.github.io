@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/374940241>
+
 > “ 本文笔记参考Wang Shusen老师的课程：[https://www.youtube.com/watch?v=aButdUV0dxI&list=PLvOO0btloRntpSWSxFbwPIjIum3Ub4GSC&index=1](https://link.zhihu.com/?target=https%3A//www.youtube.com/watch%3Fv%3DaButdUV0dxI%26list%3DPLvOO0btloRntpSWSxFbwPIjIum3Ub4GSC%26index%3D1)  
 >  ”
 
@@ -26,15 +28,17 @@ toc:
 
 对应到上图，隐状态$s_j$计算公式如下，
 
-$$\mathrm{s}_{j}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{j}^{\prime} \\ \mathrm{s}_{j-1} \\ \mathrm{c}_{j-1} \end{array}\right]+\mathbf{b}\right)$$
+![\mathrm{s}_{j}=\tanh \left(\mathbf{A}^{\prime} \cdot\left[\begin{array}{l} \mathbf{x}_{j}^{\prime} \\ \mathrm{s}_{j-1} \\ \mathrm{c}_{j-1} \end{array}\right]+\mathbf{b}\right) \\](https://www.zhihu.com/equation?tex=%5Cmathrm%7Bs%7D_%7Bj%7D%3D%5Ctanh+%5Cleft%28%5Cmathbf%7BA%7D%5E%7B%5Cprime%7D+%5Ccdot%5Cleft%5B%5Cbegin%7Barray%7D%7Bl%7D+%5Cmathbf%7Bx%7D_%7Bj%7D%5E%7B%5Cprime%7D+%5C%5C+%5Cmathrm%7Bs%7D_%7Bj-1%7D+%5C%5C+%5Cmathrm%7Bc%7D_%7Bj-1%7D+%5Cend%7Barray%7D%5Cright%5D%2B%5Cmathbf%7Bb%7D%5Cright%29+%5C%5C)
 
 ## **1.2 Context Vector**
 
 虽然看起来$s_j$只依赖于上一时刻（单词）的结果，其实其中的Context vector $c_{j-1}$ 已经包含了前面单词的信息。以$c_j$的计算为例：
 
-$$c_{j}=\alpha_{1j} h_{1}+\ldots \alpha_{mj} h_{m},\,\,\,\,s.t.\,\,\alpha_{ij}=align(h_i,s_j)$$
+$$
+c_{j}=\alpha_{1j} h_{1}+\ldots \alpha_{mj} h_{m},\,\,\,\,s.t.\,\,\alpha_{ij}=align(h_i,s_j) \\
+$$
 
-上面公式中的$align$可以有不同的计算方式，它计算的是$h_i$和$s_j$的关系。注意，我们需要计算$s_j$与左边所有$\{h_i,i\in[1,m]\}$的关系，得到对应的权重$\{\alpha_{ij},i\in[1,m]\}$，最后把所有的$\{h_i,i\in[1,m]\}$加权求和就得到了第$j$个预测单词的特征和原句子每个单词之间的关系。
+上面公式中的$align$可以有不同的计算方式，它计算的是$h_i$和$s_j$的关系。注意，我们需要计算$s_j$与左边所有![\{h_i,i\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bh_i%2Ci%5Cin%5B1%2Cm%5D%5C%7D)的关系，得到对应的权重![\{\alpha_{ij},i\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7B%5Calpha_%7Bij%7D%2Ci%5Cin%5B1%2Cm%5D%5C%7D)，最后把所有的![\{h_i,i\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bh_i%2Ci%5Cin%5B1%2Cm%5D%5C%7D)加权求和就得到了第$j$个预测单词的特征和原句子每个单词之间的关系。
 
 ## **1.3 Q,K,V**
 
@@ -124,7 +128,7 @@ $$c_{j}=\alpha_{1j} h_{1}+\ldots \alpha_{mj} h_{m},\,\,\,\,s.t.\,\,\alpha_{ij}=a
 
 1. 权重
 
-如果要计算第$i$个单词和其他单词之间的权重，就只需要拿第$i$个单词的Query$q_{:i}$和所有单词的Key$\{k_{:,j},j\in[1,m]\}$进行计算。
+如果要计算第$i$个单词和其他单词之间的权重，就只需要拿第$i$个单词的Query$q_{:i}$和所有单词的Key![\{k_{:,j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bk_%7B%3A%2Cj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)进行计算。
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/92cb7ab6.jpg)
 
@@ -138,7 +142,7 @@ $$c_{j}=\alpha_{1j} h_{1}+\ldots \alpha_{mj} h_{m},\,\,\,\,s.t.\,\,\alpha_{ij}=a
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/f53b1e45.jpg)
 
-同理，在真实代码层面，也是直接计算$V \cdot Softmax(K^TQ)$就可以得到所有的$\{c_{:j},j\in[1,m]\}$
+同理，在真实代码层面，也是直接计算$V \cdot Softmax(K^TQ)$就可以得到所有的![\{c_{:j},j\in[1,m]\}](https://www.zhihu.com/equation?tex=%5C%7Bc_%7B%3Aj%7D%2Cj%5Cin%5B1%2Cm%5D%5C%7D)
 
 ![](/assets/img/marsggbo/2021-05-24-Transformer自下而上理解4-Attention-without-RNN/2fa90e00.jpg)
 

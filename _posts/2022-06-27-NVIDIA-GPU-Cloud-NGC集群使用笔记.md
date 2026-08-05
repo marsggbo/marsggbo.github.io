@@ -11,13 +11,15 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/534424910>
+
 ## **1. 安装ngc命令**
 
 NGC集群的使用需要用到ngc命令行，安装方法如下：
 
 1. 下载NGC CLI
 
-```
+```bash
 wget --content-disposition https://ngc.nvidia.com/downloads/ngccli_linux.zip && unzip ngccli_linux.zip && chmod u+x ngc-cli/ngc
 ```
 
@@ -29,7 +31,7 @@ find ngc-cli/ -type f -exec md5sum {} + | LC_ALL=C sort | md5sum -c ngc-cli.md5
 
 1. 将ngc添加到path
 
-```
+```bash
 echo "export PATH=\"\$PATH:$(pwd)/ngc-cli\"" >> ~/.bash_profile && source ~/.bash_profile
 ```
 

@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/91334380>
+
 在使用深度学习框架的过程中一定会经常碰到这些东西，虽然anaconda有时会帮助我们自动地解决这些设置，但是有些特殊的库却还是需要我们手动配置环境，但是我对标题上的这些名词其实并不十分清楚，所以老是被网上的教程绕得云里雾里，所以觉得有必要写下一篇文章当做笔记供之后参考。
 
 ## GPU型号含义
@@ -157,7 +159,7 @@ CUDA有两个主要的API：**runtime(运行时) API**和**driver API**。这两
 
 PATH是可执行文件路径，是三个中我们最常接触到的，因为我们命令行中的每句能运行的命令，如ls、top、ps等，都是系统通过PATH找到了这个命令执行文件的所在位置，再run这个命令（可执行文件）。 比如说，在用户的目录`~/mycode/`下有一个bin文件夹，里面放了有可执行的二进制文件、shell脚本等。如果想要在任意目录下都能运行上述bin文件夹的可执行文件，那么只需要把这个bin的路径添加到PATH即可，方法如下：
 
-```
+```bash
 # vim ~/.bashrc
 PATH=$PATH:~/mycode/bin
 ```
@@ -175,7 +177,7 @@ PATH=$PATH:~/mycode/bin
 
 配置方法也是类似：
 
-```
+```bash
 export  LD_LIBRARY_PATH=LD_LIBRARY_PATH:XXXX
 ```
 
@@ -197,7 +199,7 @@ export  LD_LIBRARY_PATH=LD_LIBRARY_PATH:XXXX
 
 进入到放置 `cuda_9.0.176_384.81_linux.run` 的目录：
 
-```
+```bash
 sudo chmod +x cuda_9.0.176_384.81_linux.run # 为 cuda_9.0.176_384.81_linux.run 添加可执行权限
 ./cuda_9.0.176_384.81_linux.run # 安装 cuda_9.0.176_384.81_linux.run
 ```
@@ -261,7 +263,7 @@ cuda # cuda-8.0 的软连接
 
 将`~/.bashrc` 或　`~/.zshrc` 下与cuda相关的路径都改为　`/usr/local/cuda/`　而不使用　`/usr/local/cuda-8.0/` 或`/usr/local/cuda-9.0/`。
 
-```
+```bash
 #在切换cuda版本时
 rm -rf /usr/local/cuda#删除之前创建的软链接
 sudo ln -s /usr/local/cuda-8.0/ /usr/local/cuda/

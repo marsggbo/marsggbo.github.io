@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/668913089>
+
 更详细的查看GitHub
 
 [https://github.com/marsggbo/Megatron-DeepSpeed/blob/main/tutorials/gpt2\_wikipedia.md](https://link.zhihu.com/?target=https%3A//github.com/marsggbo/Megatron-DeepSpeed/blob/main/tutorials/gpt2_wikipedia.md)
@@ -20,7 +22,7 @@ toc:
 1. 下载Wikipedia压缩数据集（[enwiki-latest-pages-articles.xml.bz2](https://link.zhihu.com/?target=https%3A//dumps.wikimedia.org/enwiki/latest/enwiki-latest-pages-articles.xml.bz2)）
 2. 使用[wikiextractor](https://link.zhihu.com/?target=https%3A//github.com/attardi/wikiextractor)工具将数据集解压缩
 
-```
+```bash
 pip install wikiextractor
 python -m wikiextractor.WikiExtractor --json enwiki-latest-pages-articles.xml.bz2
 ```
@@ -50,14 +52,14 @@ text
 
 不过`tools/preprocess_data.py`只能对单个的json文件做处理，而第二步中我们有几十万个json文件，这个该怎么办呢？一种处理办法就是把第三步中的所有json文件合并到一个json文件中去，最后再对后并后的文件做预处理就可以了。在于处理之前，你需要先运行下面大命令下载GPT相关的文件，这主要是用来预处理的
 
-```
+```bash
 wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-vocab.json
 wget https://s3.amazonaws.com/models.huggingface.co/bert/gpt2-merges.txt
 ```
 
 下载好后，执行下面的代码即可
 
-```
+```bash
 #!/bin/bash  
   
 # 设置ROOT路径  
@@ -72,7 +74,7 @@ fi
 touch "$ROOT/wiki_all.json"
   
 # 遍历ROOT路径下所有的文件  
-find$ROOT -type f -name "*" -print0 | while IFS= read -r -d $'\0' file; do  
+find $ROOT -type f -name "*" -print0 | while IFS= read -r -d $'\0' file; do  
     # 将所有文件内容追加到wiki_all.json文件中  
     cat "$file" >> "$ROOT/wiki_all.json"  
 done  

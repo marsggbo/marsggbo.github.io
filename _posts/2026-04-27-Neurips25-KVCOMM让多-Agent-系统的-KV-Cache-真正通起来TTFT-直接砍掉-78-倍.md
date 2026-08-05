@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/2032027171540165158>
+
 > 原文：[KVCOMM: Online Cross-context KV-cache Communication for Efficient LLM-based Multi-agent Systems](https://link.zhihu.com/?target=https%3A//openreview.net/forum%3Fid%3DyGOytgjurF)（Duke / MIT / NVIDIA，OpenReview 投稿） 代码：[https://github.com/FastMAS/KVCOMM](https://link.zhihu.com/?target=https%3A//github.com/FastMAS/KVCOMM)
 
 ---
@@ -90,7 +92,9 @@ KV cache 不是早就解决重复计算了吗？——**单 agent 场景下是�
 
 近似公式很直观：
 
-$$(\hat k / \hat v)_{\phi_{(m,i)} = (k/v)_{\phi_{(m,i)} + \sum_{\psi \in A_{\phi_{(m,i)} w_{\phi_{(m,i)} \to \psi} \cdot \Delta(k/v)^\phi_{(m,\psi)}$$
+$$
+(\hat k / \hat v)_{\phi_{(m,i)}} = (k/v)_{\phi_{(m,i)}} + \sum_{\psi \in A_{\phi_{(m,i)}}} w_{\phi_{(m,i)} \to \psi} \cdot \Delta(k/v)^\phi_{(m,\psi)}
+$$
 
 也就是 **base 值 + 用 embedding 距离做 softmax 加权的偏移项**。Prefix 段的 KV 也走类似流程。
 

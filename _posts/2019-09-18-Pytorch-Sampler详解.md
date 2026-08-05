@@ -11,6 +11,8 @@ toc:
   sidebar: left
 ---
 
+> 原文: <http://zhuanlan.zhihu.com/p/82985227>
+
 > 关于为什么要用Sampler可以阅读[一文弄懂Pytorch的DataLoader, DataSet, Sampler之间的关系](https://link.zhihu.com/?target=https%3A//www.cnblogs.com/marsggbo/p/11308889.html)。
 
 本文我们会从源代码的角度了解Sampler。
@@ -25,7 +27,7 @@ toc:
 * `__iter__`: 这个是用来产生迭代索引值的，也就是指定每个step需要读取哪些数据
 * `__len__`: 这个是用来返回每次迭代器的长度
 
-```
+```python
 class Sampler(object):
     r"""Base class for all Samplers.
     Every Sampler subclass has to provide an __iter__ method, providing a way
@@ -53,7 +55,7 @@ class Sampler(object):
 
 其原理是首先在初始化的时候拿到数据集`data_source`，之后在`__iter__`方法中首先得到一个和`data_source`一样长度的`range`可迭代器。**每次只会返回一个索引值**。
 
-```
+```python
 class SequentialSampler(Sampler):
     r"""Samples elements sequentially, always in the same order.
     Arguments:
@@ -72,7 +74,7 @@ class SequentialSampler(Sampler):
 
 使用示例：
 
-```
+```python
 a = [1,5,78,9,68]
 b = torch.utils.data.SequentialSampler(a)
 for x in b:
@@ -93,7 +95,7 @@ for x in b:
 * num\_samples: 指定采样的数量，默认是所有。
 * replacement: 若为True，则表示可以重复采样，即同一个样本可以重复采样，这样可能导致有的样本采样不到。所以此时我们可以设置num\_samples来增加采样数量使得每个样本都可能被采样到。
 
-```
+```python
 class RandomSampler(Sampler):
     r"""Samples elements randomly. If without replacement, then sample from a shuffled dataset.
     If with replacement, then user can specify ``num_samples`` to draw.
@@ -134,7 +136,7 @@ class RandomSampler(Sampler):
 
 ## **SubsetRandomSampler**
 
-```
+```python
 class SubsetRandomSampler(Sampler):
     r"""Samples elements randomly from a given list of indices, without replacement.
     Arguments:
@@ -153,7 +155,7 @@ class SubsetRandomSampler(Sampler):
 
 这个采样器常见的使用场景是将训练集划分成训练集和验证集，示例如下：
 
-```
+```python
 n_train = len(train_dataset)
 split = n_train // 3
 indices = random.shuffle(list(range(n_train)))
@@ -167,7 +169,7 @@ valid_loader = DataLoader(..., sampler=valid_sampler, ...)
 
 参数作用同上面的RandomSampler，不再赘述。
 
-```
+```python
 class WeightedRandomSampler(Sampler):
     r"""Samples elements from [0,..,len(weights)-1] with given probabilities (weights).
     Arguments:
@@ -201,7 +203,7 @@ class WeightedRandomSampler(Sampler):
 
 前面的采样器每次都只返回一个索引，但是我们在训练时是对批量的数据进行训练，而这个工作就需要BatchSampler来做。也就是说BatchSampler的作用就是将前面的Sampler采样得到的索引值进行合并，当数量等于一个batch大小后就将这一批的索引值返回。
 
-```
+```python
 class BatchSampler(Sampler):
     r"""Wraps another sampler to yield a mini-batch of indices.
     Args:
