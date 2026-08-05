@@ -1,4 +1,6 @@
 {% assign img_path = include.path | remove: '.jpg' | remove: '.jpeg' | remove: '.png' | remove: '.tiff' | remove: '.gif' %}
+{% assign img_lookup_path = include.path | remove_first: '/' %}
+{% assign has_generated_webp = site.data.generated_webp[img_lookup_path] %}
 
 <figure
   {% if include.slot %}
@@ -11,10 +13,10 @@
       See https://www.debugbear.com/blog/responsive-images#w-descriptors-and-the-sizes-attribute and
       https://developer.mozilla.org/en-US/docs/Learn/HTML/Multimedia_and_embedding/Responsive_images for info on defining 'sizes' for responsive images
     -->
-    {% if site.imagemagick.enabled %}
+    {% if has_generated_webp %}
       <source
         class="responsive-img-srcset"
-        srcset="{% for i in site.imagemagick.widths %}{{ img_path | relative_url }}-{{ i }}.webp {{i}}w,{% endfor %}"
+        srcset="{% for i in site.selective_webp.widths %}{{ img_path | relative_url }}-{{ i }}.webp {{i}}w,{% endfor %}"
         {% if include.sizes %}
           sizes="{{include.sizes}}"
         {% else %}

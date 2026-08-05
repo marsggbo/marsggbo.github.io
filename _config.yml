@@ -240,7 +240,6 @@ plugins:
   - jekyll-email-protect
   - jekyll-feed
   - jekyll-get-json
-  - jekyll-imagemagick
   - jekyll-jupyter-notebook
   - jekyll-link-attributes
   - jekyll-minifier
@@ -349,13 +348,14 @@ external_links:
   - assets/citations/
 
 # -----------------------------------------------------------------------------
-# Responsive WebP Images
+# Selective Responsive WebP Images
 # -----------------------------------------------------------------------------
 
-# MAKE SURE imagemagick is installed and on your PATH before enabling imagemagick. In a terminal, run:
-#   convert -version
-imagemagick:
-  enabled: true # enables responsive images for your site (recommended, see https://github.com/alshedivat/al-folio/issues/537)
+# Generate responsive WebP only for images that are either large enough or
+# explicitly whitelisted. This avoids paying the conversion cost for the whole
+# repository on every deploy.
+selective_webp:
+  enabled: true
   widths:
     - 480
     - 800
@@ -368,8 +368,18 @@ imagemagick:
     - ".png"
     - ".tiff"
     - ".gif"
+  auto_formats:
+    - ".png"
+    - ".tiff"
+    - ".gif"
   output_formats:
     webp: "-quality 85"
+  min_source_bytes: 1048576
+  include:
+    - assets/img/prof_pic_color.png
+    - assets/img/book_cover_automl.png
+    - assets/img/ggbo_xiaoxin2.png
+  exclude: []
 
 # Lazy loading images
 #   If you enable lazy loading, all images will add the loading="lazy" attribute.
