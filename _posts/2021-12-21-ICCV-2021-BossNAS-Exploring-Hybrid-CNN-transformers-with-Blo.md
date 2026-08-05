@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "ICCV 2021 | BossNAS: Exploring Hybrid CNN-transformers with Block-wisely Self-supervised NAS"
-  NAS'
 date: '2021-12-21'
 tags: [techniques]
 category: techniques

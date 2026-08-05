@@ -1,7 +1,6 @@
 ---
 layout: post
 title: "ICLR2022 | UniNet: Unified Architecture Search with Convolution, Transformer, and MLP"
-  and MLP'
 date: '2021-12-23'
 tags: [techniques]
 category: techniques
