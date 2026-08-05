@@ -6,4 +6,5 @@ _site
 .DS_store
 .tweet-cache
 node_modules/
-vendorvenv/
+vendor/
+venv/
