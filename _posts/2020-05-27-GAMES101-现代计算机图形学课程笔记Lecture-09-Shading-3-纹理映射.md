@@ -1,0 +1,255 @@
+---
+layout: post
+title: "【GAMES101-现代计算机图形学课程笔记】Lecture 09 Shading 3 （纹理映射）"
+date: 2020-05-27
+category: techniques
+grammar_cjkRuby: true
+zhihu_url: http://zhuanlan.zhihu.com/p/143921237
+related_posts: false
+toc:
+  sidebar: left
+---
+
+前面已经介绍了着色的大部分内容：
+
+* Blinn-Phong reflectance model
+* Shading models / frequencies
+* Graphics pipeline
+* texture mapping
+
+这里补充一下上一节遗漏的一丢丢知识点，见下图。左边是渲染后的平面图，右边是对应的纹理。另外无论纹理平面原始有多大，最后都会被映射在![U-V](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/00fec3fa.jpg)坐标，又称**纹理坐标**，并且规定坐标范围是0~1。
+
+举例来说就是左下角为原点，它的![U-V](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/00fec3fa.jpg)坐标是(0,0),而右上角顶点坐标则是(1,1)。例如一个256x256大小的二维纹理，UV坐标(0.5,1.0)对应的纹素坐标(128,256)。这样一来，比如A纹理原来的大小是100x100，B纹理原来的大小是20x20，很显然映射后A所对应的纹理平面的纹理会更密集，而B则会相对稀疏。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/89ced1a7.jpg)
+
+本节内容概要：
+
+* Shading
+
++ 重心坐标(barycentric coordinates)
++ Texture queries
++ Applications of textures
+
+* Shadow mapping （下一节介绍）
+
+## **1. 三角形内插值:Barycentric Coordinates**
+
+要介绍插值算法，首先需要知道为什么我们需要插值。其实在上一节中已经介绍过，像Phong Shading这样的算法，它需要在已知顶点法向后对每个像素求出法向，因此需要用到插值算法，更进一步的目的是希望能够在三角形内部获得一个平滑的过渡。当然除了对法向做插值，我们也可以对颜色、纹理坐标等做插值计算。
+
+那么怎么做插值呢？这就需要用到**重心坐标(Barycentric Coordinates)**。
+
+注意重心坐标并不是指三角形内重心的坐标，而是每个点的坐标表示形式不再是常用的直角坐标系，而是用重心坐标来表示任意点。
+
+## **1.1 重心坐标的计算**
+
+说起来有点绕，直接看下图，下图给出了重心坐标的示意图。下图中三角形三个顶点分别是A,B,C(假设是2D空间), 其中红点可以是三角形内任意的点，该点的真实坐标为![(x,y)](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/e5d9fe4a.jpg)，重心坐标为![(\alpha,\beta,\gamma)](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/a58258ad.jpg)，真实坐标和重心坐标满足如下关系：即该点的直角坐标是三个顶点直角坐标的线性组合，且系数之和为1，且每个系数是非负的。
+
+![\begin{aligned} (x, y)=& \alpha A+\beta B+\gamma C \\ =& \alpha(x_A,y_A) + \beta(x_B,y_B) + \gamma (x_C,y_C)\\ \Rightarrow  s.t. \,\, & \alpha+\beta+\gamma=1 \\ & \alpha\ge 0,\beta\ge 0,\gamma\ge 0 \end{aligned}\\](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/7dde257e.jpg)
+
+举例来说，A点的重心坐标为(1,0,0)
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/e481fb55.jpg)
+
+上面重心坐标的三个系数是从坐标的角度计算得到的，其实也可以从几何角度来计算。具体来说就是计算三角形面积占比。以下图为例，我们随便选取一个三角形内的点，然后将三个顶点和该点连接后可以得到三个子三角形，那么三个系数计算公式如下：
+
+![\begin{aligned} \alpha &=\frac{A_{A}}{A_{A}+A_{B}+A_{C}} \\ \beta &=\frac{A_{B}}{A_{A}+A_{B}+A_{C}} \\ \gamma &=\frac{A_{C}}{A_{A}+A_{B}+A_{C}} \end{aligned}\\](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/fbe0b1b0.jpg)
+
+![A_A](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/3b01142f.jpg)表示![Area_A](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/fca9886d.jpg)
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/375bcf33.jpg)
+
+我们知道三角形重心的直角坐标是顶点坐标的算术平均，即![x_c=\frac{1}{3}(x_A+x_B+x_C)](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/c4a04e34.jpg)，那么很自然重心的重心坐标就是![(\frac{1}{3},\frac{1}{3},\frac{1}{3})](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/c4ad63d6.jpg)
+
+基于上面的介绍，这里给出任意点的重心坐标计算公式：
+
+![\begin{array}{l} \alpha=\frac{-\left(x-x_{B}\right)\left(y_{C}-y_{B}\right)+\left(y-y_{B}\right)\left(x_{C}-x_{B}\right)}{-\left(x_{A}-x_{B}\right)\left(y_{C}-y_{B}\right)+\left(y_{A}-y_{B}\right)\left(x_{C}-x_{B}\right)} \\ \beta=\frac{-\left(x-x_{C}\right)\left(y_{A}-y_{C}\right)+\left(y-y_{C}\right)\left(x_{A}-x_{C}\right)}{-\left(x_{B}-x_{C}\right)\left(y_{A}-y_{C}\right)+\left(y_{B}-y_{C}\right)\left(x_{A}-x_{C}\right)} \\ \gamma=1-\alpha-\beta \end{array}\\](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/3ec2f1f8.jpg)
+
+## **1.2 重心坐标插值**
+
+介绍完了重心坐标，那我们怎么利用重心坐标来做插值呢？其实很简单，我们首先假设三角形内每个点的重心坐标已经求解出来了，那么之后的插值计算就很自然了，因为重心坐标其实就是插值了。
+
+举例来说，如果我们想要求三角形内任意点![k](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/9d4a1163.jpg)插值后的法向![n_k](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/c2cf7331.jpg)，那么首先我们一直三个顶点的法向，则![n_k=\alpha n_A+\beta n_B + \gamma n_C](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/893f76d9.jpg)。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/c51a1d08.jpg)
+
+但是有一点需要注意的是，3D物体投影到2D屏幕后，点的重心坐标可能是会发生变化的，比如3D时重心坐标可能是(0.5,0.2,0.3), 到了2D后就变成了(0.4,0.4,0.2),这样一来就可能导致差值结果产生较大偏差。所以为了避免这种偏差，正确的做法是什么呢？举例来说，假如我们要求投影后三角形内所有点的深度信息，我们不能根据2D空间中三个顶点的深度信息做插值，而需要先计算出3D空间中的三角形内每个点的重心坐标，然后计算出3D空间中该点插值后的深度信息，最后将该深度信息填充到对应的2D位置上。
+
+## **2. Simple Texture Mapping: Diffuse Color**
+
+简单的纹理映射伪代码如下：
+
+我们需要遍历每个光栅化后的屏幕采样点（即每个像素），得到该像素的中心坐标(x,y)，之后通过某种对应关系找到该像素点(x,y)在二维的纹理平面的坐标（u,v），然后得到该坐标的纹理信息（通常是漫反射系数![k_d](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/7a5e0133.jpg)）,最后将纹理信息设置到对应像素即可。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/cabd413d.jpg)
+
+上面介绍的是一个比较粗略的纹理映射的过程，但是在这一过程中会遇到不少问题。
+
+在介绍之前，我们需要引入一个新的概念，就是**纹理元素**，又简称**纹素（texel）**。我们知道**像素**是图片构成的基本单元，也是屏幕空间的基本单元，大部分情况下是方的，而**纹素是纹理图片空间的基本单元，可以看成是纹理的组成“像素”**，这里让它区别于像素，主要是为了强调它的应用方式。而且像素一般是平面的（当然有体素这个），纹素则因为纹理可以是多维（一般1～3维），所以纹素是也可以是多维的。
+
+当3d纹理物体最终绘制到屏幕上的时候，纹素会被转换成屏幕的像素最终呈现出来。而纹素与纹素之间会以texture filtering里的规则进行填充，所以纹素也并不是指代一个点，它具体代表什么还要分情况：
+
+* 在屏幕上可以说它指代的是屏幕上一块区域（不一定是方的），最终呈现的是其转换成的像素来显示的
+* 在三维物体上，它是贴图纹理的最小单元，可以是原文纹理里的多个像素，也可以小于一个像素
+
+在物体uv空间，它会呈现和像素一样方式的排列，不过它的不以像素为单位，而是用uv位置表示。
+
+Pixel和Texel的区别可以参考如下两个图：
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/aaa99508.jpg)![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/fd9c7125.jpg)
+
+总结来说Pixel和Texel对应关系可以有如下三种：
+
+* 一 一对应
+* 一个Pixel包含多个Texel
+* 一个Texel可能需要由若干个像素显示
+
+一 一对应是比较好的情况，余下的两种情况则需要我们特殊处理。
+
+## **2.1 Texture Magnification（纹理放大）**
+
+第一个问题就是**纹理放大**，就是说相对于要渲染的物体，纹理的分辨率不太高。
+
+举例解释就是假设我们需要用右边的纹理(比如是40x40)渲染左边的两个三角形（比如是80x00），但是纹理平面非常小，那么最后导致的结果就是一个纹素要对应4个像素，这样在实际渲染时产生的效果就是纹理被拉伸，视觉上会有模糊的感觉，如下图（左）。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/64003413.jpg)
+
+### **2.1.1 双线性插值**
+
+为了解决这个问题，一个常用的办法是双线性插值(Bilinear interpolation)。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/48cd3bc5.jpg)
+
+由于要渲染的物体大于纹理平面，所以物体中的一些部分对应到纹理平面坐标可能就不是整数了，而是小数，比如下面的红点，那此时红点的纹理应该怎么表示呢？
+
+一个很自然的想法是选取离红点最近的像素点的纹理，但是这样一来就会导致在实际渲染时，物体的某一部分的纹理是完全一样的。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/9ad118c4.jpg)
+
+双线性插值就是为了解决上面的问题，下面做具体介绍：
+
+1. 以红点左下角的像素中心点作为原点可以计算出横轴和纵轴两个方向上的坐标![(s,t)](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/595fb807.jpg)。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/a618b239.jpg)
+
+1. 线性插值(linear interpolation, **lerp**)的计算公式为：
+
+![lerp(x,v_0 ,v_1 ) = v_0 + x(v_1 - v_0 ) \\](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/118411d9.jpg)
+
+那么很自然，这里红点对应到![u_{00}](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/274f15e5.jpg)和![u_{10}](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/db06bf48.jpg)之间的点![u_0](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/65d353b0.jpg)的值就等 ![u_{0}=lerp\left(s, u_{00}, u_{10}\right)](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/286ad9c5.jpg)；同理红点对应到![u_{01}](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/aa204e10.jpg)和![u_{11}](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/22cfaea5.jpg)之间的点![u_1](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/1e636b26.jpg)的值就等 ![u_{1}=lerp\left(s, u_{01}, u_{11}\right)](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/abe2fbcb.jpg)
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/01183440.jpg)
+
+1. 上面已经做了线性插值求出了![u_0,u_1](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/4f1404b6.jpg)，那么很自然地，我们在![u_0](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/65d353b0.jpg)和![u_1](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/1e636b26.jpg)之间再做一次线性插值不就求解出红点的值了嘛，即![f(x,y) = lerp(t,u_0 ,u_1 )](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/3e317327.jpg)
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/38350ff3.jpg)
+
+总结来说，双线性插值其实就是横向和纵向两个方向做插值。
+
+## **2.2 Texture Minification（纹理缩小）**
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/43ff69de.jpg)
+
+另外一种情况就是纹理相比于要渲染的物体大，这样就会导致纹理缩小，即一个像素会覆盖多个纹素。
+
+除了纹理分辨率大于要渲染的物体，在如下情况中也会出现**纹理缩小**的问题。左边是我们要达到的效果。我们知道左边其实通过透射投影来将物体映射到平面，因此会造成近处纹理大，远处纹理小的视觉效果。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/6ed85edf.jpg)
+
+换句话说就是近处的一个像素可能只覆盖一个纹素，或者一个纹素覆盖多个像素（这种情况用双线性插值可以解决），但是对于远处的像素而言，一个像素会覆盖多个纹素，如下图示（蓝点表示一个像素点，框表示该像素点所能覆盖的纹素数量）。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/2ef78f7b.jpg)
+
+对于一个像素覆盖多个纹素的情况，最简单的处理办法是首先算出某一个像素的中心点对应到纹理UV坐标，之后选择该点的纹理来填充该像素。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/7db6622a.jpg)
+
+但是这样一来就会导致上图右的失真（aliasing）问题，即产生Morie和Jaggies。原因其实就是采样频率过低导致的。怎么理解呢？其实我们可以把纹素数量理解成样本数，而像素数量就是采样频率。当一个像素覆盖多个纹素，那么此时纹素的数量就类似于信号中的高频信息，而用于表征的像素数量就是采样频率，很显然上面的方法采样频率太慢，因为只采样了一个点（即像素中心所对应的纹素），所以导致了失真。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/2e0299a7.jpg)
+
+其实在前面**[Lecture 06](https://zhuanlan.zhihu.com/p/136511395)**已经介绍过可以用**MSAA**算法通过提高采样率（将一个像素分解成若干个子像素，然后求平均）来解决失真问题,但是这样需要大量的计算，非常耗时。
+
+那么有没有更好的解决办法呢？我们知道上面之所以失真就是因为采样导致的，那如果我们不采样呢（滑稽）？一个思路就是我们假设对每一个像素点，我们都能求出该像素点所覆盖的纹素的平均值，按弹幕的说法就是空间换时间。
+
+简单来说原来的思路是**点查询**，现在变成了**范围内的平均查询**
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/46234d1e.jpg)
+
+### **2.2.1 Mipmap**
+
+Mipmap就是一个常用来解决纹理缩小问题的方法，它可以快速地对一个**正方形**内部（纹理查询）近似查询，注意它只能是对正方形查询，对其它形状还不行。
+
+MipMap方法如下：首先它会将原始的纹理图不断下采样，有点类似于卷积神经网络里的池化操作，可以看到最开始是level 0,每下采样一次，纹理大小就变为原来的1/4，知道最后只剩下一个纹素。下图中得到了8层纹理。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/7868b706.jpg)
+
+通过上面的操作我们可以得到如下的多个不同层次的纹理图。那么最后我们多生成了这些纹理图，相比与原来的一个纹理图，我们需要额外消耗多大的存储空间呢？
+
+这个很好计算，我们假设原纹理图大小是1，每次下采样后的纹理图是原来的1/4，这其实就是等比数列，最后总的纹理图大小是4/3，所以最后需要多消耗1/3的存储量。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/cea577a4.jpg)
+
+得到了不同层次的纹理图后，我该怎么计算某一个像素点所对应的纹理呢？或者说我怎么知道某个像素点对应到哪一层纹理图呢？
+
+以下图为例，假设我们要计算出三角形的纹理，首先我们可以计算出每个像素点对应到纹理UV的坐标。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/a1c67387.jpg)
+
+对于每个像素点我们都可以找到它的邻居像素点所对应的UV坐标，如下图示，其实我们也可以得到右边那样的不规则图形，然后用那个图形内部纹理的平均值作为该像素的纹理。投影后纹素点之间的距离(![L](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/600ccfe8.jpg))计算公式为：
+
+![L=\max (\sqrt{\left(\frac{d u}{d x}\right)^{2}+\left(\frac{d v}{d x}\right)^{2}}, \sqrt{\left(\frac{d u}{d y}\right)^{2}+\left(\frac{d v}{d y}\right)^{2}}) \\](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/87538fe2.jpg)
+
+上面为什么要用微分还没有太理解，这里把GAMES微信群里其他大佬的解释放上来仅供参考：
+
+* 想一个平面，纹理图和屏幕分辨率一样，但在屏幕中一个纹素可能只占了一半的像素，u，v在屏幕空间的变化就是2了。（仲唐）
+* ![L](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/600ccfe8.jpg)的含义是指屏幕空间这个像素对应在纹理图上覆盖的区域的长度，这个L的单位是纹理图上的纹素个数，而不是不是uv坐标上的距离。（7788）
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/4b18f08b.jpg)
+
+但是如果使用不规则图形来计算纹素的平均值会复杂不少，而Mipmap的精妙之处就在于它会用正方形来近似不规则图形，如下图示，假设近似后的正方形边长为![L](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/600ccfe8.jpg)，此时我们就能利用前面生成的若干层纹理图了，我们可以很明显的知道，这个边长为![L](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/600ccfe8.jpg)的正方形会对应到第![D=log_2L](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/8a48248e.jpg)层的纹理图的某一个点的值，也就是说我们只需要直接查询第![D](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/1e9eba69.jpg)层纹理图即可知道这个正方形的平均值了。比如如果![L=1](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/0d4c6838.jpg)，那么我们就从level 0的纹理图去查询就好了，而如果![L=4](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/44143451.jpg),那么我们就需要从level 2的纹理图去查询。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/05017992.jpg)
+
+注意不同层的纹理图最后依旧会被归一化到0~1之间，所以只要正方形的边长是2的指数倍，总能找到对应的点，示意图如下：
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/291e377f.jpg)
+
+当正方形边长不是2的指数，比如当![L=3](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/bf77e22e.jpg)，此时![D=log_2 3=1.58](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/b00e0f7f.jpg)。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/5c589e49.jpg)
+
+此时就需要用到三线性插值算法（Trilinear interpolation）。算法示意图如下：在该例中，左边应该是level 1的纹理图，右边是level 2 的纹理图。红点是原像素点在不同level映射的纹素位置，三线性插值的原理很简单就是现在两个level的纹理涂上先做双线性插值求出红点的值，然后再在层与层之间做插值，所以叫做三线性插值。
+
+层与层之间的插值很好理解，其实也是一次双线性插值，因为不同level的纹理图都被归一化到0~1之间的uv坐标，所以我们可以知道两个层的红点uv坐标，然根据uv坐标做一次双线性插值即可。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/8421cd89.jpg)
+
+### **2.2.2 Mipmap改进算法**
+
+至此Mipmap就算介绍完了，但是还是有些许问题需要改进。前面也提到了Mipmap其还是对正方形做的近似，
+
+下图（左）是超采样的结果，看起来还是不错的，中间是Mipmap的效果，可以看过在远处很明显都模糊掉了，一个改进的算法是**各向异性过滤（Anisotropic Filtering）**，效果如图右。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/87aa55b5.jpg)
+
+Mipmap之所以会产生模糊效果正是因为正方形近似导致的。我们通过下图可以看到左边的屏幕空间的每个像素对应到右边的纹理空间的形状可能是不规则的扁、长的形状，如果用正方形取近似显然会导致很大的误差。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/9f61087d.jpg)
+
+而各向异性过滤算法则是通过对矩形的近似来解决Mipmap的缺点，我们看下图中的右上角的图，图中有很多被不同程度压缩的卫星。Mipmap得到的一系列的纹理图其实就是对角线上的卫星，可以看到都是正方形的，而各向异性过滤会对把原纹理图缩放成不同大小的矩形，各向异性生成的一系列纹理图也叫**Ripmaps**。
+
+我们可以看到每一行其实就是对纹理图做宽度的压缩，每一列就是对纹理图的高度做压缩。这样处理之后，当查询屏幕空间某个像素点的纹理时，我们就可以用其对应的纹理图上的纹理，这样就解决了Mipmap只能用正方形来近似的问题。
+
+但是各向异性过滤只是解决了规则的矩形的映射问题，还是没法解决那些非常不规则的图形，比如上图的纹理图中的斜着的矩形。而**EWA Filtering**就是为了解决这个问题，它的思路就使用椭圆形去近似那些不规则的图形，然后做多次查询来近似，虽然效果提升了，但是耗时也更长了。
+
+![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/07d97b12.jpg)
+
+### **微信公众号：AutoML机器学习**
+
+**![](/assets/img/marsggbo/2020-05-27-GAMES101-现代计算机图形学课程笔记Lecture-09-Shading-3-纹理映射/228f26c5.jpg)**
+
+**MARSGGBO♥原创**  
+**如有意合作或学术讨论欢迎私戳联系~**  
+**邮箱:marsggbo@foxmail.com**   
+**2020-05-26 21:38:51**
