@@ -1,0 +1,26 @@
+<svg xmlns:xlink="http://www.w3.org/1999/xlink" width="9.933ex" height="6.176ex" style="font-size: 15px; vertical-align: -2.505ex;" viewBox="0 -1580.7 4276.5 2659.1" role="img" focusable="false" xmlns="http://www.w3.org/2000/svg">
+<defs>
+<path stroke-width="1" id="E1-MJMAINB-76" d="M401 444Q413 441 495 441Q568 441 574 444H580V382H510L409 156Q348 18 339 6Q331 -4 320 -4Q318 -4 313 -4T303 -3H288Q273 -3 264 12T221 102Q206 135 197 156L96 382H26V444H34Q49 441 145 441Q252 441 270 444H279V382H231L284 264Q335 149 338 149Q338 150 389 264T442 381Q442 382 418 382H394V444H401Z"></path>
+<path stroke-width="1" id="E1-MJMAIN-31" d="M213 578L200 573Q186 568 160 563T102 556H83V602H102Q149 604 189 617T245 641T273 663Q275 666 285 666Q294 666 302 660V361L303 61Q310 54 315 52T339 48T401 46H427V0H416Q395 3 257 3Q121 3 100 0H88V46H114Q136 46 152 46T177 47T193 50T201 52T207 57T213 61V578Z"></path>
+<path stroke-width="1" id="E1-MJMAIN-3D" d="M56 347Q56 360 70 367H707Q722 359 722 347Q722 336 708 328L390 327H72Q56 332 56 347ZM56 153Q56 168 72 173H708Q722 163 722 153Q722 140 707 133H70Q56 140 56 153Z"></path>
+<path stroke-width="1" id="E1-MJMAIN-5B" d="M118 -250V750H255V710H158V-210H255V-250H118Z"></path>
+<path stroke-width="1" id="E1-MJMAIN-5D" d="M22 710V750H159V-250H22V-210H119V710H22Z"></path>
+<path stroke-width="1" id="E1-MJSZ3-5B" d="M247 -949V1450H516V1388H309V-887H516V-949H247Z"></path>
+<path stroke-width="1" id="E1-MJSZ3-5D" d="M11 1388V1450H280V-949H11V-887H218V1388H11Z"></path>
+</defs>
+<g stroke="currentColor" fill="currentColor" stroke-width="0" transform="matrix(1 0 0 -1 0 0)">
+ <use xlink:href="#E1-MJMAINB-76" x="0" y="0"></use>
+ <use transform="scale(0.707)" xlink:href="#E1-MJMAIN-31" x="859" y="-213"></use>
+ <use xlink:href="#E1-MJMAIN-3D" x="1339" y="0"></use>
+<g transform="translate(2395,0)">
+ <use xlink:href="#E1-MJSZ3-5B"></use>
+<g transform="translate(695,0)">
+<g transform="translate(-11,0)">
+ <use xlink:href="#E1-MJMAIN-31" x="0" y="650"></use>
+ <use xlink:href="#E1-MJMAIN-31" x="0" y="-750"></use>
+</g>
+</g>
+ <use xlink:href="#E1-MJSZ3-5D" x="1352" y="-1"></use>
+</g>
+</g>
+</svg>
