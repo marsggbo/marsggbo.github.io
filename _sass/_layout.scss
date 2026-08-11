@@ -27,8 +27,22 @@ body.sticky-bottom-footer {
   padding-bottom: 0;
 }
 
+// On large screens let the container breathe; below xl Bootstrap's own
+// responsive widths take over, so the override only applies where there's
+// actually room to spare.
 .container {
-  max-width: $max-content-width;
+  @media (min-width: 1200px) {
+    max-width: min(90vw, 1400px);
+  }
+}
+
+// Keep blog post body readable on wide screens while the surrounding
+// container (blog list, topic browse, graph) can use the full width.
+.post .post-content,
+.post .post-header {
+  max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 // Profile
