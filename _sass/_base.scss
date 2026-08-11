@@ -1131,39 +1131,15 @@ swiper-container {
 /* ─── Project cards ──────────────────────────────────────────── */
 
 .projects {
-  // Replace Masonry with a responsive CSS grid so all cards in a row
-  // share the same height regardless of content length or logo presence.
-  .grid {
-    display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
-    gap: 16px;
-    align-items: stretch;
-  }
-
-  // Keep these selectors so Masonry JS doesn't break if it still runs,
-  // but they no longer control layout width.
   .grid-sizer,
   .grid-item {
-    width: auto;
-    margin-bottom: 0;
-  }
-
-  // grid-item itself must be a flex column so the card fills the cell.
-  .grid-item {
-    display: flex;
-    flex-direction: column;
-
-    a {
-      display: flex;
-      flex-direction: column;
-      height: 100%;
-    }
+    width: 280px;
+    margin-bottom: 16px;
   }
 
   .project-card {
     display: flex;
     flex-direction: column;
-    flex: 1;
     border: 1px solid var(--global-divider-color);
     border-left: 3px solid var(--global-theme-color);
     border-radius: 8px;
@@ -1200,10 +1176,10 @@ swiper-container {
       font-size: 0.82rem;
       color: var(--global-text-color-light);
       line-height: 1.5;
-      flex: 1; // push github icon row to bottom
+      flex: 1;
     }
 
-    // GitHub icon + stars row: always sits at the bottom of the card.
+    // GitHub icon row pushed to card bottom regardless of description length.
     .row.ml-1 {
       margin-top: auto;
       padding-top: 0.5rem;
