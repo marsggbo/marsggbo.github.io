@@ -36,11 +36,19 @@ body.sticky-bottom-footer {
   }
 }
 
-// Keep blog post body readable on wide screens while the surrounding
-// container (blog list, topic browse, graph) can use the full width.
+// Keep blog post body and about page readable on wide screens.
+// Blog list / topic-browse / graph can use the full container width.
 .post .post-content,
 .post .post-header {
   max-width: 800px;
+  margin-left: auto;
+  margin-right: auto;
+}
+
+// About page: cap the whole article so the profile photo + text
+// column don't stretch awkwardly on very wide screens.
+.post > article {
+  max-width: 900px;
   margin-left: auto;
   margin-right: auto;
 }
