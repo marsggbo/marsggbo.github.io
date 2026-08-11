@@ -21,6 +21,11 @@ layout: default
       {{ page.date | date: '%B %d, %Y' }}
       {% if page.author %}• {{ page.author }}{% endif %}
       {% if page.meta %}• {{ page.meta }}{% endif %}
+      {% if site.enable_busuanzi %}
+        <span id="busuanzi_container_page_pv" style="display: none">
+          • <i class="fa-solid fa-eye fa-sm"></i> <span id="busuanzi_value_page_pv"></span> views
+        </span>
+      {% endif %}
     </p>
     <p class="post-tags">
       {% if url_beginning == '/blog/' %}
