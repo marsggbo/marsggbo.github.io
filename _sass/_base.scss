@@ -1146,7 +1146,11 @@ swiper-container {
       width: 100%;
     }
 
-    a {
+    // Direct child only: the outer <a> wrapping the whole card.
+    // A descendant selector here would also match the GitHub-icon
+    // <a> nested inside the card body, forcing its ancestors into a
+    // flex row and squashing the title/text into narrow columns.
+    > a {
       display: flex;
       width: 100%;
     }
