@@ -1125,10 +1125,13 @@ swiper-container {
 /* ─── Project cards ──────────────────────────────────────────── */
 
 .projects {
-  // Use flexbox instead of Masonry so cards in the same row share height.
+  // Flexbox grid, natural per-card height (no forced row-stretch —
+  // that squashed short cards into a tall block with dead space at
+  // the bottom whenever a neighboring card had more content).
   .grid {
     display: flex;
     flex-wrap: wrap;
+    align-items: flex-start;
     gap: 16px;
   }
 
@@ -1140,7 +1143,6 @@ swiper-container {
   .grid-item {
     // Two columns on ≥576px, one column on mobile.
     width: calc(50% - 8px);
-    display: flex;
 
     @media (max-width: 575px) {
       width: 100%;
@@ -1151,14 +1153,12 @@ swiper-container {
     // <a> nested inside the card body, forcing its ancestors into a
     // flex row and squashing the title/text into narrow columns.
     > a {
-      display: flex;
+      display: block;
       width: 100%;
     }
   }
 
   .project-card {
-    display: flex;
-    flex-direction: column;
     width: 100%;
     border: 1px solid var(--global-divider-color);
     border-left: 3px solid var(--global-theme-color);
@@ -1178,9 +1178,6 @@ swiper-container {
     }
 
     .card-body {
-      display: flex;
-      flex-direction: column;
-      flex: 1;
       padding: 1rem 1.1rem 0.8rem;
     }
 
@@ -1196,13 +1193,11 @@ swiper-container {
       font-size: 0.82rem;
       color: var(--global-text-color-light);
       line-height: 1.5;
-      flex: 1;
     }
 
-    // GitHub icon row sits at the card bottom.
+    // GitHub icon row directly below the description.
     .row.ml-1 {
-      margin-top: auto;
-      padding-top: 0.5rem;
+      margin-top: 0.5rem;
     }
   }
 
