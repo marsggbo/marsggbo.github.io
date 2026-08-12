@@ -1125,13 +1125,12 @@ swiper-container {
 /* ─── Project cards ──────────────────────────────────────────── */
 
 .projects {
-  // Fixed-height cards: same height everywhere regardless of content;
-  // overflowing title/description text is clamped with an ellipsis
-  // instead of stretching the card or leaving ragged heights.
+  // Card wall: every card is the same fixed width AND height, and
+  // wraps to as many columns as fit — a true grid of uniform tiles
+  // instead of a fluid two-column layout.
   .grid {
     display: flex;
     flex-wrap: wrap;
-    align-items: flex-start;
     gap: 16px;
   }
 
@@ -1141,13 +1140,9 @@ swiper-container {
   }
 
   .grid-item {
-    // Two columns on ≥576px, one column on mobile.
-    width: calc(50% - 8px);
-    display: flex;
-
-    @media (max-width: 575px) {
-      width: 100%;
-    }
+    // Fixed tile size — cards wrap into a grid instead of stretching
+    // to fill a percentage-based column.
+    width: 280px;
 
     // Direct child only: the outer <a> wrapping the whole card.
     // A descendant selector here would also match the GitHub-icon
@@ -1158,6 +1153,14 @@ swiper-container {
       width: 100%;
     }
   }
+
+  // Category → accent color, drawn from colors already used elsewhere
+  // in the theme (tip-block teal, theme amber) so new categories stay
+  // on-brand instead of introducing arbitrary hues.
+  $category-colors: (
+    "work": var(--global-theme-color),
+    "fun": var(--global-tip-block),
+  );
 
   .project-card {
     display: flex;
@@ -1172,7 +1175,21 @@ swiper-container {
 
     &:hover {
       box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
-      border-left-color: var(--global-hover-color);
+    }
+
+    @each $cat, $color in $category-colors {
+      &[data-category="#{$cat}"] {
+        border-left-color: $color;
+
+        &:hover {
+          border-left-color: $color;
+          box-shadow: 0 4px 16px rgba(0, 0, 0, 0.1);
+        }
+
+        .project-category-tag {
+          background: $color;
+        }
+      }
     }
 
     .project-card-img {

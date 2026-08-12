@@ -1,7 +1,7 @@
 <div class="grid-sizer"></div>
 <div class="grid-item">
   <a href="{% if project.redirect %}{{ project.redirect }}{% else %}{{ project.url | relative_url }}{% endif %}">
-    <div class="card hoverable project-card">
+    <div class="card hoverable project-card" data-category="{{ project.category }}">
       {% if project.img %}
         {%
           include figure.liquid
