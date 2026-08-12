@@ -1,39 +1,62 @@
-<div class="grid-sizer"></div>
 <div class="grid-item">
-  <a href="{% if project.redirect %}{{ project.redirect }}{% else %}{{ project.url | relative_url }}{% endif %}">
-    <div class="card hoverable project-card" data-category="{{ project.category }}">
-      {% if project.img %}
-        {%
-          include figure.liquid
-          loading="eager"
-          path=project.img
-          sizes="250px"
-          alt="project thumbnail"
-          class="project-card-img"
-        %}
-      {% endif %}
-      <div class="card-body">
-        {% if project.category %}
-          <span class="project-category-tag">{{ project.category }}</span>
-        {% endif %}
-        <h2 class="card-title">{{ project.title }}</h2>
-        <p class="card-text">{{ project.description }}</p>
-        <div class="row ml-1 mr-1 p-0">
+  {% capture project_url %}{% if project.redirect %}{{ project.redirect }}{% else %}{{ project.url | relative_url }}{% endif %}{% endcapture %}
+  <article class="card hoverable project-card" data-category="{{ project.category }}">
+    <span class="project-card-corner project-card-corner-top">
+      <span class="project-card-corner-rank">0{{ project.importance | default: 0 }}</span>
+      <span class="project-card-corner-suit">{{ project.category | upcase | slice: 0 }}</span>
+    </span>
+
+    <span class="project-card-corner project-card-corner-bottom" aria-hidden="true">
+      <span class="project-card-corner-rank">0{{ project.importance | default: 0 }}</span>
+      <span class="project-card-corner-suit">{{ project.category | upcase | slice: 0 }}</span>
+    </span>
+
+    <a class="project-card-main-link" href="{{ project_url | strip }}">
+      <div class="project-card-frame">
+        <div class="project-card-header">
+          {% if project.category %}
+            <span class="project-category-tag">{{ project.category | upcase }}</span>
+          {% endif %}
           {% if project.github %}
-            <div class="github-icon">
-              <div class="icon" data-toggle="tooltip" title="Code Repository">
-                <a href="{{ project.github }}"><i class="fa-brands fa-github gh-icon"></i></a>
-              </div>
-              {% if project.github_stars %}
-                <span class="stars" data-toggle="tooltip" title="GitHub Stars">
-                  <i class="fa-solid fa-star"></i>
-                  <span id="{{ project.github_stars }}-stars"></span>
-                </span>
-              {% endif %}
-            </div>
+            <span class="project-card-chip project-card-chip-plain">OPEN SOURCE</span>
           {% endif %}
         </div>
+
+        <div class="project-card-body">
+          <div class="project-card-mark" aria-hidden="true"></div>
+
+          {% if project.img %}
+            {%
+              include figure.liquid
+              loading="eager"
+              path=project.img
+              sizes="280px"
+              alt="project thumbnail"
+              class="project-card-img"
+            %}
+          {% endif %}
+
+          <h2 class="card-title">{{ project.title }}</h2>
+          <p class="card-text">{{ project.description }}</p>
+        </div>
       </div>
-    </div>
-  </a>
+    </a>
+
+    {% if project.github or project.github_stars %}
+      <div class="project-card-footer">
+        {% if project.github %}
+          <a class="project-card-chip" href="{{ project.github }}" data-toggle="tooltip" title="Code Repository">
+            <i class="fa-brands fa-github gh-icon"></i>
+            <span>Repository</span>
+          </a>
+        {% endif %}
+        {% if project.github_stars %}
+          <span class="project-card-chip" data-toggle="tooltip" title="GitHub Stars">
+            <i class="fa-solid fa-star"></i>
+            <span id="{{ project.github_stars }}-stars"></span>
+          </span>
+        {% endif %}
+      </div>
+    {% endif %}
+  </article>
 </div>
