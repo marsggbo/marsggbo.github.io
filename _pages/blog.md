@@ -2,6 +2,7 @@
 layout: default
 permalink: /blog/
 title: Blog
+body_class: page-blog
 nav: true
 nav_order: 1
 pagination:

@@ -27,12 +27,21 @@ body.sticky-bottom-footer {
   padding-bottom: 0;
 }
 
-// On large screens let the container breathe; below xl Bootstrap's own
-// responsive widths take over, so the override only applies where there's
-// actually room to spare.
 .container {
   @media (min-width: 1200px) {
-    max-width: min(90vw, 1400px);
+    max-width: min(84vw, 1120px);
+  }
+}
+
+body.page-blog .container {
+  @media (min-width: 1200px) {
+    max-width: min(90vw, 1360px);
+  }
+}
+
+body.page-projects .container {
+  @media (min-width: 1200px) {
+    max-width: min(88vw, 1280px);
   }
 }
 
