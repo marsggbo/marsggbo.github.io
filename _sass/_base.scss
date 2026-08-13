@@ -857,6 +857,8 @@ footer.sticky-bottom {
 }
 
 .repo-hero-stat span {
+  display: block;
+  width: 100%;
   font-size: 0.66rem;
   color: var(--global-text-color-light);
   text-transform: uppercase;

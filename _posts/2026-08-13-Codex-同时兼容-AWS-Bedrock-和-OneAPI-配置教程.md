@@ -113,21 +113,12 @@ model_provider = "amazon-bedrock"
 
 [model_providers.amazon-bedrock.aws]
 region = "us-east-2"
-
-[projects."/Users/hexin"]
-trust_level = "trusted"
-
-[projects."/Users/hexin/Desktop/marsggbo.github.io"]
-trust_level = "trusted"
-
-[projects."/Users/hexin/Desktop/posts"]
-trust_level = "trusted"
 ```
 
 这里有两个注意点：
 
 1. 这份基础配置可以直接默认走 Bedrock。
-2. 你平时已经信任过的 project 配置也继续留在这里，不影响 profile 切换。
+2. 如果你本机还有 `trusted project` 之类的个人配置，可以继续保留，但不要写进公开教程。
 
 ---
 
