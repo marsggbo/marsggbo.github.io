@@ -32,7 +32,8 @@ horizontal: false
   {% else %}
   <div class="project-grid">
     {% for project in sorted_projects %}
-      {% include projects.liquid %}
+      {% assign category_code = category | upcase | slice: 0 %}
+      {% include projects.liquid serial=forloop.index category_code=category_code %}
     {% endfor %}
   </div>
   {% endif %}
@@ -58,7 +59,8 @@ horizontal: false
   {% else %}
   <div class="project-grid">
     {% for project in sorted_projects %}
-      {% include projects.liquid %}
+      {% assign category_code = project.category | default: 'P' | upcase | slice: 0 %}
+      {% include projects.liquid serial=forloop.index category_code=category_code %}
     {% endfor %}
   </div>
   {% endif %}

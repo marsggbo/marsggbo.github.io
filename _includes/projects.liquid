@@ -1,14 +1,19 @@
 <div class="grid-item">
   {% capture project_url %}{% if project.redirect %}{{ project.redirect }}{% else %}{{ project.url | relative_url }}{% endif %}{% endcapture %}
+  {% if include.serial < 10 %}
+    {% assign project_serial = '0' | append: include.serial %}
+  {% else %}
+    {% assign project_serial = include.serial %}
+  {% endif %}
   <article class="card hoverable project-card" data-category="{{ project.category }}">
     <span class="project-card-corner project-card-corner-top">
-      <span class="project-card-corner-rank">0{{ project.importance | default: 0 }}</span>
-      <span class="project-card-corner-suit">{{ project.category | upcase | slice: 0 }}</span>
+      <span class="project-card-corner-rank">{{ include.category_code }}{{ project_serial }}</span>
+      <span class="project-card-corner-suit">{{ include.category_code }}</span>
     </span>
 
     <span class="project-card-corner project-card-corner-bottom" aria-hidden="true">
-      <span class="project-card-corner-rank">0{{ project.importance | default: 0 }}</span>
-      <span class="project-card-corner-suit">{{ project.category | upcase | slice: 0 }}</span>
+      <span class="project-card-corner-rank">{{ include.category_code }}{{ project_serial }}</span>
+      <span class="project-card-corner-suit">{{ include.category_code }}</span>
     </span>
 
     <a class="project-card-main-link" href="{{ project_url | strip }}">
@@ -23,7 +28,9 @@
         </div>
 
         <div class="project-card-body">
-          <div class="project-card-mark" aria-hidden="true"></div>
+          <div class="project-card-mark" aria-hidden="true">
+            <span class="project-card-mark-glyph">{{ include.category_code }}</span>
+          </div>
 
           {% if project.img %}
             {%

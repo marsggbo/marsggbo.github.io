@@ -1127,13 +1127,13 @@ swiper-container {
 .projects {
   .project-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+    grid-template-columns: repeat(auto-fit, 300px);
     justify-content: center;
-    gap: 28px;
+    gap: 24px;
   }
 
   .grid-item {
-    width: 100%;
+    width: 300px;
   }
 
   $category-colors: (
@@ -1145,11 +1145,11 @@ swiper-container {
     display: flex;
     flex-direction: column;
     width: 100%;
-    min-height: 430px;
+    height: 398px;
     position: relative;
-    padding: 12px;
+    padding: 10px;
     border: 1px solid rgba(125, 96, 58, 0.18);
-    border-radius: 24px;
+    border-radius: 22px;
     background: linear-gradient(180deg, #fffdfa 0%, #f7efe4 100%);
     box-shadow: 0 18px 40px rgba(55, 38, 19, 0.12), 0 4px 12px rgba(55, 38, 19, 0.08);
     transition: transform 0.25s ease, box-shadow 0.25s ease, border-color 0.25s ease;
@@ -1163,9 +1163,9 @@ swiper-container {
     &::before {
       content: "";
       position: absolute;
-      inset: 10px;
+      inset: 9px;
       border: 1px solid rgba(125, 96, 58, 0.16);
-      border-radius: 18px;
+      border-radius: 17px;
       pointer-events: none;
     }
 
@@ -1180,8 +1180,10 @@ swiper-container {
     @each $cat, $color in $category-colors {
       &[data-category="#{$cat}"] {
         .project-category-tag,
+        .project-card-mark,
         .project-card-mark::before,
         .project-card-mark::after,
+        .project-card-mark-glyph,
         .project-card-corner,
         .project-card-chip i,
         .project-card-chip-plain {
@@ -1211,8 +1213,8 @@ swiper-container {
       display: flex;
       flex-direction: column;
       flex: 1;
-      gap: 1rem;
-      padding: 0.9rem 1rem 0;
+      gap: 0.75rem;
+      padding: 0.8rem 0.85rem 0;
     }
 
     .project-card-header {
@@ -1220,7 +1222,7 @@ swiper-container {
       align-items: center;
       justify-content: space-between;
       gap: 0.75rem;
-      padding: 0 1.55rem;
+      padding: 0 1.25rem;
     }
 
     .project-card-body {
@@ -1229,7 +1231,7 @@ swiper-container {
       flex: 1;
       align-items: center;
       text-align: center;
-      padding: 0 1.55rem 1rem;
+      padding: 0 1.25rem 0.8rem;
     }
 
     .project-card-corner {
@@ -1247,91 +1249,105 @@ swiper-container {
     }
 
     .project-card-corner-top {
-      top: 18px;
-      left: 18px;
+      top: 15px;
+      left: 15px;
     }
 
     .project-card-corner-bottom {
-      right: 18px;
-      bottom: 18px;
+      right: 15px;
+      bottom: 15px;
       transform: rotate(180deg);
     }
 
     .project-card-corner-rank {
-      font-size: 0.82rem;
+      font-size: 0.72rem;
     }
 
     .project-card-corner-suit {
-      font-size: 1.45rem;
+      font-size: 1.18rem;
     }
 
     .project-card-mark {
-      width: 120px;
-      height: 120px;
+      width: 86px;
+      height: 86px;
       border: 1px solid rgba(125, 96, 58, 0.16);
       border-radius: 999px;
-      margin: 1.3rem auto 1.35rem;
+      margin: 0.55rem auto 0.8rem;
       position: relative;
       flex-shrink: 0;
       background: radial-gradient(circle at center, rgba(255, 255, 255, 0.88), rgba(246, 237, 224, 0.7) 62%, transparent 63%);
     }
 
-    .project-card-mark::before,
-    .project-card-mark::after {
+    .project-card-mark::before {
       content: "";
       position: absolute;
       left: 50%;
       top: 50%;
-      width: 56px;
-      height: 2px;
-      border-radius: 999px;
-      background: currentColor;
-      opacity: 0.6;
-      transform-origin: center;
-    }
-
-    .project-card-mark::before {
+      width: 30px;
+      height: 30px;
+      border: 1px solid currentColor;
+      border-radius: 10px;
+      opacity: 0.18;
       transform: translate(-50%, -50%) rotate(45deg);
     }
 
     .project-card-mark::after {
-      transform: translate(-50%, -50%) rotate(-45deg);
+      content: "✦";
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      font-size: 1.2rem;
+      line-height: 1;
+      opacity: 0.32;
+      transform: translate(-50%, -72%);
+    }
+
+    .project-card-mark-glyph {
+      position: absolute;
+      left: 50%;
+      top: 50%;
+      font-family: "Georgia", "Times New Roman", serif;
+      font-size: 2rem;
+      font-weight: 700;
+      line-height: 1;
+      transform: translate(-50%, -38%);
+      opacity: 0.88;
     }
 
     .project-card-img {
       width: 100%;
-      max-width: 180px;
-      height: 120px;
+      max-width: 152px;
+      height: 96px;
       object-fit: cover;
-      border-radius: 14px;
+      border-radius: 12px;
       flex-shrink: 0;
-      margin-bottom: 1rem;
+      margin-bottom: 0.7rem;
     }
 
     .card-title {
       display: -webkit-box;
-      -webkit-line-clamp: 4;
+      -webkit-line-clamp: 3;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
       font-family: "Georgia", "Times New Roman", serif;
-      font-size: 1.45rem;
+      font-size: 1.08rem;
       font-weight: 700;
-      line-height: 1.22;
-      margin-bottom: 0.9rem;
+      line-height: 1.24;
+      margin-bottom: 0.55rem;
       color: var(--global-text-color);
     }
 
     .card-text {
       display: -webkit-box;
-      -webkit-line-clamp: 5;
+      -webkit-line-clamp: 4;
       -webkit-box-orient: vertical;
       overflow: hidden;
       text-overflow: ellipsis;
       flex: 1;
-      font-size: 0.96rem;
+      font-size: 0.78rem;
       color: var(--global-text-color-light);
-      line-height: 1.65;
+      line-height: 1.55;
       margin-bottom: 0;
     }
 
@@ -1340,8 +1356,8 @@ swiper-container {
       align-items: center;
       justify-content: center;
       flex-wrap: wrap;
-      gap: 0.7rem;
-      padding: 0 1.25rem 1.35rem;
+      gap: 0.55rem;
+      padding: 0 1rem 1rem;
       position: relative;
       z-index: 1;
     }
@@ -1350,12 +1366,12 @@ swiper-container {
       display: inline-flex;
       align-items: center;
       gap: 0.45rem;
-      min-height: 34px;
-      padding: 0.4rem 0.8rem;
+      min-height: 30px;
+      padding: 0.34rem 0.72rem;
       border: 1px solid rgba(125, 96, 58, 0.14);
       border-radius: 999px;
       background: rgba(255, 255, 255, 0.62);
-      font-size: 0.78rem;
+      font-size: 0.72rem;
       font-weight: 700;
       letter-spacing: 0.06em;
       color: var(--global-text-color);
@@ -1374,8 +1390,8 @@ swiper-container {
       border: none;
       padding: 0;
       min-height: auto;
-      font-size: 0.68rem;
-      letter-spacing: 0.18em;
+      font-size: 0.62rem;
+      letter-spacing: 0.15em;
     }
   }
 
@@ -1384,13 +1400,13 @@ swiper-container {
     align-items: center;
     justify-content: center;
     min-height: 28px;
-    padding: 0.28rem 0.8rem;
+    padding: 0.22rem 0.72rem;
     border-radius: 999px;
     color: #fff;
-    font-size: 0.72rem;
+    font-size: 0.66rem;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 0.16em;
+    letter-spacing: 0.14em;
     margin-bottom: 0;
   }
 
@@ -1400,11 +1416,16 @@ swiper-container {
 
   @media (max-width: 768px) {
     .project-grid {
+      grid-template-columns: minmax(0, 320px);
       gap: 20px;
     }
 
+    .grid-item {
+      width: 100%;
+    }
+
     .project-card {
-      min-height: 390px;
+      height: 390px;
       border-radius: 20px;
       padding: 10px;
     }
@@ -1420,18 +1441,18 @@ swiper-container {
     }
 
     .project-card .project-card-mark {
-      width: 96px;
-      height: 96px;
-      margin-top: 0.8rem;
-      margin-bottom: 1rem;
+      width: 80px;
+      height: 80px;
+      margin-top: 0.45rem;
+      margin-bottom: 0.75rem;
     }
 
     .project-card .card-title {
-      font-size: 1.22rem;
+      font-size: 1rem;
     }
 
     .project-card .card-text {
-      font-size: 0.9rem;
+      font-size: 0.76rem;
     }
   }
 }
