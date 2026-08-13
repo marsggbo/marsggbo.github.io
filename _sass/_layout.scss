@@ -29,7 +29,7 @@ body.sticky-bottom-footer {
 
 .container {
   @media (min-width: 1200px) {
-    max-width: min(78vw, 1000px);
+    max-width: min(72vw, 980px);
   }
 }
 
@@ -39,9 +39,11 @@ body.page-blog .container {
   }
 }
 
-body.page-projects .container {
+body:not(.page-blog) .post {
   @media (min-width: 1200px) {
-    max-width: min(88vw, 1280px);
+    max-width: min(60vw, 920px);
+    margin-left: auto;
+    margin-right: auto;
   }
 }
 
@@ -54,12 +56,10 @@ body.page-projects .container {
   margin-right: auto;
 }
 
-// About page only: cap the profile photo + bio column so it doesn't
-// stretch awkwardly on very wide screens. Scoped to .clearfix (unique
-// to about.liquid) so other `layout: page` pages (e.g. Projects) that
-// share the generic .post > article structure are unaffected.
-.post > .clearfix {
-  max-width: 840px;
+// About page body lives inside article > .clearfix, not directly under .post.
+// Keep the text column readable while letting the floated profile sit beside it.
+.post article > .clearfix {
+  max-width: 100%;
   margin-left: auto;
   margin-right: auto;
 }
