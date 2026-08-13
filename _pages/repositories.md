@@ -9,77 +9,129 @@ nav_order: 4
 ---
 
 <div class="repo-page">
-  <section class="repo-section">
-    <div class="repo-section-head">
-      <div>
-        <h2>GitHub Profile</h2>
-        <p class="repo-section-note">Rendered as native cards instead of third-party image widgets.</p>
+  <div class="repo-showcase">
+    <section class="repo-hero">
+      <div class="repo-hero-copy">
+        <span class="repo-kicker">Open Source</span>
+        <h2>{{ site.data.repositories.profile.name }} on GitHub</h2>
+        <p class="repo-hero-text">{{ site.data.repositories.profile.bio }}</p>
+        <div class="repo-hero-meta">
+          <span>{{ site.data.repositories.profile.location }}</span>
+          <span>{{ site.data.repositories.profile.public_repos }} public repos</span>
+          <span>Research code + tools + notes</span>
+        </div>
+        <div class="repo-hero-actions">
+          <a class="repo-cta" href="{{ site.data.repositories.profile.url }}" target="_blank" rel="noopener noreferrer">
+            <i class="fa-brands fa-github"></i>
+            <span>View Profile</span>
+          </a>
+          <a class="repo-ghost" href="{{ site.data.repositories.profile.website }}" target="_blank" rel="noopener noreferrer">
+            <span>Website</span>
+          </a>
+        </div>
       </div>
-    </div>
 
-    {% if site.data.repositories.github_users %}
-      <div class="repo-user-grid">
-        {% for user in site.data.repositories.github_users %}
-          <article class="github-user-card repo-skeleton" data-github-user="{{ user }}">
-            <a class="repo-card-link" href="https://github.com/{{ user }}">
-              <div class="repo-user-top">
-                <div class="repo-user-avatar"></div>
-                <div class="repo-user-meta">
-                  <h3>{{ user }}</h3>
-                  <p>@{{ user }}</p>
-                </div>
+      <div class="repo-hero-card">
+        <img class="repo-hero-avatar" src="{{ site.data.repositories.profile.avatar }}" alt="{{ site.data.repositories.profile.username }}">
+        <div class="repo-hero-stats">
+          <div class="repo-hero-stat">
+            <strong>{{ site.data.repositories.profile.public_repos }}</strong>
+            <span>Repos</span>
+          </div>
+          <div class="repo-hero-stat">
+            <strong>{{ site.data.repositories.profile.followers }}</strong>
+            <span>Followers</span>
+          </div>
+          <div class="repo-hero-stat">
+            <strong>{{ site.data.repositories.profile.following }}</strong>
+            <span>Following</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="repo-shelf">
+      <div class="repo-shelf-head">
+        <div>
+          <span class="repo-kicker">Flagship</span>
+          <h3>Flagship Repos</h3>
+        </div>
+        <p>Higher-signal work: frameworks, paper codebases, and projects that represent the strongest technical taste.</p>
+      </div>
+
+      <div class="repo-curated-grid repo-curated-grid-featured">
+        {% for repo in site.data.repositories.featured_repos %}
+          <article class="repo-curated-card" data-language="{{ repo.language | slugify }}">
+            <div class="repo-curated-top">
+              <span class="repo-kind">{{ repo.kind }}</span>
+              <span class="repo-language">{{ repo.language }}</span>
+            </div>
+            <h4>{{ repo.name }}</h4>
+            <p class="repo-curated-name">{{ repo.full_name }}</p>
+            <p class="repo-curated-summary">{{ repo.summary }}</p>
+            {% if repo.topics %}
+              <div class="repo-topic-row">
+                {% for topic in repo.topics limit: 3 %}
+                  <span class="repo-topic">{{ topic }}</span>
+                {% endfor %}
               </div>
-              <p class="repo-user-bio">Loading profile summary...</p>
-              <div class="repo-stat-row">
-                <span class="repo-stat-pill">Repos</span>
-                <span class="repo-stat-pill">Followers</span>
-                <span class="repo-stat-pill">Following</span>
-              </div>
-            </a>
+            {% endif %}
+            <div class="repo-curated-meta">
+              <span><i class="fa-solid fa-star fa-sm"></i> {{ repo.stars }}</span>
+              <span><i class="fa-solid fa-code-fork fa-sm"></i> {{ repo.forks }}</span>
+              <span>{{ repo.updated_at | date: "%b %Y" }}</span>
+            </div>
+            <div class="repo-curated-actions">
+              <a class="repo-cta repo-cta-small" href="{{ repo.url }}" target="_blank" rel="noopener noreferrer">Repository</a>
+              {% if repo.external_url %}
+                <a class="repo-ghost repo-ghost-small" href="{{ repo.external_url }}" target="_blank" rel="noopener noreferrer">{{ repo.external_label }}</a>
+              {% endif %}
+            </div>
           </article>
         {% endfor %}
       </div>
-    {% endif %}
+    </section>
 
-  </section>
-
-  <section class="repo-section">
-    <div class="repo-section-head">
-      <div>
-        <h2>Featured Repositories</h2>
-        <p class="repo-section-note">Pinned as compact HTML cards with live stars, forks, language, and last update.</p>
+    <section class="repo-shelf">
+      <div class="repo-shelf-head">
+        <div>
+          <span class="repo-kicker">Lab Shelf</span>
+          <h3>Research And Experiments</h3>
+        </div>
+        <p>Smaller utilities, earlier experiments, and paper-adjacent repos that still show the evolution of the work.</p>
       </div>
-    </div>
 
-    {% if site.data.repositories.github_repos %}
-      <div class="repo-grid">
-        {% for repo in site.data.repositories.github_repos %}
-          {% assign repo_url = repo | split: '/' %}
-          <article
-            class="repo-card repo-skeleton"
-            data-github-repo="{{ repo }}"
-            data-github-owner="{{ repo_url[0] }}"
-            data-github-name="{{ repo_url[1] }}"
-          >
-            <a class="repo-card-link" href="https://github.com/{{ repo }}">
-              <div class="repo-card-head">
-                <span class="repo-owner">{{ repo_url[0] }}</span>
-                <span class="repo-chip">GitHub</span>
+      <div class="repo-curated-grid repo-curated-grid-compact">
+        {% for repo in site.data.repositories.lab_repos %}
+          <article class="repo-curated-card repo-curated-card-compact" data-language="{{ repo.language | slugify }}">
+            <div class="repo-curated-top">
+              <span class="repo-kind">{{ repo.kind }}</span>
+              <span class="repo-language">{{ repo.language }}</span>
+            </div>
+            <h4>{{ repo.name }}</h4>
+            <p class="repo-curated-summary">{{ repo.summary }}</p>
+            {% if repo.topics %}
+              <div class="repo-topic-row">
+                {% for topic in repo.topics limit: 3 %}
+                  <span class="repo-topic">{{ topic }}</span>
+                {% endfor %}
               </div>
-              <h3>{{ repo_url[1] }}</h3>
-              <p class="repo-description">Loading repository details...</p>
-              <div class="repo-stat-row">
-                <span class="repo-stat-pill">Stars</span>
-                <span class="repo-stat-pill">Forks</span>
-                <span class="repo-stat-pill">Updated</span>
-              </div>
-            </a>
+            {% endif %}
+            <div class="repo-curated-meta">
+              <span><i class="fa-solid fa-star fa-sm"></i> {{ repo.stars }}</span>
+              <span><i class="fa-solid fa-code-fork fa-sm"></i> {{ repo.forks }}</span>
+              <span>{{ repo.updated_at | date: "%Y" }}</span>
+            </div>
+            <div class="repo-curated-actions">
+              <a class="repo-cta repo-cta-small" href="{{ repo.url }}" target="_blank" rel="noopener noreferrer">Open</a>
+              {% if repo.external_url %}
+                <a class="repo-ghost repo-ghost-small" href="{{ repo.external_url }}" target="_blank" rel="noopener noreferrer">{{ repo.external_label }}</a>
+              {% endif %}
+            </div>
           </article>
         {% endfor %}
       </div>
-    {% endif %}
+    </section>
 
-  </section>
+  </div>
 </div>
-
-<script defer src="{{ '/assets/js/repositories.js' | relative_url | bust_file_cache }}"></script>

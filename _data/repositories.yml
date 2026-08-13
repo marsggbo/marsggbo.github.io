@@ -1,3 +1,147 @@
+profile:
+  username: marsggbo
+  name: marsggbo
+  url: https://github.com/marsggbo
+  avatar: https://avatars.githubusercontent.com/u/13477956?v=4
+  bio: Open-source work around AutoML, LLM systems, and research engineering.
+  location: HUST -> HKBU -> NUS -> A*STAR
+  website: https://marsggbo.github.io/
+  public_repos: 61
+  followers: 156
+  following: 32
+
+featured_repos:
+  - name: torchline
+    full_name: marsggbo/torchline
+    url: https://github.com/marsggbo/torchline
+    kind: Framework
+    summary: Lightweight PyTorch training pipeline with pragmatic defaults for experiments, demos, and small production loops.
+    language: Python
+    stars: 69
+    forks: 2
+    updated_at: 2026-03-27
+    license: MIT License
+    topics: [PyTorch, Lightning, Pipeline]
+
+  - name: hyperbox
+    full_name: marsggbo/hyperbox
+    url: https://github.com/marsggbo/hyperbox
+    external_url: https://hyperbox-doc.readthedocs.io/en/latest/
+    external_label: Docs
+    kind: AutoML
+    summary: Modular AutoML toolbox covering NAS, HPO, and augmentation search with a cleaner engineering interface.
+    language: Python
+    stars: 27
+    forks: 4
+    updated_at: 2026-05-27
+    license: MIT License
+    topics: [AutoML, NAS, HPO]
+
+  - name: NAS-LID
+    full_name: marsggbo/NAS-LID
+    url: https://github.com/marsggbo/NAS-LID
+    external_url: https://arxiv.org/abs/2211.12759
+    external_label: Paper
+    kind: Paper Code
+    summary: AAAI 2023 codebase for efficient neural architecture search using local intrinsic dimension to partition search spaces.
+    language: Python
+    stars: 17
+    forks: 0
+    updated_at: 2025-10-29
+    topics: [NAS, AAAI, Search]
+
+  - name: EAGAN
+    full_name: marsggbo/EAGAN
+    url: https://github.com/marsggbo/EAGAN
+    kind: GAN Search
+    summary: ECCV 2022 two-stage evolutionary architecture search framework for discovering efficient GAN architectures.
+    language: Jupyter Notebook
+    stars: 12
+    forks: 2
+    updated_at: 2025-04-13
+    license: MIT License
+    topics: [ECCV, GAN, Evolution]
+
+  - name: CovidNet3D
+    full_name: marsggbo/CovidNet3D
+    url: https://github.com/marsggbo/CovidNet3D
+    kind: Medical AI
+    summary: AAAI 2021 project on automated design and benchmarking of 3D deep learning models for COVID-19 CT detection.
+    language: Python
+    stars: 13
+    forks: 5
+    updated_at: 2025-08-30
+    license: MIT License
+    topics: [AAAI, 3D CT, Medical]
+
+lab_repos:
+  - name: MICCAI2022-EMARS
+    full_name: marsggbo/MICCAI2022-EMARS
+    url: https://github.com/marsggbo/MICCAI2022-EMARS
+    kind: Paper Code
+    summary: Evolutionary multi-objective architecture search applied to COVID-19 3D CT classification.
+    language: Python
+    stars: 6
+    forks: 1
+    updated_at: 2023-11-01
+    license: MIT License
+    topics: [MICCAI, Evolution, Medical]
+
+  - name: machine_learning_basics_notes
+    full_name: marsggbo/machine_learning_basics_notes
+    url: https://github.com/marsggbo/machine_learning_basics_notes
+    kind: Notes
+    summary: Machine learning whiteboard-style derivation notes, accumulated as a reusable study and teaching repository.
+    language: Notes
+    stars: 32
+    forks: 8
+    updated_at: 2026-01-15
+    topics: [Notes, ML Basics, Chinese]
+
+  - name: script_identification
+    full_name: marsggbo/script_identification
+    url: https://github.com/marsggbo/script_identification
+    kind: CV
+    summary: CNN-based script identification project for multilingual character recognition with transfer-learning experiments.
+    language: Python
+    stars: 1
+    forks: 0
+    updated_at: 2021-03-02
+    topics: [CNN, Transfer Learning, OCR]
+
+  - name: MarsMail
+    full_name: marsggbo/MarsMail
+    url: https://github.com/marsggbo/MarsMail
+    external_url: http://marsggbo.github.io/MarsMail
+    external_label: Demo
+    kind: Toy App
+    summary: Early side project exploring product flow and mail-style interaction design as a lightweight web app.
+    language: Python
+    stars: 1
+    forks: 1
+    updated_at: 2018-11-12
+
+  - name: LabelImg
+    full_name: marsggbo/LabelImg
+    url: https://github.com/marsggbo/LabelImg
+    kind: Tool
+    summary: Flask-based image labeling utility from an earlier period of building quick CV annotation helpers.
+    language: HTML
+    stars: 0
+    forks: 0
+    updated_at: 2020-05-06
+    license: MIT License
+
+  - name: 2048
+    full_name: marsggbo/2048
+    url: https://github.com/marsggbo/2048
+    kind: Toy App
+    summary: A compact 2048 implementation from the early days, kept here as a small nostalgia piece.
+    language: JavaScript
+    stars: 0
+    forks: 0
+    updated_at: 2016-03-11
+
 github_users:
   - marsggbo
 
