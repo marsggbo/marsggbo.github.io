@@ -47,7 +47,7 @@
         {% endif %}
         {%- if forloop.first == false -%}, {% endif %}
         {%- if author_is_self -%}
-          <em>
+          <em class="pub-author-self">
             {{- author.first }}
             {{ author.last -}}
           </em>

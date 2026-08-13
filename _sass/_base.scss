@@ -667,7 +667,7 @@ footer.sticky-bottom {
   display: flex;
   flex-direction: column;
   gap: 2.35rem;
-  width: min(100%, 1040px);
+  width: min(100%, 1120px);
 }
 
 .repo-kicker {
@@ -897,13 +897,11 @@ footer.sticky-bottom {
 }
 
 .repo-curated-grid-featured {
-  grid-template-columns: repeat(auto-fit, minmax(260px, 280px));
-  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
 }
 
 .repo-curated-grid-compact {
-  grid-template-columns: repeat(auto-fit, minmax(240px, 260px));
-  justify-content: center;
+  grid-template-columns: repeat(auto-fit, minmax(230px, 1fr));
 }
 
 .repo-curated-card {
@@ -1091,7 +1089,7 @@ footer.sticky-bottom {
   align-self: flex-start;
 }
 
-.publications-cards {
+.publications.publications-cards {
   ol.bibliography {
     display: grid;
     grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
@@ -1099,14 +1097,22 @@ footer.sticky-bottom {
   }
 
   h2.bibliography {
+    position: relative;
+    z-index: 2;
+    display: flex;
+    justify-content: flex-end;
     margin-bottom: 1rem;
     margin-top: 2.5rem;
-    text-align: left;
+    text-align: right;
     border-top: none;
     border-bottom: 1px solid var(--global-divider-color);
     padding-top: 0;
     padding-bottom: 0.75rem;
-    color: var(--global-text-color-light);
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(255, 255, 255, 0.94));
+    color: color-mix(in srgb, var(--global-theme-color) 72%, var(--global-text-color));
+    font-size: clamp(1.9rem, 3vw, 2.7rem);
+    font-weight: 800;
+    letter-spacing: 0.08em;
   }
 
   ol.bibliography li {
@@ -1197,6 +1203,12 @@ footer.sticky-bottom {
   color: var(--global-text-color-light);
   font-size: 0.84rem;
   line-height: 1.55;
+}
+
+.pub-card-authors .pub-author-self {
+  font-style: normal;
+  font-weight: 800;
+  color: var(--global-text-color);
 }
 
 .pub-card-links {
@@ -1295,6 +1307,7 @@ footer.sticky-bottom {
         > em {
           border-bottom: 1px solid;
           font-style: normal;
+          font-weight: 700;
         }
 
         > span.more-authors {
