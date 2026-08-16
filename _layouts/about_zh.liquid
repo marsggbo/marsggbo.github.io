@@ -17,8 +17,9 @@ layout: default
   {% include book_banner.liquid %}
 
   <article>
-    {% if page.profile %}
-      <div class="profile float-{% if page.profile.align == "left" %}left{% else %}right{% endif %}">
+    <div class="about-hero">
+      {% if page.profile %}
+        <div class="profile float-{% if page.profile.align == "left" %}left{% else %}right{% endif %}">
         {% if page.profile.image %}
           {% assign profile_image_path = page.profile.image | prepend: "assets/img/" %}
           {% if page.profile.image_circular %}
@@ -32,10 +33,11 @@ layout: default
         {% if page.profile.more_info %}
           <div class="more-info">{{ page.profile.more_info }}</div>
         {% endif %}
-      </div>
-    {% endif %}
+        </div>
+      {% endif %}
 
-    <div class="clearfix">{{ content }}</div>
+      <div class="clearfix">{{ content }}</div>
+    </div>
 
     <!-- 最新动态 -->
     {% if page.news and site.announcements.enabled %}

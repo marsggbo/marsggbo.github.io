@@ -20,6 +20,7 @@
   font-weight: 500;
   color: #fff;
   text-decoration: none;
+  white-space: nowrap;
   transition:
     transform 0.15s ease,
     box-shadow 0.15s ease,
@@ -372,6 +373,57 @@
 @media (prefers-reduced-motion: reduce) {
   .book-banner-slides img.active {
     animation: none;
+  }
+}
+
+/* ---- about hero: avatar column + content column (flex, no floats) ----
+   Wide: avatar left, content (pills + intro) right.
+   Narrow: pills above avatar, avatar centered, remaining content below. */
+.about-hero {
+  display: flex;
+  flex-direction: row;
+  gap: 1.6rem;
+  align-items: flex-start;
+}
+.about-hero .profile {
+  flex: 0 0 220px;
+  width: 220px;
+  max-width: 220px;
+  margin: 0;
+}
+.about-hero .clearfix {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+@media (max-width: 768px) {
+  .about-hero {
+    flex-direction: column;
+    gap: 1.2rem;
+  }
+  .about-hero .profile {
+    order: 2;
+    flex-basis: auto;
+    width: 100%;
+    max-width: 240px;
+    margin: 0 auto;
+    text-align: center;
+  }
+  .about-hero .profile .more-info {
+    text-align: center;
+  }
+  /* promote the clearfix children to hero level so the pills can sit above
+     the avatar while the rest of the content stays below it */
+  .about-hero .clearfix {
+    display: contents;
+  }
+  .about-hero .clearfix::after {
+    display: none;
+  }
+  .about-hero .social-pills {
+    order: 1;
+  }
+  .about-hero .clearfix > *:not(.social-pills) {
+    order: 3;
   }
 }
 
