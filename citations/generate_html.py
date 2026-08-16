@@ -554,7 +554,7 @@ nav_order: 99
 </body>
 </html>'''
     
-    with open(OUTPUT_FILE, 'w', encoding='utf-8') as f:
+    with open('index.html', 'w', encoding='utf-8') as f:
         f.write(html)
     
     print(f"✅ 生成了 {OUTPUT_FILE}")

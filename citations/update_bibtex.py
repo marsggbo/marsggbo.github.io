@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 from datetime import datetime
 
-BIB_FILE = '../_bibliography/papers.bib'  # 相对于 citations 目录
+BIB_FILE = str(Path(__file__).resolve().parent.parent / '_bibliography' / 'papers.bib')
 PAPERS_FILE = 'papers_data.json'
 
 # 从 papers.bib 中提取已有的论文标题

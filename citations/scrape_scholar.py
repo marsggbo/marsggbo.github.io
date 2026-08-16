@@ -86,7 +86,7 @@ def save_history(history, data):
         'papers_count': len(data['papers'])
     }
     
-    with open(HISTORY_FILE, 'w', encoding='utf-8', newline='') as f:
+    with open('citations_history.csv', 'w', encoding='utf-8', newline='') as f:
         writer = csv.DictWriter(f, fieldnames=['date', 'total_citations', 'hindex', 'i10index', 'papers_count'])
         writer.writeheader()
         for entry in sorted(history.values(), key=lambda x: x['date']):
@@ -97,7 +97,7 @@ def save_history(history, data):
 
 def save_papers(data):
     """保存最新论文数据"""
-    with open(PAPERS_FILE, 'w', encoding='utf-8') as f:
+    with open('papers_data.json', 'w', encoding='utf-8') as f:
         json.dump(data, f, ensure_ascii=False, indent=2)
     logger.info(f"保存了 {len(data['papers'])} 篇论文数据")
 
