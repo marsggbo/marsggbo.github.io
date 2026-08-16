@@ -22,6 +22,8 @@
     <button class="book-banner-dot" aria-label="Slide {{ forloop.index }}"></button>
     {% endfor %}
   </div>
+  <button class="book-banner-arrow book-banner-arrow-prev" aria-label="Previous slide"><i class="fa-solid fa-chevron-left"></i></button>
+  <button class="book-banner-arrow book-banner-arrow-next" aria-label="Next slide"><i class="fa-solid fa-chevron-right"></i></button>
 </div>
 <script>
   (function () {
@@ -41,6 +43,10 @@
     dots.forEach(function (d, k) {
       d.addEventListener('click', function () { stop(); go(k); start(); });
     });
+    var prev = b.querySelector('.book-banner-arrow-prev');
+    var next = b.querySelector('.book-banner-arrow-next');
+    if (prev) prev.addEventListener('click', function () { stop(); go(i - 1); start(); });
+    if (next) next.addEventListener('click', function () { stop(); go(i + 1); start(); });
     b.addEventListener('mouseenter', stop);
     b.addEventListener('mouseleave', start);
     /* touch swipe: left = next, right = prev (vertical scroll preserved via touch-action) */

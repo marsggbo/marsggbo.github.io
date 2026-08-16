@@ -175,9 +175,9 @@
 .book-banner-content {
   position: absolute;
   top: 50%;
-  right: 1.5rem;
+  right: 3.4rem; /* keep clear of the next-slide arrow */
   transform: translateY(-50%);
-  max-width: 48%;
+  max-width: 46%;
   display: flex;
   flex-direction: column;
   align-items: flex-end;
@@ -253,6 +253,54 @@
   width: 18px;
 }
 
+/* ---- banner arrows: gray-masked circles, revealed on hover ---- */
+.book-banner-arrow {
+  position: absolute;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(20, 20, 20, 0.45);
+  color: #fff;
+  font-size: 0.85rem;
+  backdrop-filter: blur(2px);
+  -webkit-backdrop-filter: blur(2px);
+  opacity: 0;
+  transition:
+    opacity 0.2s ease,
+    background 0.2s ease;
+  z-index: 2;
+}
+.book-banner-arrow-prev {
+  left: 0.8rem;
+}
+.book-banner-arrow-next {
+  right: 0.8rem;
+}
+.book-banner:hover .book-banner-arrow,
+.book-banner-arrow:focus-visible {
+  opacity: 1;
+}
+.book-banner-arrow:hover {
+  background: rgba(20, 20, 20, 0.7);
+}
+/* touch devices have no hover: keep arrows faintly visible */
+@media (hover: none) {
+  .book-banner-arrow {
+    opacity: 0.7;
+    width: 30px;
+    height: 30px;
+    font-size: 0.75rem;
+  }
+}
+
 /* ---- book banner: mobile ---- */
 @media (max-width: 576px) {
   .social-pills {
@@ -264,77 +312,60 @@
     gap: 0.35rem;
   }
 
-  /* navbar social icons wrap out of the fixed bar and overlap content on phones;
-     the same icons remain in the page footer */
-  .navbar .navbar-brand.social {
-    display: none;
-  }
-
   .book-banner {
     height: 168px;
   }
   .book-banner-mask {
     background: linear-gradient(
       180deg,
-      rgba(0, 0, 0, 0) 35%,
+      rgba(0, 0, 0, 0) 30%,
       var(--global-bg-color) 100%
     );
   }
   .book-banner-content {
     top: auto;
     bottom: 0.7rem;
-    left: 0.7rem;
-    right: auto;
+    left: 1rem;
+    right: 1rem;
     transform: none;
-    max-width: calc(100% - 2.4rem);
-    flex-direction: row;
-    flex-wrap: wrap;
-    align-items: center;
-    gap: 0.25rem 0.55rem;
+    max-width: none;
+    flex-direction: column;
+    align-items: flex-start;
     text-align: left;
-    padding: 0.4rem 0.6rem;
-    border-radius: 8px;
-    background: rgba(250, 249, 247, 0.88);
-    background: color-mix(in srgb, var(--global-bg-color) 88%, transparent);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-  }
-  .book-banner-subtitle {
-    display: none;
+    gap: 0.24rem;
   }
   .book-banner-title {
-    font-size: 0.98rem;
+    font-size: 1.05rem;
   }
-  .book-banner-tag {
-    font-size: 0.6rem;
+  .book-banner-subtitle {
+    font-size: 0.72rem;
   }
   .book-banner-btn {
-    margin-top: 0;
-    padding: 0.28rem 0.8rem;
-    font-size: 0.78rem;
+    margin-top: 0.3rem;
+    padding: 0.3rem 0.9rem;
+    font-size: 0.8rem;
   }
-  .book-banner-dot {
-    width: 22px;
-    height: 22px;
-    background-clip: padding-box;
-    padding: 0;
-    position: relative;
+  .book-banner-dots {
+    bottom: auto;
+    left: auto;
+    top: 0.75rem;
+    right: 1rem;
   }
-  .book-banner-dot::after {
-    content: '';
-    position: absolute;
-    inset: 7px;
-    border-radius: 999px;
-    background: var(--global-text-color-light);
-    opacity: 0.55;
-    transition: all 0.2s ease;
+}
+
+/* ---- navbar social icons, adaptive by available space ----
+   <768px: nav links collapse into the hamburger -> icons have room, keep them
+   768–992px: full nav expanded -> most crowded zone, hide icons (footer still has them)
+   >=992px: plenty of room, show icons */
+@media (min-width: 768px) and (max-width: 991.98px) {
+  .navbar .navbar-brand.social {
+    display: none;
   }
-  .book-banner-dot.active {
-    width: 34px;
-  }
-  .book-banner-dot.active::after {
-    background: var(--global-theme-color);
-    opacity: 1;
+}
+@media (max-width: 767.98px) {
+  .navbar .navbar-brand.social {
+    font-size: 1.25rem;
+    flex-wrap: nowrap;
   }
 }
 
@@ -342,4 +373,110 @@
   .book-banner-slides img.active {
     animation: none;
   }
+}
+
+/* ---- Others / Teaching pages ---- */
+.others-section {
+  margin: 2.2rem 0;
+}
+.chip-grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+.venue-chip {
+  display: inline-flex;
+  align-items: baseline;
+  padding: 0.3rem 0.75rem;
+  border-radius: 8px;
+  background: var(--global-card-bg-color);
+  border: 1px solid var(--global-divider-color);
+  font-weight: 600;
+  font-size: 0.85rem;
+  color: var(--global-theme-color);
+  transition: border-color 0.15s ease;
+}
+.venue-chip:hover {
+  border-color: var(--global-theme-color);
+}
+.venue-chip em {
+  font-style: normal;
+  font-weight: 400;
+  font-size: 0.72rem;
+  color: var(--global-text-color-light);
+  margin-left: 0.35rem;
+}
+.award-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+.award-item {
+  display: flex;
+  gap: 0.9rem;
+  align-items: baseline;
+  padding: 0.65rem 0.9rem;
+  background: var(--global-card-bg-color);
+  border: 1px solid var(--global-divider-color);
+  border-left: 3px solid var(--global-theme-color);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.award-year {
+  font-weight: 700;
+  color: var(--global-theme-color);
+  min-width: 4.2rem;
+  font-size: 0.82rem;
+}
+.talk-card {
+  padding: 0.8rem 1rem;
+  background: var(--global-card-bg-color);
+  border: 1px solid var(--global-divider-color);
+  border-radius: 8px;
+  font-size: 0.9rem;
+}
+.intern-grid,
+.course-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(230px, 1fr));
+  gap: 0.8rem;
+}
+.intern-card,
+.course-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+  padding: 0.9rem 1rem;
+  background: var(--global-card-bg-color);
+  border: 1px solid var(--global-divider-color);
+  border-radius: 10px;
+  transition: border-color 0.15s ease;
+}
+.intern-card:hover,
+.course-card:hover {
+  border-color: var(--global-theme-color);
+}
+.intern-card b {
+  color: var(--global-theme-color);
+  font-size: 0.95rem;
+}
+.intern-card span {
+  font-size: 0.8rem;
+  color: var(--global-text-color-light);
+  line-height: 1.45;
+}
+.course-code {
+  font-family: monospace;
+  font-size: 0.78rem;
+  font-weight: 600;
+  color: var(--global-theme-color);
+  letter-spacing: 0.03em;
+}
+.course-card b {
+  font-size: 0.92rem;
+  color: var(--global-text-color);
+}
+.course-meta {
+  font-size: 0.78rem;
+  color: var(--global-text-color-light);
 }
