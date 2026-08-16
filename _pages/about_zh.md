@@ -29,7 +29,7 @@ book_banner:
   <a class="pill pill-zhihu" href="https://www.zhihu.com/people/hexin_marsggbo/posts"><i class="fa-brands fa-zhihu"></i> 知乎</a>
   <a class="pill pill-wechat" href="../assets/img/WeChat.jpeg"><i class="fa-brands fa-weixin"></i> 微信公众号</a>
   <a class="pill pill-cnblogs" href="https://www.cnblogs.com/marsggbo/"><i class="fa-solid fa-rss"></i> 博客园</a>
-  <a class="pill pill-tencent" href="https://cloud.tencent.com/developer/column/1851"><i class="fa-solid fa-cloud"></i> 腾讯云社区</a>
+  <a class="pill pill-tencent" href="https://cloud.tencent.com/developer/column/1851" title="腾讯云+社区"><i class="fa-solid fa-cloud"></i> 腾讯云</a>
   <a class="pill pill-github" href="https://github.com/marsggbo/marsggbo.github.io"><i class="fa-brands fa-github"></i> 源码</a>
   <a class="pill pill-light" href="/"><i class="fa-solid fa-language"></i> English</a>
 </div>

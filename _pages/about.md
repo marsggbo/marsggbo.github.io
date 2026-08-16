@@ -27,9 +27,9 @@ book_banner:
 
 <div class="social-pills">
   <a class="pill pill-zhihu" href="https://www.zhihu.com/people/hexin_marsggbo/posts"><i class="fa-brands fa-zhihu"></i> Zhihu</a>
-  <a class="pill pill-wechat" href="../assets/img/WeChat.jpeg"><i class="fa-brands fa-weixin"></i> WeChat MP</a>
+  <a class="pill pill-wechat" href="../assets/img/WeChat.jpeg" title="WeChat Official Account"><i class="fa-brands fa-weixin"></i> WeChat</a>
   <a class="pill pill-cnblogs" href="https://www.cnblogs.com/marsggbo/"><i class="fa-solid fa-rss"></i> Cnblogs</a>
-  <a class="pill pill-tencent" href="https://cloud.tencent.com/developer/column/1851"><i class="fa-solid fa-cloud"></i> Tencent Cloud</a>
+  <a class="pill pill-tencent" href="https://cloud.tencent.com/developer/column/1851" title="Tencent Cloud Community"><i class="fa-solid fa-cloud"></i> Tencent</a>
   <a class="pill pill-github" href="https://github.com/marsggbo/marsggbo.github.io"><i class="fa-brands fa-github"></i> Source</a>
   <a class="pill pill-light" href="/zh/"><i class="fa-solid fa-language"></i> 中文</a>
 </div>
