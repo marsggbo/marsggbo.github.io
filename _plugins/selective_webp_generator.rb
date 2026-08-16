@@ -115,6 +115,10 @@ module SelectiveWebp
     end
 
     def convert_image(input_file, output_file, edge, flags)
+      unless input_file.start_with?(@site.source) && output_file.start_with?(@site.dest)
+        raise "refusing to convert paths outside site source/dest: #{input_file} -> #{output_file}"
+      end
+
       cmd = converter_binary
       resize = edge.to_i.zero? ? [] : ['-resize', "#{edge}>"]
       extra_flags = Shellwords.split(flags.to_s)

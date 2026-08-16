@@ -6,11 +6,47 @@ profile:
   bio: Open-source work around AutoML, LLM systems, and research engineering.
   location: HUST -> HKBU -> NUS -> A*STAR
   website: https://marsggbo.github.io/
-  public_repos: 61
+  public_repos: 62
   followers: 156
   following: 32
 
 featured_repos:
+  - name: markdown2anything
+    full_name: marsggbo/markdown2anything
+    url: https://github.com/marsggbo/markdown2anything
+    kind: VS Code Extension
+    summary: Write Markdown once, publish everywhere — one-click export to WeChat / Zhihu / Xiaohongshu / Twitter threads / PPT with LaTeX, 14 themes, and AI copywriting.
+    language: JavaScript
+    stars: 4
+    forks: 0
+    updated_at: 2026-08-12
+    license: MIT License
+    topics: [Markdown, Publishing, VS Code]
+
+  - name: MyPaperTrend
+    full_name: marsggbo/MyPaperTrend
+    url: https://github.com/marsggbo/MyPaperTrend
+    kind: Chrome Extension
+    summary: Zero-config, local-first extension that tracks Google Scholar citations over time and overlays the trend chart right on the Scholar profile page.
+    language: JavaScript
+    stars: 2
+    forks: 0
+    updated_at: 2026-07-19
+    license: MIT License
+    topics: [Google Scholar, Citations, Research]
+
+  - name: BatteryGate
+    full_name: marsggbo/BatteryGate
+    url: https://github.com/marsggbo/BatteryGate
+    kind: macOS App
+    summary: Menu-bar app that pauses charging at an upper threshold and resumes at a lower one, talking to the SMC directly — pluggable backends, zero telemetry.
+    language: Objective-C
+    stars: 0
+    forks: 0
+    updated_at: 2026-08-15
+    license: MIT License
+    topics: [macOS, Battery, SMC]
+
   - name: torchline
     full_name: marsggbo/torchline
     url: https://github.com/marsggbo/torchline

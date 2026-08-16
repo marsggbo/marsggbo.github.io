@@ -6,6 +6,7 @@ description: >
   7K+ on WeChat, 600+ on Xiaohongshu, top-700 on Cnblogs.
 importance: 1
 category: fun
+img: assets/img/project_preview/content-creation.png
 ---
 
 ## English

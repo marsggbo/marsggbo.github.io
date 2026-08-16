@@ -1,0 +1,289 @@
+/*******************************************************************************
+ * About page extras: social pill links, stat cards, open-source tool pills
+ * All colors use theme CSS variables where possible for dark-mode support.
+ ******************************************************************************/
+
+/* ---- social pill link row ---- */
+.social-pills {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+  margin: 0.6rem 0 1.4rem 0;
+}
+.social-pills .pill {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.45rem;
+  padding: 0.35rem 0.85rem;
+  border-radius: 999px;
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: #fff;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    box-shadow 0.15s ease,
+    filter 0.15s ease;
+}
+.social-pills .pill:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.18);
+  color: #fff;
+}
+.pill-zhihu {
+  background: #0084ff;
+}
+.pill-wechat {
+  background: #07c160;
+}
+.pill-cnblogs {
+  background: #3d5a80;
+}
+.pill-tencent {
+  background: #0052d9;
+}
+.pill-github {
+  background: #24292f;
+}
+.social-pills .pill-light {
+  background: var(--global-card-bg-color);
+  color: var(--global-text-color);
+  border: 1px solid var(--global-divider-color);
+}
+.social-pills .pill-light:hover {
+  border-color: var(--global-theme-color);
+  color: var(--global-theme-color);
+  box-shadow: none;
+}
+
+/* ---- Highlights stat cards ---- */
+.stat-cards {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+  gap: 0.8rem;
+  margin: 0.8rem 0 1.4rem 0;
+}
+.stat-card {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+  padding: 0.9rem 1rem;
+  border-radius: 10px;
+  background: var(--global-card-bg-color);
+  border: 1px solid var(--global-divider-color);
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+.stat-card:hover {
+  border-color: var(--global-theme-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+.stat-card .stat-icon {
+  font-size: 1.2rem;
+}
+.stat-card .stat-value {
+  font-size: 1.35rem;
+  font-weight: 700;
+  color: var(--global-theme-color);
+  line-height: 1.2;
+}
+.stat-card .stat-label {
+  font-size: 0.8rem;
+  color: var(--global-text-color-light);
+  line-height: 1.4;
+}
+
+/* ---- Open-source tool pills ---- */
+.tool-pills {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
+  gap: 0.8rem;
+  margin: 0.8rem 0 1.4rem 0;
+}
+.tool-pill {
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+  padding: 0.8rem 1rem;
+  border-radius: 10px;
+  border: 1px solid var(--global-divider-color);
+  background: var(--global-card-bg-color);
+  text-decoration: none;
+  transition: all 0.15s ease-in-out;
+}
+.tool-pill:hover {
+  border-color: var(--global-theme-color);
+  transform: translateY(-2px);
+  box-shadow: 0 4px 14px rgba(0, 0, 0, 0.08);
+}
+.tool-pill b {
+  color: var(--global-text-color);
+  font-size: 0.95rem;
+}
+.tool-pill span {
+  font-size: 0.78rem;
+  color: var(--global-text-color-light);
+  line-height: 1.4;
+}
+
+/* ---- book promo banner (方案B: gradient-masked crossfade strip) ---- */
+.book-banner {
+  position: relative;
+  height: 215px;
+  border-radius: 12px;
+  overflow: hidden;
+  border: 1px solid var(--global-divider-color);
+  margin: 0 0 1.6rem 0;
+}
+.book-banner-slides,
+.book-banner-slides img {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+}
+.book-banner-slides img {
+  object-fit: cover;
+  object-position: center 42%;
+  opacity: 0;
+  transition: opacity 1.2s ease;
+}
+.book-banner-slides img.active {
+  opacity: 1;
+  animation: book-banner-zoom 12s ease-out forwards;
+}
+@keyframes book-banner-zoom {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.045);
+  }
+}
+.book-banner-mask {
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(
+    90deg,
+    rgba(0, 0, 0, 0) 35%,
+    var(--global-bg-color) 88%
+  );
+}
+.book-banner-content {
+  position: absolute;
+  top: 50%;
+  right: 1.5rem;
+  transform: translateY(-50%);
+  max-width: 48%;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.28rem;
+  text-align: right;
+}
+.book-banner-tag {
+  font-size: 0.66rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  padding: 2px 9px;
+  border-radius: 999px;
+  background: var(--global-theme-color);
+  color: var(--global-hover-text-color);
+}
+.book-banner-title {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: var(--global-text-color);
+  line-height: 1.25;
+}
+.book-banner-subtitle {
+  font-size: 0.78rem;
+  color: var(--global-text-color-light);
+  line-height: 1.4;
+}
+.book-banner-btn {
+  margin-top: 0.4rem;
+  padding: 0.38rem 1rem;
+  border-radius: 999px;
+  background: var(--global-theme-color);
+  color: var(--global-hover-text-color);
+  font-size: 0.85rem;
+  font-weight: 500;
+  text-decoration: none;
+  transition:
+    transform 0.15s ease,
+    filter 0.15s ease;
+}
+.book-banner-btn:hover {
+  transform: translateY(-2px);
+  filter: brightness(1.08);
+  color: var(--global-hover-text-color);
+}
+.book-banner-dots {
+  position: absolute;
+  bottom: 0.85rem;
+  left: 1rem;
+  display: flex;
+  gap: 0.4rem;
+}
+.book-banner-dot {
+  width: 8px;
+  height: 8px;
+  border-radius: 999px;
+  border: none;
+  padding: 0;
+  cursor: pointer;
+  background: var(--global-text-color-light);
+  opacity: 0.55;
+  transition: all 0.2s ease;
+}
+.book-banner-dot.active {
+  background: var(--global-theme-color);
+  opacity: 1;
+  width: 18px;
+}
+
+/* ---- book banner: mobile ---- */
+@media (max-width: 576px) {
+  .book-banner {
+    height: 168px;
+  }
+  .book-banner-mask {
+    background: linear-gradient(
+      180deg,
+      rgba(0, 0, 0, 0) 22%,
+      var(--global-bg-color) 90%
+    );
+  }
+  .book-banner-content {
+    top: auto;
+    bottom: 0.75rem;
+    left: 1rem;
+    right: 1rem;
+    transform: none;
+    max-width: none;
+    align-items: flex-start;
+    text-align: left;
+  }
+  .book-banner-title {
+    font-size: 1.05rem;
+  }
+  .book-banner-subtitle {
+    font-size: 0.72rem;
+  }
+  .book-banner-dots {
+    bottom: auto;
+    left: auto;
+    top: 0.75rem;
+    right: 1rem;
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .book-banner-slides img.active {
+    animation: none;
+  }
+}

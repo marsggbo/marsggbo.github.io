@@ -1,0 +1,50 @@
+{% comment %}
+  Book promo banner: full-width-of-content strip, image crossfades behind a
+  gradient mask that fades into the page background; text + CTA sit on the
+  masked side. Configured per-page via `page.book_banner` front matter.
+{% endcomment %}
+{% if page.book_banner and page.book_banner.enabled %}
+<div class="book-banner">
+  <div class="book-banner-slides">
+    {% for img in page.book_banner.images %}
+    <img src="{{ img | relative_url }}" alt="{{ page.book_banner.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+    {% endfor %}
+  </div>
+  <div class="book-banner-mask"></div>
+  <div class="book-banner-content">
+    <span class="book-banner-tag">{{ page.book_banner.tag }}</span>
+    <span class="book-banner-title">{{ page.book_banner.title }}</span>
+    <span class="book-banner-subtitle">{{ page.book_banner.subtitle }}</span>
+    <a class="book-banner-btn" href="{{ page.book_banner.url }}" target="_blank" rel="noopener noreferrer">{{ page.book_banner.cta }} <i class="fa-solid fa-arrow-right fa-xs"></i></a>
+  </div>
+  <div class="book-banner-dots">
+    {% for img in page.book_banner.images %}
+    <button class="book-banner-dot" aria-label="Slide {{ forloop.index }}"></button>
+    {% endfor %}
+  </div>
+</div>
+<script>
+  (function () {
+    var b = document.querySelector('.book-banner');
+    if (!b) return;
+    var slides = Array.prototype.slice.call(b.querySelectorAll('.book-banner-slides img'));
+    var dots = Array.prototype.slice.call(b.querySelectorAll('.book-banner-dot'));
+    if (slides.length < 2) return;
+    var i = 0, timer = null;
+    function go(n) {
+      i = ((n % slides.length) + slides.length) % slides.length;
+      slides.forEach(function (s, k) { s.classList.toggle('active', k === i); });
+      dots.forEach(function (d, k) { d.classList.toggle('active', k === i); });
+    }
+    function start() { if (!timer) timer = setInterval(function () { go(i + 1); }, 10000); }
+    function stop() { if (timer) { clearInterval(timer); timer = null; } }
+    dots.forEach(function (d, k) {
+      d.addEventListener('click', function () { stop(); go(k); start(); });
+    });
+    b.addEventListener('mouseenter', stop);
+    b.addEventListener('mouseleave', start);
+    go(0);
+    start();
+  })();
+</script>
+{% endif %}

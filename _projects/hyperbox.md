@@ -6,6 +6,7 @@ description: >
   Supports NAS, HPO, and Auto Data Augmentation with a unified, modular API.
 importance: 2
 category: fun
+img: assets/img/project_preview/hyperbox.png
 github: https://github.com/marsggbo/hyperbox
 github_stars: marsggbo/hyperbox
 ---

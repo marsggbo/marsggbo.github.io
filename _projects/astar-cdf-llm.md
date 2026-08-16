@@ -6,6 +6,7 @@ description: >
   31 recipients selected from 194 applicants.
 importance: 1
 category: work
+img: assets/img/project_preview/astar-cdf-llm.png
 ---
 
 ## English

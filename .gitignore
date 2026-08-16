@@ -8,3 +8,4 @@ _site
 node_modules/
 vendor/
 venv/
+.mimosa/

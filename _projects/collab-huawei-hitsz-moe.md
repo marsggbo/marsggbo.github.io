@@ -6,6 +6,7 @@ description: >
   MoE LLM inference deployment. Details withheld under NDA.
 importance: 3
 category: work
+img: assets/img/project_preview/collab-huawei-hitsz-moe.png
 ---
 
 ## English
