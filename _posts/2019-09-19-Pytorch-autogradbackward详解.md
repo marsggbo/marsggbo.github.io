@@ -35,7 +35,7 @@ z = x + x
 
 ![](/assets/img/marsggbo/2019-09-19-Pytorch-autogradbackward详解/7121a6db.jpg)
 
-*\*图片出处：[PyTorch Autograd]([https://towardsdatascience.com/pytorch-autograd-understanding-the-heart-of-pytorchs-magic-2686cd94ec95](https://link.zhihu.com/?target=https%3A//towardsdatascience.com/pytorch-autograd-understanding-the-heart-of-pytorchs-magic-2686cd94ec95))\**
+*\*图片出处：[PyTorch Autograd](https://link.zhihu.com/?target=https%3A//towardsdatascience.com/pytorch-autograd-understanding-the-heart-of-pytorchs-magic-2686cd94ec95)\**
 
 *上图中的z.is\_leaf应该是False。原图作者应该是画错了。*
 

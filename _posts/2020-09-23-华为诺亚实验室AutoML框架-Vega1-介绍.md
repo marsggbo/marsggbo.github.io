@@ -36,7 +36,7 @@ toc:
 
 ## **3. Vega**
 
-Vega是华为诺亚方舟实验室自研的AutoML算法工具链([https://github.com/huawei-noah/vega](https://link.zhihu.com/?target=https%3A//github.com/huawei-noah/vega))，有如下几个主要特点。
+Vega是华为诺亚方舟实验室自研的AutoML算法工具链([huawei-noah/vega](https://link.zhihu.com/?target=https%3A//github.com/huawei-noah/vega))，有如下几个主要特点。
 
 ## **3.1 完备的AutoML能力**
 

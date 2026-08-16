@@ -103,7 +103,7 @@ toc:
 
 其实，Transformer还有很多细节这里没有讲到，这里只做简短补充：
 
-* Position Encoding： 这个其实就是对一个句子里每个单词的位置做编码，比如“请一键三连”,我们应该把“请”标记为0，“一”标记为1，其他同理，只不过Transformer是通过某种算法把这些位置信息也编码成了和词向量同等长度的向量，在将输入传入模型之前，每个单词的词向量都需要加上它自己的Position Encoding，如下图([https://jalammar.github.io/illustrated-transformer/](https://link.zhihu.com/?target=https%3A//jalammar.github.io/illustrated-transformer/))所示
+* Position Encoding： 这个其实就是对一个句子里每个单词的位置做编码，比如“请一键三连”,我们应该把“请”标记为0，“一”标记为1，其他同理，只不过Transformer是通过某种算法把这些位置信息也编码成了和词向量同等长度的向量，在将输入传入模型之前，每个单词的词向量都需要加上它自己的Position Encoding，如下图([illustrated-transformer](https://link.zhihu.com/?target=https%3A//jalammar.github.io/illustrated-transformer/))所示
 
 ![](/assets/img/marsggbo/2021-05-25-Transformer自下而上理解5-从Attention层到Transformer网络/4f8c5468.jpg)
 
