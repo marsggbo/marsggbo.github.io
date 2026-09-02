@@ -32,7 +32,8 @@
       "2026-08-19": 2819,
       "2026-08-24": 2830,
       "2026-08-25": 2830,
-      "2026-08-30": 2833
+      "2026-08-30": 2833,
+      "2026-09-02": 2840
     }
   },
   "Virtual homogeneity learning: Defending against data heterogeneity in federated learning": {
@@ -68,7 +69,8 @@
       "2026-08-19": 158,
       "2026-08-24": 160,
       "2026-08-25": 160,
-      "2026-08-30": 160
+      "2026-08-30": 160,
+      "2026-09-02": 160
     }
   },
   "BurstGPT: A Real-world Workload Dataset to Optimize LLM Serving Systems": {
@@ -104,7 +106,8 @@
       "2026-08-19": 214,
       "2026-08-24": 219,
       "2026-08-25": 219,
-      "2026-08-30": 223
+      "2026-08-30": 223,
+      "2026-09-02": 229
     }
   },
   "Benchmarking the performance and energy efficiency of AI accelerators for AI training": {
@@ -140,7 +143,8 @@
       "2026-08-19": 141,
       "2026-08-24": 141,
       "2026-08-25": 141,
-      "2026-08-30": 141
+      "2026-08-30": 141,
+      "2026-09-02": 141
     }
   },
   "Benchmarking deep learning models and automated model design for COVID-19 detection with chest CT scans": {
@@ -176,7 +180,8 @@
       "2026-08-19": 68,
       "2026-08-24": 68,
       "2026-08-25": 68,
-      "2026-08-30": 68
+      "2026-08-30": 68,
+      "2026-09-02": 68
     }
   },
   "Automated model design and benchmarking of deep learning models for covid-19 detection with chest ct scans": {
@@ -212,7 +217,8 @@
       "2026-08-19": 59,
       "2026-08-24": 59,
       "2026-08-25": 59,
-      "2026-08-30": 59
+      "2026-08-30": 59,
+      "2026-09-02": 59
     }
   },
   "Fusionai: Decentralized training and deploying llms with massive consumer-level gpus": {
@@ -248,7 +254,8 @@
       "2026-08-19": 50,
       "2026-08-24": 50,
       "2026-08-25": 50,
-      "2026-08-30": 50
+      "2026-08-30": 50,
+      "2026-09-02": 50
     }
   },
   "EAGAN: Efficient two-stage evolutionary architecture search for GANs": {
@@ -284,7 +291,8 @@
       "2026-08-19": 42,
       "2026-08-24": 42,
       "2026-08-25": 42,
-      "2026-08-30": 43
+      "2026-08-30": 43,
+      "2026-09-02": 43
     }
   },
   "ExpertFlow: Efficient Mixture-of-Experts Inference via Predictive Expert Caching and Token Scheduling": {
@@ -320,7 +328,8 @@
       "2026-08-19": 39,
       "2026-08-24": 40,
       "2026-08-25": 40,
-      "2026-08-30": 40
+      "2026-08-30": 40,
+      "2026-09-02": 40
     }
   },
   "Evolutionary multi-objective architecture search framework: Application to covid-19 3d ct classification": {
@@ -418,7 +427,8 @@
       "2026-08-19": 24,
       "2026-08-24": 24,
       "2026-08-25": 24,
-      "2026-08-30": 24
+      "2026-08-30": 24,
+      "2026-09-02": 24
     }
   },
   "Fault-Tolerant Hybrid-Parallel Training at Scale with Reliable and Efficient In-memory Checkpointing": {
@@ -454,7 +464,8 @@
       "2026-08-19": 21,
       "2026-08-24": 21,
       "2026-08-25": 21,
-      "2026-08-30": 21
+      "2026-08-30": 21,
+      "2026-09-02": 21
     }
   },
   "FusionLLM: a decentralized LLM training system on geo-distributed GPUs with adaptive compression": {
@@ -490,7 +501,8 @@
       "2026-08-19": 19,
       "2026-08-24": 19,
       "2026-08-25": 19,
-      "2026-08-30": 19
+      "2026-08-30": 19,
+      "2026-09-02": 19
     }
   },
   "MedPipe: End-to-End Joint Search of Data Augmentation Policy and Neural Architecture for 3D Medical Image Classification": {
@@ -526,7 +538,8 @@
       "2026-08-19": 12,
       "2026-08-24": 12,
       "2026-08-25": 12,
-      "2026-08-30": 12
+      "2026-08-30": 12,
+      "2026-09-02": 12
     }
   },
   "Lang-PINN: From Language to Physics-Informed Neural Networks via a Multi-Agent Framework": {
@@ -562,7 +575,8 @@
       "2026-08-19": 12,
       "2026-08-24": 12,
       "2026-08-25": 12,
-      "2026-08-30": 12
+      "2026-08-30": 12,
+      "2026-09-02": 12
     }
   },
   "Ghost in the cloud: Your geo-distributed large language models training is easily manipulated": {
@@ -598,7 +612,8 @@
       "2026-08-19": 9,
       "2026-08-24": 9,
       "2026-08-25": 9,
-      "2026-08-30": 9
+      "2026-08-30": 9,
+      "2026-09-02": 9
     }
   },
   "Autohete: An automatic and efficient heterogeneous training system for llms": {
@@ -634,7 +649,8 @@
       "2026-08-19": 3,
       "2026-08-24": 3,
       "2026-08-25": 3,
-      "2026-08-30": 3
+      "2026-08-30": 3,
+      "2026-09-02": 3
     }
   },
   "Routemark: A fingerprint for intellectual property attribution in routing-based model merging": {
@@ -670,7 +686,8 @@
       "2026-08-19": 5,
       "2026-08-24": 5,
       "2026-08-25": 5,
-      "2026-08-30": 5
+      "2026-08-30": 5,
+      "2026-09-02": 5
     }
   },
   "GM-Skip: Metric-Guided Transformer Block Skipping for Efficient Vision-Language Models": {
@@ -706,7 +723,8 @@
       "2026-08-19": 1,
       "2026-08-24": 2,
       "2026-08-25": 2,
-      "2026-08-30": 2
+      "2026-08-30": 2,
+      "2026-09-02": 2
     }
   },
   "LLM Agent Memory: A Survey from a Unified Representation–Management Perspective": {
@@ -762,7 +780,8 @@
       "2026-08-19": 0,
       "2026-08-24": 0,
       "2026-08-25": 0,
-      "2026-08-30": 0
+      "2026-08-30": 0,
+      "2026-09-02": 0
     }
   },
   "LLM Agents Make Collective Belief Dynamics Programmable: Challenges and Research Directions": {
@@ -786,7 +805,8 @@
       "2026-08-19": 0,
       "2026-08-24": 0,
       "2026-08-25": 0,
-      "2026-08-30": 0
+      "2026-08-30": 0,
+      "2026-09-02": 0
     }
   },
   "Llm agent memory: A survey from a unified representation–management perspective": {
@@ -816,7 +836,8 @@
       "2026-08-19": 0,
       "2026-08-24": 0,
       "2026-08-25": 0,
-      "2026-08-30": 0
+      "2026-08-30": 0,
+      "2026-09-02": 0
     }
   },
   "Evolutionary multi-objective architecture search framework: Application to COVID-19 3D CT classification": {
@@ -825,7 +846,8 @@
       "2026-08-19": 28,
       "2026-08-24": 28,
       "2026-08-25": 28,
-      "2026-08-30": 28
+      "2026-08-30": 28,
+      "2026-09-02": 28
     }
   },
   "Computer-aided clinical skin disease diagnosis using cnn and object detection models": {
@@ -834,7 +856,8 @@
       "2026-08-19": 27,
       "2026-08-24": 27,
       "2026-08-25": 27,
-      "2026-08-30": 27
+      "2026-08-30": 27,
+      "2026-09-02": 27
     }
   },
   "Llm agent memory: a survey from a unified representation–management perspective": {
@@ -843,7 +866,8 @@
       "2026-08-19": 4,
       "2026-08-24": 4,
       "2026-08-25": 4,
-      "2026-08-30": 4
+      "2026-08-30": 4,
+      "2026-09-02": 4
     }
   }
 }
