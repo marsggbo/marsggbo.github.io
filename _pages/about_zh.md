@@ -16,6 +16,8 @@ social: true
 book_banner:
   enabled: true
   images:
+    - src: assets/img/book_promo_cover.jpg
+      position: left center
     - assets/img/book_promo_1.jpg
     - assets/img/book_promo_2.jpg
   tag: 新书出版

@@ -6,8 +6,9 @@
 {% if page.book_banner and page.book_banner.enabled %}
 <div class="book-banner">
   <div class="book-banner-slides">
-    {% for img in page.book_banner.images %}
-    <img src="{{ img | relative_url }}" alt="{{ page.book_banner.title | escape }}" loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
+    {% for item in page.book_banner.images %}
+    {% if item.src %}{% assign img_src = item.src %}{% assign img_pos = item.position %}{% else %}{% assign img_src = item %}{% assign img_pos = nil %}{% endif %}
+    <img src="{{ img_src | relative_url }}" alt="{{ page.book_banner.title | escape }}"{% if img_pos %} style="object-position: {{ img_pos }}"{% endif %} loading="{% if forloop.first %}eager{% else %}lazy{% endif %}">
     {% endfor %}
   </div>
   <div class="book-banner-mask"></div>
